@@ -9,9 +9,11 @@
 #include <sstream>
 #include <vector>
 #include <thread>
+#include <limits>
+#include <mutex>
+//#include <memory>
 
 /*
-#include <memory>
 
 For Linux
 //#include <cstring>

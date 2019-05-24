@@ -19,7 +19,7 @@ Resources :
 
 #include "other/Util.h"
 
-void engineRenderImage(const unsigned int& _frame, const Image& _renderSurface, const std::string& _fileName);
+void engineRenderImage(const unsigned int& _frame, const unsigned int& _frames, const Image& _renderSurface, const std::string& _fileName);
 
 class Engine {
 	private:
@@ -83,7 +83,7 @@ class Engine {
 
 		void drawTriangle3D(const Triangle& _tr);
 
-		void writeFrames(const unsigned int& _ticks);
+		void renderAndWriteFrames(const unsigned int& _ticks);
 
 		void writeVideo(const unsigned int& _fps);
 };

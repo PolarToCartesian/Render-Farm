@@ -1,0 +1,7 @@
+x64/
+out/
+models/
+.vs/
+*.sin
+*.filters
+*.user

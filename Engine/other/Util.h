@@ -8,6 +8,10 @@
 
 namespace EN {
 	namespace UTIL {
+		namespace {
+			std::mutex sharedPrintingMutex;
+		}
+
 		std::vector<std::string> splitString(const std::string& _str, const char& _seperator);
 
 		unsigned int randomInt(const unsigned int& _min, const unsigned int& _max);
@@ -18,5 +22,7 @@ namespace EN {
 	
 		// True if successful
 		bool openFile(FILE*& _file, const char* _filename, const char* _permissions);
+
+		void syncPrint(const std::string& _message);
 	};
 };

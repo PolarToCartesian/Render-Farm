@@ -38,5 +38,11 @@ namespace EN {
 
 			return false;
 		}
+
+		void syncPrint(const std::string& _message) {
+			std::lock_guard<std::mutex> guard(sharedPrintingMutex);
+
+			std::cout << _message;
+		}
 	};
 };

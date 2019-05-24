@@ -2,7 +2,7 @@
 
 // Engine Functions
 
-void engineRenderImage(const unsigned int& _frame, const Image& _renderSurface, const std::string& _fileName) {
+void engineRenderImage(const unsigned int& _frame, const unsigned int& _frames, const Image& _renderSurface, const std::string& _fileName) {
 	auto startTime = std::chrono::system_clock::now();
 
 	_renderSurface.writeToDisk(_fileName.c_str());
@@ -10,8 +10,8 @@ void engineRenderImage(const unsigned int& _frame, const Image& _renderSurface, 
 	auto endTime = std::chrono::system_clock::now();
 
 	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-
-	std::cout << "Wrote Frame n" << (_frame + 1) << " (" << elapsed.count() << "ms)" << std::endl;
+		
+	EN::UTIL::syncPrint("[WRITING]   Wrote    " + std::to_string(_frame + 1) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n");
 }
 
 // Engine Class
@@ -21,7 +21,9 @@ void engineRenderImage(const unsigned int& _frame, const Image& _renderSurface, 
 void Engine::dealWithDepthBuffer() {
 	delete[] this->depthBuffer;
 
-	this->depthBuffer = new double[static_cast<long>(this->width * this->height)];
+	long nPixels = this->width * this->height;
+
+	this->depthBuffer = new double[nPixels];
 
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
@@ -295,7 +297,7 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 }
 
 // Renders And Writes to a folder with the name of the title given in the constructor the selected number of frames.
-void Engine::writeFrames(const unsigned int& _frames) {
+void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 	std::vector<std::thread> renderThreads;
 
 	// Alocate Space in std::vectors to limite unnecessary memory manipulation
@@ -325,20 +327,22 @@ void Engine::writeFrames(const unsigned int& _frames) {
 		auto endTime = std::chrono::system_clock::now();
 		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-		std::cout << "Rendered Frame n" << (frame + 1) << " (" << elapsed.count() << "ms)" << std::endl;
+		EN::UTIL::syncPrint("[RENDERING] Rendered " + std::to_string(frame + 1) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n");
 
 		// Clear depthBuffer
 		this->dealWithDepthBuffer();
 		
-		renderThreads.emplace_back(engineRenderImage, frame, this->renderImages[frame], "./out/frames/" + std::to_string(frame + 1) + ".ppm");
+		renderThreads.emplace_back(engineRenderImage, frame, _frames, this->renderImages[frame], "./out/frames/" + std::to_string(frame + 1) + ".ppm");
 	}
+
+	EN::UTIL::syncPrint("[RENDERING] Finished Rendering Every Single Frame (" + std::to_string(_frames) + ")\n");
 
 	// Wait For Every Single Frame To Have Been Written
 	for (unsigned int i = 0; i < _frames; i++) {
 		renderThreads[i].join();
 	}
-
-	std::cout << "Finished Writing " << _frames << "!" << std::endl;
+	                                       
+	EN::UTIL::syncPrint("[WRITING]   Finished Writing Every Single Frame (" + std::to_string(_frames) + ")!\n");
 }
 
 void Engine::writeVideo(const unsigned int& _fps) {	
@@ -351,16 +355,16 @@ void Engine::writeVideo(const unsigned int& _fps) {
 			fprintf(file, (PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[i] + std::string("\n")).c_str());
 		}
 
-		std::cout << "[VIDEO] Added Python Script (1/3)" << std::endl;
+		EN::UTIL::syncPrint("[VIDEO] Added Python Script (1/3)\n");
 	} else {
-		std::cout << "[ERROR] While Writing Python File To Encode Video (1/3 failed)" << std::endl;
+		EN::UTIL::syncPrint("[ERROR] While Writing Python File To Encode Video (1/3 failed)\n");
 	}
 
 	fclose(file);
 
-	std::cout << "[VIDEO] About To Write Video (2/3)" << std::endl;
+	EN::UTIL::syncPrint("[VIDEO] Writing Video (2/3)\n");
 
 	system(("cd ./out/video/ && python videoEncoder.py " + std::to_string(_fps)).c_str());
 
-	std::cout << "[VIDEO] Wrote Video (3/3)" << std::endl;
+	EN::UTIL::syncPrint("[VIDEO] Wrote Video (3/3)\n");
 }
