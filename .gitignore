@@ -2,6 +2,7 @@ x64/
 out/
 models/
 .vs/
-*.sin
-*.filters
+*.sln
 *.user
+*.vcxproj
+*.filters
