@@ -5,61 +5,42 @@
 // Model Struct
 
 // Inspired By https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part4.cpp
-Model::Model(const std::string& _filePath, const Vector3D& _delataPosition, const bool& _randomColors, const Color& _flatColor, const Vector3D& _centerOfRotation, const Vector3D& _rotation) {
+Model::Model(const char* _filePath, const Vector3D& _delataPosition, const bool& _randomColors, const Color& _flatColor, const Vector3D& _centerOfRotation, const Vector3D& _rotation) {	
 	std::ifstream file(_filePath);
 
 	if (file.is_open()) {
+		std::string line, dataType;
+
 		std::vector<Vector3D> vertices;
 
-		char junk;
+		while (std::getline(file, line)) {
+			if (!line.empty()) {
+				std::istringstream lineStream(line);
 
-		while (!file.eof()) {
-			char currentLine[MAX_CHARACTERS_PER_LINE];
+				lineStream >> dataType;
 
-			file.getline(currentLine, MAX_CHARACTERS_PER_LINE);
+				if (dataType == "v") {
+					double x = 0.f, y = 0.f, z = 0.f;
 
-			std::strstream currentLineStream;
-			currentLineStream << currentLine;
+					lineStream >> x >> y >> z;
 
-			if (currentLine[1] == ' ') {
-				switch (currentLine[0]) {
-					case 'v':
-						{
-							double x = 0.f, y = 0.f, z = 0.f;
+					vertices.emplace_back(x, y, z);
+				} else if (dataType == "f") {
+					unsigned int vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
+					lineStream >> vertexIndex1 >> vertexIndex2 >> vertexIndex3;
 
-							currentLineStream >> junk >> x >> y >> z;
+					Vector3D triangleVertices[3] = {vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1]};
 
-							vertices.emplace_back(x, y, z);
+					Vector3D triangleColors[3] = { _flatColor, _flatColor, _flatColor };
+
+					if (_randomColors) {
+						using EN::UTIL::randomInt;
+						for (unsigned char i = 0; i < 3; i++) {
+							triangleColors[i] = Color(randomInt(0, 255), randomInt(0, 255), randomInt(0, 255));
 						}
+					}
 
-						break;
-					case 'f':
-						{
-							currentLineStream >> junk;
-
-							Vector3D triangleVertices[3];
-							Color triangleColors[3];
-
-							for (unsigned char i = 0; i < 3; i++) {
-								std::string lineArgument;
-
-								currentLineStream >> lineArgument;
-
-								unsigned int vertexIndex = std::stoi(EN::UTIL::splitString(lineArgument, '/')[0]) - 1;
-
-								triangleVertices[i] = vertices[vertexIndex] + _delataPosition;
-
-								if (_randomColors) {
-									triangleColors[i] = Color(EN::UTIL::randomInt(0, 255), EN::UTIL::randomInt(0, 255), EN::UTIL::randomInt(0, 255));
-								} else {
-									triangleColors[i] = _flatColor;
-								}
-							}
-
-							this->triangles.emplace_back(triangleVertices, triangleColors, _centerOfRotation, _rotation);
-						}
-
-						break;
+					this->triangles.emplace_back(triangleVertices, triangleColors, _centerOfRotation, _rotation);
 				}
 			}
 		}

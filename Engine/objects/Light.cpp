@@ -25,7 +25,7 @@ namespace EN {
 				totalVertexBrightness = EN::UTIL::constrain(totalVertexBrightness, 0, 1);
 
 				_output[v] = (_colorOfVertices[v] * totalVertexBrightness);
-			}			
+			}
 		}
 	};
 };

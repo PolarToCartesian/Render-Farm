@@ -11,13 +11,7 @@ namespace EN {
 
 			for (unsigned int current = 0; current < _str.size(); current++) {
 				if (_str.at(current) == _seperator || current == _str.size() - 1) {
-					std::string middle;
-
-					for (unsigned int i = last; i < current; i++) {
-						middle += _str.at(i);
-					}
-
-					r.push_back(middle);
+					r.push_back(_str.substr(last, current));
 
 					last = current + 1;
 				}

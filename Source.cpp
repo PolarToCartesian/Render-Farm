@@ -3,8 +3,9 @@
 class App : Engine {
 	public:
 		App() : Engine(1920, 1080) {
-			this->addModel(Model("models/armadillo.txt", Vector3D(), true));
+			this->addModel(Model("models/teapot.txt", Vector3D(), true));
 			this->addLight(Light(Vector3D(0, 0,-5), Vector3D(255, 255, 255), 5));
+			this->camera.position.y = 1.2f;
 			this->camera.position.z = -3.f;
 			this->writeFrames(15 * 5);
 			this->writeVideo(15);
@@ -18,7 +19,7 @@ class App : Engine {
 
 int main() {
 	App app;
-	
+
 	std::cin.get();
 
 	return 0;

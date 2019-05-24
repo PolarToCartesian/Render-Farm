@@ -21,7 +21,7 @@ void engineRenderImage(const unsigned int& _frame, const Image& _renderSurface, 
 void Engine::dealWithDepthBuffer() {
 	delete[] this->depthBuffer;
 
-	this->depthBuffer = new double[this->width * this->height];
+	this->depthBuffer = new double[static_cast<long>(this->width * this->height)];
 
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
@@ -40,7 +40,7 @@ void Engine::apply3D(const Triangle& _tr, bool& _doRenderTriangle, Vector3D& _tr
 	_doRenderTriangle = true;
 	
 	// Apply 3D Rotation around _tr.rotationMidPoint
-	std::memcpy(_rotatedVertices, _tr.vertices, SIZE_3_VECTOR3D);
+	std::memcpy(_rotatedVertices, _tr.vertices, 3 * sizeof(Vector3D));
 
 	for (unsigned char v = 0; v < 3; v++) {
 		_rotatedVertices[v] -= _tr.rotationMidPoint;
@@ -59,7 +59,7 @@ void Engine::apply3D(const Triangle& _tr, bool& _doRenderTriangle, Vector3D& _tr
 	if (!this->camera.isTriangleFacingCamera(_rotatedVertices, _triangleSurfaceNormal)) _doRenderTriangle = false;
 
 	// Apply Camera Translation, perspective and change coordinate system
-	std::memcpy(_transformedVertices, _rotatedVertices, SIZE_3_VECTOR3D);
+	std::memcpy(_transformedVertices, _rotatedVertices, 3 * sizeof(Vector3D));
 
 	for (unsigned char v = 0; v < 3; v++) {
 		// Camera Translation
@@ -68,9 +68,13 @@ void Engine::apply3D(const Triangle& _tr, bool& _doRenderTriangle, Vector3D& _tr
 		// Perspective
 		_transformedVertices[v] = _transformedVertices[v] * this->perspectiveMatrix;
 
-		if (_transformedVertices[v].w <= 0) _doRenderTriangle = false; 
+		if (_transformedVertices[v].w < 0) {
+			_doRenderTriangle = false;
+		}
 
-		_transformedVertices[v] /= _transformedVertices[v].w;
+		if (_transformedVertices[v].w > 0) {
+			_transformedVertices[v] /= _transformedVertices[v].w;
+		}
 
 		// Change coordinate system
 		_transformedVertices[v].x = ((_transformedVertices[v].x - 1.f) / -2.f) * this->width;  // (-1 to 1)  to (0 to width)
@@ -138,35 +142,60 @@ void Engine::drawRectangle(const unsigned int& _x, const unsigned int& _y, const
 
 // Renders a triangle in 3D
 void Engine::drawTriangle3D(const Triangle& _tr) {	
-	bool     doRenderTriangle = true;
-	Vector3D triangleSurfaceNormal;
-	Vector3D rotatedVertices[3], transformedVertices[3];
+	Vector3D rotatedVertices[3] = { 0 };
+	std::memcpy(rotatedVertices, _tr.vertices, 3 * sizeof(Vector3D));
 
-	this->apply3D(_tr, doRenderTriangle, triangleSurfaceNormal, rotatedVertices, transformedVertices);
+	// For Every Vertex
+	for (unsigned char v = 0; v < 3; v++) {
+		// Rotate Triangle Around Point
+		rotatedVertices[v] -= _tr.rotationMidPoint;
 
-	if (!doRenderTriangle) return;
+		rotatedVertices[v] *= EN::MATRIX4X4::getRotationXMatrix(_tr.rotation.x);
+		rotatedVertices[v] *= EN::MATRIX4X4::getRotationYMatrix(_tr.rotation.y);
+		rotatedVertices[v] *= EN::MATRIX4X4::getRotationZMatrix(_tr.rotation.z);
 
-	Color vertexColorsWithLighting[3];
-	EN::LIGHT::applyLightingToVertices(rotatedVertices, _tr.colors, triangleSurfaceNormal, this->lights, vertexColorsWithLighting);
+		rotatedVertices[v] += _tr.rotationMidPoint;
+	}
 
-	// PreCalculate Values (For Barycentric Interpolation)
-	// Thanks to : https://codeplea.com/triangular-interpolation
+	Vector3D triangleSurfaceNormal = EN::TRIANGLE::getSurfaceNormal(rotatedVertices);
 
-	double denominator = (transformedVertices[1].y - transformedVertices[2].y)
-				       * (transformedVertices[0].x - transformedVertices[2].x)
-					   + (transformedVertices[2].x - transformedVertices[1].x)
-					   * (transformedVertices[0].y - transformedVertices[2].y);
+	// Check if triangle is facing camera
+	if (!this->camera.isTriangleFacingCamera(rotatedVertices, triangleSurfaceNormal)) {
+		return;
+	}
 
-	double preCalc1 = (transformedVertices[1].y - transformedVertices[2].y);
-	double preCalc2 = (transformedVertices[2].x - transformedVertices[1].x);
-	double preCalc3 = (transformedVertices[2].y - transformedVertices[0].y);
-	double preCalc4 = (transformedVertices[0].x - transformedVertices[2].x);
+	Vector3D transformedVertices[3] = { 0 };
+	std::memcpy(transformedVertices, rotatedVertices, 3 * sizeof(Vector3D));
 
-	// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
+	for (unsigned char v = 0; v < 3; v++) {
+		// Camera Translation
+		transformedVertices[v] -= this->camera.position;
+
+		// Apply Perspective
+		transformedVertices[v] = transformedVertices[v] * this->perspectiveMatrix;
+
+		if (transformedVertices[v].w < 0) {
+			return;
+		}
+
+		if (transformedVertices[v].w > 0) {
+			transformedVertices[v] /= transformedVertices[v].w;
+		}
+
+		// -1 to 1    to    0-width
+		transformedVertices[v].x = ((transformedVertices[v].x - 1.f) / -2.f) * this->width;
+		// 1  to -1   to    height-0
+		transformedVertices[v].y = ((transformedVertices[v].y + 1.f) / +2.f) * this->height;
+	}
+
+	Color lightenedVertexColors[3];
+	EN::LIGHT::applyLightingToVertices(rotatedVertices, _tr.colors, triangleSurfaceNormal, this->lights, lightenedVertexColors);
 
 	Vector3D t0 = EN::VECTOR3D::intify(transformedVertices[0]);
 	Vector3D t1 = EN::VECTOR3D::intify(transformedVertices[1]);
 	Vector3D t2 = EN::VECTOR3D::intify(transformedVertices[2]);
+
+	// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
 	if (t0.y == t1.y && t0.y == t2.y) return;
 
@@ -175,6 +204,21 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 	if (t1.y > t2.y) std::swap(t1, t2);
 
 	unsigned int total_height = static_cast<unsigned int>(t2.y - t0.y);
+
+	// PreCalculate Values (For Barycentric Interpolation)
+	// Thanks to : https://codeplea.com/triangular-interpolation
+
+	double denominator = (transformedVertices[1].y - transformedVertices[2].y)
+		* (transformedVertices[0].x - transformedVertices[2].x)
+		+ (transformedVertices[2].x - transformedVertices[1].x)
+		* (transformedVertices[0].y - transformedVertices[2].y);
+
+	double preCalc1 = (transformedVertices[1].y - transformedVertices[2].y);
+	double preCalc2 = (transformedVertices[2].x - transformedVertices[1].x);
+	double preCalc3 = (transformedVertices[2].y - transformedVertices[0].y);
+	double preCalc4 = (transformedVertices[0].x - transformedVertices[2].x);
+
+	// Continue Rendering
 
 	// Render Triangle With The 3 Triangulated :D colors
 	for (unsigned int i = 0; i < static_cast<unsigned int>(total_height); i++) {
@@ -185,8 +229,8 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 		bool second_half = i > t1.y - t0.y || t1.y == t0.y;
 		int segment_height = static_cast<int>(second_half ? t2.y - t1.y : t1.y - t0.y);
 
-		double alpha = static_cast<double>(i / total_height);
-		double beta  = static_cast<double>((i - (second_half ? t1.y - t0.y : 0)) / segment_height);
+		double alpha = (double)i / total_height;
+		double beta = (double)(i - (second_half ? t1.y - t0.y : 0)) / segment_height;
 
 		Vector3D A = t0 + (t2 - t0) * alpha;
 		Vector3D B = second_half ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
@@ -237,7 +281,7 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 
 				// For every vertex
 				for (unsigned char c = 0; c < 3; c++) {
-					pixelColor += vertexColorsWithLighting[c] * VertexPositionWeights[c];
+					pixelColor += lightenedVertexColors[c] * VertexPositionWeights[c];
 				}
 
 				pixelColor /= VertexPositionWeightSum;

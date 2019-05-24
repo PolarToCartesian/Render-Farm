@@ -7,12 +7,6 @@ constexpr double TAU = 2 * PI;
 // Other
 constexpr unsigned int MAX_THREADS = 5;
 
-constexpr size_t SIZE_VECTOR3D   = 4 * sizeof(double);
-constexpr size_t SIZE_3_VECTOR3D = 3 * SIZE_VECTOR3D;
-
-// File Reading
-constexpr unsigned int MAX_CHARACTERS_PER_LINE = 128;
-
 constexpr const char* PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[] = {
 	"# python FramesToVideo.py fps",
 	"# exemple: python FramesToVideo.py 30",

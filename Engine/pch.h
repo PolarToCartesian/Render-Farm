@@ -11,6 +11,8 @@
 #include <thread>
 
 /*
+#include <memory>
+
 For Linux
 //#include <cstring>
 //#include <cmath>
