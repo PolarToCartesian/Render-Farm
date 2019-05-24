@@ -342,7 +342,7 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 		renderThreads[i].join();
 	}
 	                                       
-	EN::UTIL::syncPrint("[WRITING]   Finished Writing Every Single Frame (" + std::to_string(_frames) + ")!\n");
+	EN::UTIL::syncPrint("[WRITING]   Finished Writing Every Single Frame (" + std::to_string(_frames) + ")\n");
 }
 
 void Engine::writeVideo(const unsigned int& _fps) {	
