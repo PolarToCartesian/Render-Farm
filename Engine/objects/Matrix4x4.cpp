@@ -10,7 +10,7 @@ Matrix4x4::Matrix4x4(const bool& _isIdentityMatrix) {
 	}
 }
 
-Matrix4x4::Matrix4x4(const double _m[16]) { std::memcpy(this->m, _m, 16 * sizeof(double)); }
+Matrix4x4::Matrix4x4(const TYPE _m[16]) { std::memcpy(this->m, _m, 16 * sizeof(TYPE)); }
 
 Matrix4x4::Matrix4x4(const Matrix4x4& _m) { Matrix4x4(_m.m); }
 
@@ -65,11 +65,11 @@ std::ostream& operator<<(std::ostream& _os, const Matrix4x4& _m) {
 
 namespace EN {
 	namespace MATRIX4X4 {
-		Matrix4x4 getRotationXMatrix(const double& _rotX) {
-			const double sinX = std::sin(_rotX);
-			const double cosX = std::cos(_rotX);
+		Matrix4x4 getRotationXMatrix(const TYPE& _rotX) {
+			const TYPE sinX = std::sin(_rotX);
+			const TYPE cosX = std::cos(_rotX);
 
-			double m[16] = {
+			TYPE m[16] = {
 				1, 0,     0,     0,
 				0, +cosX, +sinX, 0,
 				0, -sinX, +cosX, 0,
@@ -79,11 +79,11 @@ namespace EN {
 			return Matrix4x4(m);
 		}
 
-		Matrix4x4 getRotationYMatrix(const double& _rotY) {
-			const double sinY = std::sin(_rotY);
-			const double cosY = std::cos(_rotY);
+		Matrix4x4 getRotationYMatrix(const TYPE& _rotY) {
+			const TYPE sinY = std::sin(_rotY);
+			const TYPE cosY = std::cos(_rotY);
 
-			double m[16] = {
+			TYPE m[16] = {
 				cosY, 0, -sinY, 0,
 				0,    1, 0,     0,
 				sinY, 0, cosY,  0,
@@ -93,11 +93,11 @@ namespace EN {
 			return Matrix4x4(m);
 		}
 
-		Matrix4x4 getRotationZMatrix(const double& _rotZ) {
-			const double sinZ = std::sin(_rotZ);
-			const double cosZ = std::cos(_rotZ);
+		Matrix4x4 getRotationZMatrix(const TYPE& _rotZ) {
+			const TYPE sinZ = std::sin(_rotZ);
+			const TYPE cosZ = std::cos(_rotZ);
 
-			double m[16] = {
+			TYPE m[16] = {
 				+cosZ, +sinZ, 0, 0,
 				-sinZ, +cosZ, 0, 0,
 				0,     0,     1, 0,
@@ -107,11 +107,11 @@ namespace EN {
 			return Matrix4x4(m);
 		}
 
-		Matrix4x4 getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const double& _fov, const double& _zNear, const double& _zFar) {
-			double aspectRatio = _height / static_cast<double>(_width);
-			double a = -std::abs(1.f / std::tan(EN::UTIL::degToRad(_fov / 2.f)));
+		Matrix4x4 getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const TYPE& _fov, const TYPE& _zNear, const TYPE& _zFar) {
+			TYPE aspectRatio = _height / static_cast<TYPE>(_width);
+			TYPE a = -std::abs(1.f / std::tan(EN::UTIL::degToRad(_fov / 2.f)));
 
-			double m[16] = {
+			TYPE m[16] = {
 					aspectRatio * a, 0, 0,                                    0,
 					0,               a, 0,                                    0,
 					0,               0, _zFar / (_zFar - _zNear),             1,

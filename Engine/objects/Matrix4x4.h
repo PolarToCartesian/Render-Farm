@@ -5,11 +5,11 @@
 #include "../other/Util.h"
 
 struct Matrix4x4 {
-	double m[16] = { 0 }; // r * c
+	TYPE m[16] = { 0 }; // r * c
 
 	Matrix4x4(const bool& _isIdentityMatrix = false);
 
-	Matrix4x4(const double _m[16]);
+	Matrix4x4(const TYPE _m[16]);
 
 	Matrix4x4(const Matrix4x4& _m);
 
@@ -34,9 +34,9 @@ std::ostream& operator<<(std::ostream& _os, const Matrix4x4& _m);
 
 namespace EN {
 	namespace MATRIX4X4 {
-		Matrix4x4 getRotationXMatrix(const double& _rotX);
-		Matrix4x4 getRotationYMatrix(const double& _rotY);
-		Matrix4x4 getRotationZMatrix(const double& _rotZ);
-		Matrix4x4 getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const double& _fov, const double& _zNear, const double& _zFar);
+		Matrix4x4 getRotationXMatrix(const TYPE& _rotX);
+		Matrix4x4 getRotationYMatrix(const TYPE& _rotY);
+		Matrix4x4 getRotationZMatrix(const TYPE& _rotZ);
+		Matrix4x4 getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const TYPE& _fov, const TYPE& _zNear, const TYPE& _zFar);
 	};
 };

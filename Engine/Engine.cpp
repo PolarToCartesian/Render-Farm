@@ -1,19 +1,5 @@
 #include "Engine.h"
 
-// Engine Functions
-
-void engineRenderImage(const unsigned int& _frame, const unsigned int& _frames, const Image& _renderSurface, const std::string& _fileName) {
-	auto startTime = std::chrono::system_clock::now();
-
-	_renderSurface.writeToDisk(_fileName.c_str());
-
-	auto endTime = std::chrono::system_clock::now();
-
-	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-		
-	EN::UTIL::syncPrint("[WRITING]   Wrote    " + std::to_string(_frame + 1) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n");
-}
-
 // Engine Class
 
 // Private Methods
@@ -23,13 +9,13 @@ void Engine::dealWithDepthBuffer() {
 
 	long nPixels = this->width * this->height;
 
-	this->depthBuffer = new double[nPixels];
+	this->depthBuffer = new TYPE[nPixels];
 
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
 
 unsigned int Engine::getIndexInColorBuffer(const unsigned int& _x, const unsigned int& _y) {
-	return renderImages[this->currentFrameBeingRendered].getIndex(_x, _y);
+	return renderImages[this->indexImageBeingRendered]->getIndex(_x, _y);
 }
 
 void Engine::calculateValues() {
@@ -86,7 +72,7 @@ void Engine::apply3D(const Triangle& _tr, bool& _doRenderTriangle, Vector3D& _tr
 
 // Public Methods
 
-Engine::Engine(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov, const double& _zNear, const double& _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
+Engine::Engine(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov, const TYPE& _zNear, const TYPE& _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
 	std::experimental::filesystem::create_directory("./out");
 	std::experimental::filesystem::create_directory("./out/frames");
 	std::experimental::filesystem::create_directory("./out/video");
@@ -97,9 +83,6 @@ Engine::Engine(const unsigned int& _width, const unsigned int& _height, const un
 Engine::~Engine() {
 	delete[] this->depthBuffer;
 }
-
-void Engine::setWidth(unsigned int& _width)   { this->width  = _width;  this->calculateValues(); }
-void Engine::setHeight(unsigned int& _height) { this->height = _height; this->calculateValues(); }
 
 unsigned int Engine::getWidth()  const { return this->width; }
 unsigned int Engine::getHeight() const { return this->height; }
@@ -113,7 +96,7 @@ Model Engine::copyModel(const unsigned int& _modelId) const { return this->model
 void Engine::setModel(const unsigned int& _modelId, const Model _model) { this->models[_modelId] = _model; }
 
 void Engine::drawPointNoVerif(const unsigned int& _x, const unsigned int& _y, const Color & _color) {
-	renderImages[this->currentFrameBeingRendered].colorBuffer[getIndexInColorBuffer(_x, _y)] = _color;
+	renderImages[this->indexImageBeingRendered]->colorBuffer[getIndexInColorBuffer(_x, _y)] = _color;
 }
 
 void Engine::drawPoint(const unsigned int& _x, const unsigned int& _y, const Color & _color) {
@@ -127,7 +110,7 @@ void Engine::drawRectangleNoVerif(const unsigned int& _x, const unsigned int& _y
 		unsigned int baseIndex = y * this->width;
 
 		for (unsigned int x = _x; x < _x + _w; x++) {
-			renderImages[this->currentFrameBeingRendered].colorBuffer[baseIndex + x] = _color;
+			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _color;
 		}
 	}
 }
@@ -137,7 +120,7 @@ void Engine::drawRectangle(const unsigned int& _x, const unsigned int& _y, const
 		unsigned int baseIndex = y * this->width;
 
 		for (unsigned int x = (_x >= 0) ? _x : 0; x < ((_x + _w < this->width) ? (_x + _w) : (this->width - 1)); x++) {
-			renderImages[this->currentFrameBeingRendered].colorBuffer[baseIndex + x] = _color;
+			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _color;
 		}
 	}
 }
@@ -210,15 +193,15 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 	// PreCalculate Values (For Barycentric Interpolation)
 	// Thanks to : https://codeplea.com/triangular-interpolation
 
-	double denominator = (transformedVertices[1].y - transformedVertices[2].y)
+	TYPE denominator = (transformedVertices[1].y - transformedVertices[2].y)
 		* (transformedVertices[0].x - transformedVertices[2].x)
 		+ (transformedVertices[2].x - transformedVertices[1].x)
 		* (transformedVertices[0].y - transformedVertices[2].y);
 
-	double preCalc1 = (transformedVertices[1].y - transformedVertices[2].y);
-	double preCalc2 = (transformedVertices[2].x - transformedVertices[1].x);
-	double preCalc3 = (transformedVertices[2].y - transformedVertices[0].y);
-	double preCalc4 = (transformedVertices[0].x - transformedVertices[2].x);
+	TYPE preCalc1 = (transformedVertices[1].y - transformedVertices[2].y);
+	TYPE preCalc2 = (transformedVertices[2].x - transformedVertices[1].x);
+	TYPE preCalc3 = (transformedVertices[2].y - transformedVertices[0].y);
+	TYPE preCalc4 = (transformedVertices[0].x - transformedVertices[2].x);
 
 	// Continue Rendering
 
@@ -231,8 +214,8 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 		bool second_half = i > t1.y - t0.y || t1.y == t0.y;
 		int segment_height = static_cast<int>(second_half ? t2.y - t1.y : t1.y - t0.y);
 
-		double alpha = (double)i / total_height;
-		double beta = (double)(i - (second_half ? t1.y - t0.y : 0)) / segment_height;
+		TYPE alpha = (TYPE)i / total_height;
+		TYPE beta = (TYPE)(i - (second_half ? t1.y - t0.y : 0)) / segment_height;
 
 		Vector3D A = t0 + (t2 - t0) * alpha;
 		Vector3D B = second_half ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
@@ -246,10 +229,10 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 			// Continue Barycentric Interpolation
 			// To calculate the w value (depth of the pixel to dicide if we should render it or not)
 
-			double preCalc5 = (x - transformedVertices[2].x);
-			double preCalc6 = (y - transformedVertices[2].y);
+			TYPE preCalc5 = (x - transformedVertices[2].x);
+			TYPE preCalc6 = (y - transformedVertices[2].y);
 
-			double VertexPositionWeights[3] = {
+			TYPE VertexPositionWeights[3] = {
 				(preCalc1 * preCalc5 + preCalc2 * preCalc6) / denominator,
 				(preCalc3 * preCalc5 + preCalc4 * preCalc6) / denominator,
 				0,
@@ -257,10 +240,10 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 
 			VertexPositionWeights[2] = 1 - VertexPositionWeights[0] - VertexPositionWeights[1];
 
-			double VertexPositionWeightSum = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
+			TYPE VertexPositionWeightSum = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
 
 			// Pixel Depth (w)
-			double w = 0;
+			TYPE w = 0;
 
 			// For every vertex
 			for (unsigned char c = 0; c < 3; c++) {
@@ -290,7 +273,7 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 				pixelColor.constrain(0, 255);
 				pixelColor.intify();
 
-				renderImages[this->currentFrameBeingRendered].colorBuffer[pixelIndex] = pixelColor;
+				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}
 		}
 	}
@@ -298,51 +281,68 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 
 // Renders And Writes to a folder with the name of the title given in the constructor the selected number of frames.
 void Engine::renderAndWriteFrames(const unsigned int& _frames) {
-	std::vector<std::thread> renderThreads;
+	std::thread writeThreads[RENDERS_AND_WRITES_PER_CYCLE];
 
-	// Alocate Space in std::vectors to limite unnecessary memory manipulation
-	renderImages.reserve(_frames);
-	renderThreads.reserve(_frames);
+	// Allocate images
+	for (unsigned int i = 0; i < RENDERS_AND_WRITES_PER_CYCLE; i++) {
+		this->renderImages[i] = new Image(this->width, this->height);
+	}
 
-	// Render Each Frame
-	for (unsigned int frame = 0; frame < _frames; frame++) {
-		this->currentFrameBeingRendered = frame;
-		renderImages.emplace_back(this->width, this->height);
+	// In each cycle, the amount specified in "RENDERS_AND_WRITES_PER_CYCLE" will be rendered and put into threads to write.
+	// When every thread has joined, another cycle starts.
+	for (unsigned int cycle = 0; cycle < _frames; cycle += RENDERS_AND_WRITES_PER_CYCLE) {
+		this->indexImageBeingRendered = 0;
+		unsigned int nFrame = cycle;
 
-		auto startTime = std::chrono::system_clock::now();
+		for (this->indexImageBeingRendered = 0; this->indexImageBeingRendered < RENDERS_AND_WRITES_PER_CYCLE; this->indexImageBeingRendered++) {
+			auto startTime = std::chrono::system_clock::now();
 
-		// Call User Defined Functions
-		this->render();
-		this->update();
+			nFrame++;
 
-		// Render Each Model
-		for (unsigned int i = 0; i < this->models.size(); i++) {
-			if (this->models[i].doRender) {
-				for (unsigned int j = 0; j < this->models[i].triangles.size(); j++) {
-					this->drawTriangle3D(this->models[i].triangles[j]);
+			// Call User Defined Functions
+			this->render();
+			this->update();
+
+			for (unsigned int nModel = 0; nModel < this->models.size(); nModel++) {
+				if (this->models[nModel].doRender) {
+					this->models[nModel].applyFunctionToEachTriangle([this](Triangle& _tr) {
+						this->drawTriangle3D(_tr);
+					});
 				}
 			}
+
+			auto endTime = std::chrono::system_clock::now();
+			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+
+			EN::UTIL::syncPrint("[RENDERING] Rendered " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n");
+
+			std::string fileName = "./out/frames/" + std::to_string(nFrame) + ".ppm";
+
+			const Image * imageBeingRenderedPtr = renderImages[this->indexImageBeingRendered];
+
+			writeThreads[this->indexImageBeingRendered] = std::thread([nFrame, &_frames, &fileName, &imageBeingRenderedPtr]() {
+				auto startTime = std::chrono::system_clock::now();
+
+				imageBeingRenderedPtr->writeToDisk(fileName.c_str());
+
+				auto endTime = std::chrono::system_clock::now();
+
+				auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+
+				EN::UTIL::syncPrint("[WRITING]   Wrote    " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n");
+			});
+
+			this->dealWithDepthBuffer();
 		}
 
-		auto endTime = std::chrono::system_clock::now();
-		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+		for (int i = 0; i < RENDERS_AND_WRITES_PER_CYCLE; i++) {
+			// Join Threads
+			writeThreads[i].join();
 
-		EN::UTIL::syncPrint("[RENDERING] Rendered " + std::to_string(frame + 1) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n");
-
-		// Clear depthBuffer
-		this->dealWithDepthBuffer();
-		
-		renderThreads.emplace_back(engineRenderImage, frame, _frames, this->renderImages[frame], "./out/frames/" + std::to_string(frame + 1) + ".ppm");
+			// Reset Images To Black
+			std::fill_n(this->renderImages[i]->colorBuffer, this->width * this->height, 0);
+		}
 	}
-
-	EN::UTIL::syncPrint("[RENDERING] Finished Rendering Every Single Frame (" + std::to_string(_frames) + ")\n");
-
-	// Wait For Every Single Frame To Have Been Written
-	for (unsigned int i = 0; i < _frames; i++) {
-		renderThreads[i].join();
-	}
-	                                       
-	EN::UTIL::syncPrint("[WRITING]   Finished Writing Every Single Frame (" + std::to_string(_frames) + ")\n");
 }
 
 void Engine::writeVideo(const unsigned int& _fps) {	

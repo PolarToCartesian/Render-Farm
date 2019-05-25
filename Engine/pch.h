@@ -11,10 +11,9 @@
 #include <vector>
 #include <thread>
 #include <limits>
+#include <memory>
 #include <cmath>
 #include <mutex>
-
-//#include <memory>
 
 #ifdef __unix
 	#define fopen_s(pFile,filename,mode) ((*(pFile))=fopen((filename),(mode)))==NULL

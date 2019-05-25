@@ -9,7 +9,7 @@ Model::Model(const char* _filePath, const Vector3D& _delataPosition, const bool&
 	std::ifstream file(_filePath);
 
 	if (file.is_open()) {
-		std::string line, dataType, junk;
+		std::string line, dataTYPE, junk;
 
 		std::vector<Vector3D> vertices;
 
@@ -17,15 +17,15 @@ Model::Model(const char* _filePath, const Vector3D& _delataPosition, const bool&
 			if (!line.empty()) {
 				std::istringstream lineStream(line);
 
-				lineStream >> dataType;
+				lineStream >> dataTYPE;
 
-				if (dataType == "v") {
-					double x = 0.f, y = 0.f, z = 0.f;
+				if (dataTYPE == "v") {
+					TYPE x = 0.f, y = 0.f, z = 0.f;
 
 					lineStream >> x >> y >> z;
 
 					vertices.emplace_back(x, y, z);
-				} else if (dataType == "f") {
+				} else if (dataTYPE == "f") {
 					unsigned int vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
 
 					if (line.find("//") == std::string::npos) {

@@ -35,9 +35,9 @@ namespace EN {
 			Vector3D U = _vertices[1] - _vertices[0];
 			Vector3D V = _vertices[2] - _vertices[0];
 
-			double nX = U.y * V.z - U.z * V.y;
-			double nY = U.z * V.x - U.x * V.z;
-			double nZ = U.x * V.y - U.y * V.x;
+			TYPE nX = U.y * V.z - U.z * V.y;
+			TYPE nY = U.z * V.x - U.x * V.z;
+			TYPE nZ = U.x * V.y - U.y * V.x;
 
 			return EN::VECTOR3D::normalize(Vector3D(nX, nY, nZ));
 		}

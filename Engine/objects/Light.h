@@ -9,9 +9,9 @@ struct Light {
 	Vector3D position;
 	Color color;
 
-	double intensity = 1;
+	TYPE intensity = 1;
 
-	Light(const Vector3D& _position, const Color& _color, const double& _intensity = 5.f);
+	Light(const Vector3D& _position, const Color& _color, const TYPE& _intensity = 5.f);
 };
 
 // Engine Namespace

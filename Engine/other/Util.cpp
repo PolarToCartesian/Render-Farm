@@ -24,11 +24,11 @@ namespace EN {
 			return _min + (rand() % static_cast<int>(_max - _min + 1));
 		}
 
-		double degToRad(const double& _deg) {
+		TYPE degToRad(const TYPE& _deg) {
 			return (_deg * 180.f / PI);
 		}
 
-		double constrain(const double _x, const double& _min, const double& _max) {
+		TYPE constrain(const TYPE _x, const TYPE& _min, const TYPE& _max) {
 			return (_x < _min) ? _min : ((_x > _max) ? _max : _x);
 		}
 

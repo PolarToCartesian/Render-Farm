@@ -16,9 +16,9 @@ namespace EN {
 
 		unsigned int randomInt(const unsigned int& _min, const unsigned int& _max);
 
-		double degToRad(const double& _deg);
+		TYPE degToRad(const TYPE& _deg);
 
-		double constrain(const double _x, const double& _min, const double& _max);
+		TYPE constrain(const TYPE _x, const TYPE& _min, const TYPE& _max);
 	
 		// True if successful
 		bool openFile(FILE*& _file, const char* _filename, const char* _permissions);

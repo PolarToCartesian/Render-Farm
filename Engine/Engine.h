@@ -19,8 +19,6 @@ Resources :
 
 #include "other/Util.h"
 
-void engineRenderImage(const unsigned int& _frame, const unsigned int& _frames, const Image& _renderSurface, const std::string& _fileName);
-
 class Engine {
 	private:
 		unsigned int width, height;
@@ -28,13 +26,13 @@ class Engine {
 		Matrix4x4 perspectiveMatrix;
 
 		unsigned int fov;
-		double zNear, zFar;
+		TYPE zNear, zFar;
 
-		unsigned int currentFrameBeingRendered = 0;
+		unsigned int indexImageBeingRendered = 0;
 
-		double* depthBuffer = nullptr;
+		TYPE* depthBuffer = nullptr;
 
-		std::vector<Image> renderImages;
+		Image * renderImages[RENDERS_AND_WRITES_PER_CYCLE];
 
 	public:
 		std::vector<Model> models;
@@ -52,15 +50,12 @@ class Engine {
 		void calculateValues();
 
 	public:
-		Engine(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov = 90, const double& _zNear = 0.1, const double& _zFar = 1000);
+		Engine(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov = 90, const TYPE& _zNear = 0.1, const TYPE& _zFar = 1000);
 
 		~Engine();
 
 		virtual void update() = 0;
 		virtual void render() = 0;
-
-		void setWidth(unsigned int& _width);
-		void setHeight(unsigned int& _height);
 
 		unsigned int getWidth()  const;
 		unsigned int getHeight() const;

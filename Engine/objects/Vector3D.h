@@ -5,79 +5,79 @@
 
 struct Vector3D { // 4th Component is not manipulated, just stored (modified if requested)
 	union {
-		struct { double x, y, z, w; };
-		struct { double r, g, b, a; };
+		struct { TYPE x, y, z, w; };
+		struct { TYPE r, g, b, a; };
 	};
 
 	// CONSTRUCTORS
 
 	Vector3D() : x(0), y(0), z(0), w(0) {}
-	Vector3D(const double& _n) : x(_n), y(_n), z(_n), w(_n) {}
-	Vector3D(const double& _x, const double& _y) : x(_x), y(_y), z(0), w(0) {}
-	Vector3D(const double& _x, const double& _y, const double& _z) : x(_x), y(_y), z(_z), w(0) {}
-	Vector3D(const double& _x, const double& _y, const double& _z, const double& _w) : x(_x), y(_y), z(_z), w(_w) {}
+	Vector3D(const TYPE& _n) : x(_n), y(_n), z(_n), w(_n) {}
+	Vector3D(const TYPE& _x, const TYPE& _y) : x(_x), y(_y), z(0), w(0) {}
+	Vector3D(const TYPE& _x, const TYPE& _y, const TYPE& _z) : x(_x), y(_y), z(_z), w(0) {}
+	Vector3D(const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w) : x(_x), y(_y), z(_z), w(_w) {}
 	Vector3D(const Vector3D& _v) : x(_v.x), y(_v.y), z(_v.z), w(_v.w) {  }
 
 	// ADD
 
-	void add(const double& _x, const double& _y, const double& _z, const double& _w, const bool& _useW = false);
-	void add(const double& _x, const double& _y, const double& _z);
-	void add(const double& _x, const double& _y);
+	void add(const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w, const bool& _useW = false);
+	void add(const TYPE& _x, const TYPE& _y, const TYPE& _z);
+	void add(const TYPE& _x, const TYPE& _y);
 	void add(const Vector3D& _v, const bool& _useW = false);
-	void add(const double& _n, const bool& _useW = false);
+	void add(const TYPE& _n, const bool& _useW = false);
 	void operator+=(const Vector3D& _a);
-	void operator+=(const double& _a);
+	void operator+=(const TYPE& _a);
 	Vector3D operator+(const Vector3D& _a) const;
-	Vector3D operator+(const double& _a) const;
+	Vector3D operator+(const TYPE& _a) const;
 
 	// SUBSTRACT
 
-	void sub(const double& _x, const double& _y, const double& _z, const double& _w, const bool& _useW = false);
-	void sub(const double& _x, const double& _y, const double& _z);
-	void sub(const double& _x, const double& _y);
+	void sub(const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w, const bool& _useW = false);
+	void sub(const TYPE& _x, const TYPE& _y, const TYPE& _z);
+	void sub(const TYPE& _x, const TYPE& _y);
 	void sub(const Vector3D& _v, const bool& _useW = false);
-	void sub(const double& _n, const bool& _useW = false);
+	void sub(const TYPE& _n, const bool& _useW = false);
 	void operator-=(const Vector3D& _a);
-	void operator-=(const double& _a);
+	void operator-=(const TYPE& _a);
 	Vector3D operator-(const Vector3D& _a) const;
-	Vector3D operator-(const double& _a) const;
+	Vector3D operator-(const TYPE& _a) const;
 
 	// MULTIPLY
 
-	void mul(const double& _x, const double& _y, const double& _z, const double& _w, const bool& _useW = false);
-	void mul(const double& _x, const double& _y, const double& _z);
-	void mul(const double& _x, const double& _y);
+	void mul(const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w, const bool& _useW = false);
+	void mul(const TYPE& _x, const TYPE& _y, const TYPE& _z);
+	void mul(const TYPE& _x, const TYPE& _y);
 	void mul(const Vector3D& _v, const bool& _useW = false);
-	void mul(const double& _n, const bool& _useW = false);
+	void mul(const TYPE& _n, const bool& _useW = false);
 	void operator*=(const Vector3D& _a);
-	void operator*=(const double& _a);
+	void operator*=(const TYPE& _a);
 	Vector3D operator*(const Vector3D& _a) const;
-	Vector3D operator*(const double& _a) const;
+	Vector3D operator*(const TYPE& _a) const;
 
 	// DIVIDE
 
-	void div(const double& _x, const double& _y, const double& _z, const double& _w, const bool& _useW = false);
-	void div(const double& _x, const double& _y, const double& _z);
-	void div(const double& _x, const double& _y);
+	void div(const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w, const bool& _useW = false);
+	void div(const TYPE& _x, const TYPE& _y, const TYPE& _z);
+	void div(const TYPE& _x, const TYPE& _y);
 	void div(const Vector3D& _v, const bool& _useW = false);
-	void div(const double& _n, const bool& _useW = false);
+	void div(const TYPE& _n, const bool& _useW = false);
 	void operator/=(const Vector3D& _a);
-	void operator/=(const double& _a);
+	void operator/=(const TYPE& _a);
 	Vector3D operator/(const Vector3D& _a) const;
-	Vector3D operator/(const double& _a) const;
+	Vector3D operator/(const TYPE& _a) const;
 
 	// MISC
 
 	void normalize();
-	void setLength(const double& _l);
+	void setLength(const TYPE& _l);
 
 	Vector3D copy() const;
 
-	double getLength() const;
+	TYPE getLength() const;
 
-	void constrain(const double& _min, const double& _max);
+	void constrain(const TYPE& _min, const TYPE& _max);
 
-	void constrainW(const double& _min, const double& _max);
+	void constrainW(const TYPE& _min, const TYPE& _max);
 
 	void intify();
 
@@ -96,11 +96,11 @@ namespace EN {
 
 		Vector3D intify(const Vector3D& _v);
 
-		double dotProduct(const Vector3D& _a, const Vector3D& _b);
+		TYPE dotProduct(const Vector3D& _a, const Vector3D& _b);
 	};
 };
 
-/// Typedef
+/// typedef
 
 typedef Vector3D Point;
 typedef Vector3D Color;

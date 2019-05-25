@@ -1,11 +1,21 @@
 #pragma once
 
-// Math
-constexpr double PI = 3.14159265359;
-constexpr double TAU = 2 * PI;
+// Can Be Changed By User
 
-// Other
-constexpr unsigned int MAX_THREADS = 5;
+// This value is used for math operations
+// Double takes more memory but is faster than float on many systems because float has to be simulated
+// Try float and see if it is any faster (note: It may show warnings)
+typedef double TYPE;
+
+// The higher, the more memory and threads needed at once
+// Putting it higher doesn't always make the rendering/writing faster
+// Putting it lower  can also make it very slow
+// You can and should try different values to see what suites you the best
+constexpr unsigned int RENDERS_AND_WRITES_PER_CYCLE = 5;
+
+// Do not modify past this comment
+constexpr TYPE PI = 3.14159265359;
+constexpr TYPE TAU = 2 * PI;
 
 constexpr const char* PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[] = {
 	"# python FramesToVideo.py fps",
