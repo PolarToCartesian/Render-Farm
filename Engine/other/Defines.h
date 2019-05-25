@@ -1,5 +1,7 @@
 #pragma once
 
+#include "pch.h"
+
 // Can Be Changed By User
 
 // This value is used for math operations
@@ -16,6 +18,13 @@ constexpr unsigned int RENDERS_AND_WRITES_PER_CYCLE = 5;
 // Do not modify past this comment
 constexpr TYPE PI = 3.14159265359;
 constexpr TYPE TAU = 2 * PI;
+
+const std::unordered_map<const char*, const char*> ainsi_colors({
+	{"GREEN",  "\x1B[32m"},
+	{"ORANGE", "\x1B[32m"},
+	{"RED",    "\x1B[31m"},
+	{"RESET",  "\x1B[0m" }
+});
 
 constexpr const char* PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[] = {
 	"# python FramesToVideo.py fps",

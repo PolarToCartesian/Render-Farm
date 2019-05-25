@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../pch.h"
-
+#include "../other/pch.h"
 #include "Defines.h"
 
 // Engine Namespace
@@ -23,6 +22,8 @@ namespace EN {
 		// True if successful
 		bool openFile(FILE*& _file, const char* _filename, const char* _permissions);
 
-		void syncPrint(const std::string& _message);
+		void print(const std::string& _message, const unsigned int& _label);
+
+		void print(const char* _message, const unsigned int& _label);
 	};
 };

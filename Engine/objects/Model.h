@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../pch.h"
-
 #include "Triangle.h"
 #include "Vector3D.h"
+#include "../other/pch.h"
 #include "../other/Util.h"
 
 struct Model {

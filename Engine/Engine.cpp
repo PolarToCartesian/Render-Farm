@@ -4,13 +4,7 @@
 
 // Private Methods
 
-void Engine::dealWithDepthBuffer() {
-	delete[] this->depthBuffer;
-
-	long nPixels = this->width * this->height;
-
-	this->depthBuffer = new TYPE[nPixels];
-
+void Engine::resetDepthBuffer() {
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
 
@@ -18,56 +12,8 @@ unsigned int Engine::getIndexInColorBuffer(const unsigned int& _x, const unsigne
 	return renderImages[this->indexImageBeingRendered]->getIndex(_x, _y);
 }
 
-void Engine::calculateValues() {
+void Engine::calculatePerspectiveMatrix() {
 	this->perspectiveMatrix = EN::MATRIX4X4::getPerspectiveMatrix(this->width, this->height, this->fov, this->zNear, this->zFar);
-	this->dealWithDepthBuffer();
-}
-
-// in->triangle; "out"->doRenderTriangle, triangleSurfaceNormal, _rotatedVertices, _transformedVertices
-void Engine::apply3D(const Triangle& _tr, bool& _doRenderTriangle, Vector3D& _triangleSurfaceNormal, Vector3D * _rotatedVertices, Vector3D * _transformedVertices) {
-	_doRenderTriangle = true;
-	
-	// Apply 3D Rotation around _tr.rotationMidPoint
-	std::memcpy(_rotatedVertices, _tr.vertices, 3 * sizeof(Vector3D));
-
-	for (unsigned char v = 0; v < 3; v++) {
-		_rotatedVertices[v] -= _tr.rotationMidPoint;
-
-		Matrix4x4 rotationMatrix = EN::MATRIX4X4::getRotationXMatrix(_tr.rotation.x)
-								 * EN::MATRIX4X4::getRotationYMatrix(_tr.rotation.y)
-			                     * EN::MATRIX4X4::getRotationZMatrix(_tr.rotation.z);
-
-		_rotatedVertices[v] *= rotationMatrix;
-
-		_rotatedVertices[v] += _tr.rotationMidPoint;
-	}
-
-	_triangleSurfaceNormal = EN::TRIANGLE::getSurfaceNormal(_rotatedVertices);
-
-	if (!this->camera.isTriangleFacingCamera(_rotatedVertices, _triangleSurfaceNormal)) _doRenderTriangle = false;
-
-	// Apply Camera Translation, perspective and change coordinate system
-	std::memcpy(_transformedVertices, _rotatedVertices, 3 * sizeof(Vector3D));
-
-	for (unsigned char v = 0; v < 3; v++) {
-		// Camera Translation
-		_transformedVertices[v] -= this->camera.position;
-
-		// Perspective
-		_transformedVertices[v] = _transformedVertices[v] * this->perspectiveMatrix;
-
-		if (_transformedVertices[v].w < 0) {
-			_doRenderTriangle = false;
-		}
-
-		if (_transformedVertices[v].w > 0) {
-			_transformedVertices[v] /= _transformedVertices[v].w;
-		}
-
-		// Change coordinate system
-		_transformedVertices[v].x = ((_transformedVertices[v].x - 1.f) / -2.f) * this->width;  // (-1 to 1)  to (0 to width)
-		_transformedVertices[v].y = ((_transformedVertices[v].y + 1.f) / +2.f) * this->height; // (1  to -1) to (height to 0)
-	}
 }
 
 // Public Methods
@@ -77,7 +23,9 @@ Engine::Engine(const unsigned int& _width, const unsigned int& _height, const un
 	std::experimental::filesystem::create_directory("./out/frames");
 	std::experimental::filesystem::create_directory("./out/video");
 
-	this->calculateValues();
+	this->calculatePerspectiveMatrix();
+
+	this->depthBuffer = new TYPE[this->width * this->height];
 }
 
 Engine::~Engine() {
@@ -281,6 +229,8 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 
 // Renders And Writes to a folder with the name of the title given in the constructor the selected number of frames.
 void Engine::renderAndWriteFrames(const unsigned int& _frames) {
+	assert(_frames > 0);
+
 	std::thread writeThreads[RENDERS_AND_WRITES_PER_CYCLE];
 
 	// Allocate images
@@ -314,7 +264,7 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 			auto endTime = std::chrono::system_clock::now();
 			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-			EN::UTIL::syncPrint("[RENDERING] Rendered " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n");
+			EN::UTIL::print("[RENDERING] Rendered " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n", 1);
 
 			std::string fileName = "./out/frames/" + std::to_string(nFrame) + ".ppm";
 
@@ -329,10 +279,10 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 
 				auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-				EN::UTIL::syncPrint("[WRITING]   Wrote    " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n");
+				EN::UTIL::print("[WRITING]   Wrote    " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n", 1);
 			});
 
-			this->dealWithDepthBuffer();
+			this->resetDepthBuffer();
 		}
 
 		for (int i = 0; i < RENDERS_AND_WRITES_PER_CYCLE; i++) {
@@ -346,7 +296,7 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 }
 
 void Engine::writeVideo(const unsigned int& _fps) {	
-	FILE* file;
+	FILE* file = nullptr;
 
 	if (EN::UTIL::openFile(file, "./out/video/videoEncoder.py", "w")) {
 		unsigned int nLines = sizeof(PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES) / sizeof(const char *);
@@ -355,16 +305,16 @@ void Engine::writeVideo(const unsigned int& _fps) {
 			fprintf(file, (PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[i] + std::string("\n")).c_str());
 		}
 
-		EN::UTIL::syncPrint("[VIDEO] Added Python Script (1/3)\n");
+		EN::UTIL::print("[VIDEO] Added Python Script (1/3)\n", 1);
 	} else {
-		EN::UTIL::syncPrint("[ERROR] While Writing Python File To Encode Video (1/3 failed)\n");
+		EN::UTIL::print("[ERROR] While Writing Python File To Encode Video (1/3 failed)\n", 1);
 	}
 
 	fclose(file);
 
-	EN::UTIL::syncPrint("[VIDEO] Writing Video (2/3)\n");
+	EN::UTIL::print("[VIDEO] Writing Video (2/3)\n", 1);
 
 	system(("cd ./out/video/ && python videoEncoder.py " + std::to_string(_fps)).c_str());
 
-	EN::UTIL::syncPrint("[VIDEO] Wrote Video (3/3)\n");
+	EN::UTIL::print("[VIDEO] Wrote Video (3/3)\n", 1);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../pch.h"
+#include "../other/pch.h"
 #include "Matrix4x4.h"
 
 struct Vector3D { // 4th Component is not manipulated, just stored (modified if requested)

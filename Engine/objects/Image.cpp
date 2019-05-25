@@ -20,7 +20,7 @@ void Image::setColor(const unsigned int& _x, const unsigned int& _y, const Color
 }
 
 void Image::writeToDisk(const char* _fileName) const {
-	FILE* file;
+	FILE* file = nullptr;
 
 	if (EN::UTIL::openFile(file, _fileName, "w")) {
 		// PPM Header

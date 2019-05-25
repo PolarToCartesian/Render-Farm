@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../pch.h"
+#include "../other/pch.h"
 
 #include "../other/Util.h"
 #include "Vector3D.h"

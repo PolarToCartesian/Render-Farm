@@ -50,9 +50,9 @@ Model::Model(const char* _filePath, const Vector3D& _delataPosition, const bool&
 			}
 		}
 
-		EN::UTIL::syncPrint("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)\n");
+		EN::UTIL::print("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)\n", 1);
 	} else {
-		EN::UTIL::syncPrint("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!\n");
+		EN::UTIL::print("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!\n", 3);
 	}
 
 	file.close();

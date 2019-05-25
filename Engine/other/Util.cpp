@@ -3,7 +3,6 @@
 
 namespace EN {
 	namespace UTIL {
-		// Recreation of Split function in java
 		std::vector<std::string> splitString(const std::string& _str, const char& _seperator) {
 			unsigned int last = 0;
 
@@ -24,25 +23,53 @@ namespace EN {
 			return _min + (rand() % static_cast<int>(_max - _min + 1));
 		}
 
-		TYPE degToRad(const TYPE& _deg) {
-			return (_deg * 180.f / PI);
-		}
+		TYPE degToRad(const TYPE& _deg) { return (_deg * 180.f / PI); }
 
 		TYPE constrain(const TYPE _x, const TYPE& _min, const TYPE& _max) {
 			return (_x < _min) ? _min : ((_x > _max) ? _max : _x);
 		}
 
 		// True if successful
-		bool openFile(FILE *& _file, const char* _filename, const char* _permissions) {
-			if (fopen_s(&_file, _filename, _permissions) == 0) return true;
+		bool openFile(FILE*& _file, const char* _filename, const char* _permissions) {
+			#ifdef _WIN32
+				return (fopen_s(&_file, _filename, _permissions) == 0);
+			#else
+				_file = fopen(_filename, _permissions);
+
+				return (_file != NULL);
+			#endif
 
 			return false;
 		}
 
-		void syncPrint(const std::string& _message) {
+		void print(const std::string& _message, const unsigned int& _label) {
+			print(_message.c_str(), _label);
+		}
+
+		void print(const char* _message, const unsigned int& _label) {
 			std::lock_guard<std::mutex> guard(sharedPrintingMutex);
 
-			std::cout << _message;
+			if (_label != 0) {
+				const char* apend = ainsi_colors.at("RESET");
+				const char* prepend = "";
+
+				switch (_label) {
+					case 1:
+						prepend = ainsi_colors.at("GREEN");
+						break;
+					case 2:
+						prepend = ainsi_colors.at("ORANGE");
+						break;
+					case 3:
+						prepend = ainsi_colors.at("RED");
+						break;
+				}
+
+				std::cout << prepend << _message << apend;
+			}
+			else {
+				std::cout << _message;
+			}
 		}
 	};
 };

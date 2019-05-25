@@ -41,13 +41,11 @@ class Engine {
 		Camera camera;
 
 	private:
-		void dealWithDepthBuffer();
+		void resetDepthBuffer();
 
 		unsigned int getIndexInColorBuffer(const unsigned int& _x, const unsigned int& _y);
 
-		void apply3D(const Triangle& _tr, bool& _doRenderTriangle, Vector3D& _triangleSurfaceNormal, Vector3D* _rotatedVertices, Vector3D* _transformedVertices);
-
-		void calculateValues();
+		void calculatePerspectiveMatrix();
 
 	public:
 		Engine(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov = 90, const TYPE& _zNear = 0.1, const TYPE& _zFar = 1000);
