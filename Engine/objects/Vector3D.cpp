@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Vector3D.h"
 
 // Vector Object

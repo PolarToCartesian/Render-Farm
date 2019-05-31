@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Model.h"
 
 // Model Struct
@@ -23,20 +21,19 @@ Model::Model(const char* _filePath, const Vector3D& _delataPosition, const bool&
 
 				lineStream >> x >> y >> z;
 
-				vertices.emplace_back(x, y, z);
+				vertices.emplace_back(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z);
 			} else if (dataTYPE == "f") {
 				unsigned int vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
 
 				if (_line.find("//") == std::string::npos) {
 					lineStream >> vertexIndex1 >> vertexIndex2 >> vertexIndex3;
-				}
-				else {
+				} else {
 					lineStream >> vertexIndex1 >> junk >> vertexIndex2 >> junk >> vertexIndex3;
 				}
 
 				Vector3D triangleVertices[3] = { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] };
 
-				Vector3D triangleColors[3] = { _flatColor, _flatColor, _flatColor };
+				Vector3D triangleColors[3]   = { _flatColor, _flatColor, _flatColor };
 
 				if (_randomColors) {
 					using EN::MATH::randomInt;
@@ -49,9 +46,9 @@ Model::Model(const char* _filePath, const Vector3D& _delataPosition, const bool&
 			}
 		});
 
-		EN::LOG::print("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)\n", LOG_TYPE::success);
+		EN::LOG::println("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)", LOG_TYPE::success);
 	} else {
-		EN::LOG::print("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!\n", LOG_TYPE::error);
+		EN::LOG::println("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!", LOG_TYPE::error);
 	}
 
 	file.close();

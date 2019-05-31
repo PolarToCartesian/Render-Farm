@@ -229,8 +229,6 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 
 // Renders And Writes to a folder with the name of the title given in the constructor the selected number of frames.
 void Engine::renderAndWriteFrames(const unsigned int& _frames) {
-	assert(_frames > 0);
-
 	std::thread writeThreads[RENDERS_AND_WRITES_PER_CYCLE];
 
 	// Allocate images
@@ -242,9 +240,13 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 	// When every thread has joined, another cycle starts.
 	for (unsigned int cycle = 0; cycle < _frames; cycle += RENDERS_AND_WRITES_PER_CYCLE) {
 		this->indexImageBeingRendered = 0;
-		unsigned int nFrame = cycle;
+		unsigned int nFrame = cycle; // Will Render From the frame cycle to cycle + RENDERS_AND_WRITES_PER_CYCLE this iteration
 
-		for (this->indexImageBeingRendered = 0; this->indexImageBeingRendered < RENDERS_AND_WRITES_PER_CYCLE; this->indexImageBeingRendered++) {
+		unsigned int nframesToRenderAndWriteThisCycle = (_frames - cycle <= RENDERS_AND_WRITES_PER_CYCLE) ? _frames - cycle : RENDERS_AND_WRITES_PER_CYCLE;
+
+		EN::LOG::println("\n[RENDERING / WRITING] Starting Cycle " + std::to_string(cycle / RENDERS_AND_WRITES_PER_CYCLE + 1) + " ("+ std::to_string(nframesToRenderAndWriteThisCycle) +" frames)\n", LOG_TYPE::success);
+
+		for (this->indexImageBeingRendered = 0; this->indexImageBeingRendered < nframesToRenderAndWriteThisCycle; this->indexImageBeingRendered++) {
 			auto startTime = std::chrono::system_clock::now();
 
 			nFrame++;
@@ -264,7 +266,7 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 			auto endTime = std::chrono::system_clock::now();
 			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-			EN::LOG::print("[RENDERING] Rendered " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n", LOG_TYPE::success);
+			EN::LOG::println("[RENDERING] Rendered " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 
 			std::string fileName = "./out/frames/" + std::to_string(nFrame) + ".ppm";
 
@@ -279,13 +281,13 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 
 				auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-				EN::LOG::print("[WRITING]   Wrote    " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n", LOG_TYPE::success);
+				EN::LOG::println("[WRITING]   Wrote    " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 			});
 
 			this->resetDepthBuffer();
 		}
 
-		for (int i = 0; i < RENDERS_AND_WRITES_PER_CYCLE; i++) {
+		for (int i = 0; i < nframesToRenderAndWriteThisCycle; i++) {
 			// Join Threads
 			writeThreads[i].join();
 
@@ -305,17 +307,17 @@ void Engine::writeVideo(const unsigned int& _fps) {
 			file.writeNoVerif(PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[i] + std::string("\n"));
 		}
 
-		EN::LOG::print("[VIDEO] Added Python Script (1/3)\n", LOG_TYPE::success);
+		EN::LOG::println("[VIDEO] Added Python Script (1/3)", LOG_TYPE::success);
 	} else {
-		EN::LOG::print("[ERROR] While Writing Python File To Encode Video (1/3 failed)\n", LOG_TYPE::error);
+		EN::LOG::println("[ERROR] While Writing Python File To Encode Video (1/3 failed)", LOG_TYPE::error);
 	}
 
 	// Close file here so that the system can execute it
 	file.close();
 
-	EN::LOG::print("[VIDEO] Writing Video (2/3)\n", LOG_TYPE::success);
+	EN::LOG::println("[VIDEO] Writing Video (2/3)", LOG_TYPE::success);
 
 	system(("cd ./out/video/ && python videoEncoder.py " + std::to_string(_fps)).c_str());
 
-	EN::LOG::print("[VIDEO] Wrote Video (3/3)\n", LOG_TYPE::success);
+	EN::LOG::println("[VIDEO] Wrote Video (3/3)", LOG_TYPE::success);
 }

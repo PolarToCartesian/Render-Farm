@@ -1,8 +1,10 @@
-x64/
-out/
-models/
-.vs/
-*.sln
-*.user
 *.vcxproj
 *.filters
+.vscode/
+models/
+Debug/
+*.user
+*.sln
+x64/
+out/
+.vs/

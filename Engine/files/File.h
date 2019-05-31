@@ -21,6 +21,7 @@ class File {
 
 		void open(const std::string& _filename, const std::string& _permissions = FILE_READ_WRITE);
 
+		std::string read() const;
 		void readLineByLine(const std::function<void(const std::string&)>& _lambda) const;
 
 		void writeNoVerif(const std::string& _content);

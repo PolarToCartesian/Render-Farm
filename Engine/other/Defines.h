@@ -2,7 +2,7 @@
 
 #include "pch.h"
 
-// Can Be Changed By User
+/// Can Be Changed By User
 
 // This value is used for math operations
 // Double takes more memory but is faster than float on many systems because float has to be simulated
@@ -10,12 +10,13 @@
 typedef double TYPE;
 
 // The higher, the more memory and threads needed at once
-// Putting it higher doesn't always make the rendering/writing faster
+// Putting it higher doesn't always make the rendering/writing faster and can cause errors
 // Putting it lower  can also make it very slow
-// You can and should try different values to see what suites you the best
-constexpr unsigned int RENDERS_AND_WRITES_PER_CYCLE = 5;
+// You can and should try different values to see what suites you the best depending on your hardware
+constexpr unsigned int RENDERS_AND_WRITES_PER_CYCLE = 10;
 
-// Do not modify past this comment
+/// Do not modify past this comment
+
 constexpr TYPE PI  = 3.14159265359;
 constexpr TYPE TAU = 2 * PI;
 

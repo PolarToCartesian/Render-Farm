@@ -24,7 +24,7 @@ class Image {
 
 		void setColor(const unsigned int& _x, const unsigned int& _y, const Color& _c);
 
-		void writeToDisk(const char* _fileName) const;
+		void writeToDisk(const std::string& _fileName) const;
 
 		~Image();
 };

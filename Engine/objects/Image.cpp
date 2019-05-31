@@ -19,7 +19,7 @@ void Image::setColor(const unsigned int& _x, const unsigned int& _y, const Color
 	this->colorBuffer[this->getIndex(_x, _y)] = _c;
 }
 
-void Image::writeToDisk(const char* _fileName) const {
+void Image::writeToDisk(const std::string& _fileName) const {
 	File file(_fileName, FILE_WRITE, false);
 
 	if (file.isOpen()) {
@@ -31,7 +31,7 @@ void Image::writeToDisk(const char* _fileName) const {
 			file.writeNoVerif(std::to_string((unsigned char)this->colorBuffer[i].r) + " " + std::to_string((unsigned char)this->colorBuffer[i].g) + " " + std::to_string((unsigned char)this->colorBuffer[i].b) + "\n");
 		}
 	} else {
-		EN::LOG::println("[ERROR] While Writing To \"" + std::string(_fileName) + "\"", LOG_TYPE::error);
+		EN::LOG::println("[ERROR] While Writing To \"" + _fileName + "\"", LOG_TYPE::error);
 	}	
 }
 
