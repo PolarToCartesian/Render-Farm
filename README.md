@@ -21,10 +21,6 @@ Coming Soon! If all goes well...
 
 Cleaner Code For :
 
-+ Engine.cpp
- * Triangle Rendering
- * Frame Rendering / Writing
-
 New Files :
 
 + Color.h / Color.cpp

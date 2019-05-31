@@ -74,7 +74,7 @@ class Engine {
 
 		void drawTriangle3D(const Triangle& _tr);
 
-		void renderAndWriteFrames(const unsigned int& _ticks);
+		void renderAndWriteFrames(const unsigned int& _nFrames);
 
 		void writeVideo(const unsigned int& _fps);
 };

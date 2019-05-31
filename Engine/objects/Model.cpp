@@ -25,7 +25,7 @@ Model::Model(const char* _filePath, const Vector3D& _delataPosition, const bool&
 			} else if (dataTYPE == "f") {
 				unsigned int vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
 
-				if (_line.find("//") == std::string::npos) {
+				if (_line.find("/") == std::string::npos) {
 					lineStream >> vertexIndex1 >> vertexIndex2 >> vertexIndex3;
 				} else {
 					lineStream >> vertexIndex1 >> junk >> vertexIndex2 >> junk >> vertexIndex3;
