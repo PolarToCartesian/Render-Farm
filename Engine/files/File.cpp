@@ -17,7 +17,7 @@ void File::open(const std::string& _filename, const std::string& _permissions) {
 	#ifdef _WIN32
 		this->isFileOpen = (fopen_s(&this->filePtr, _filename.c_str(), _permissions.c_str()) == 0);
 	#else
-		this->filePtr = fopen(_filePtr.c_str(), _permissions.c_str());
+		this->filePtr    = fopen(_filename.c_str(), _permissions.c_str());
 		this->isFileOpen = (this->filePtr != NULL);
 	#endif
 

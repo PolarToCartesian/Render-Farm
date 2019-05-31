@@ -31,7 +31,7 @@ void Image::writeToDisk(const char* _fileName) const {
 			file.writeNoVerif(std::to_string((unsigned char)this->colorBuffer[i].r) + " " + std::to_string((unsigned char)this->colorBuffer[i].g) + " " + std::to_string((unsigned char)this->colorBuffer[i].b) + "\n");
 		}
 	} else {
-		EN::LOG::println("[ERROR] While Writing To \"" + std::string(_fileName) + "\"");
+		EN::LOG::println("[ERROR] While Writing To \"" + std::string(_fileName) + "\"", LOG_TYPE::error);
 	}	
 }
 
