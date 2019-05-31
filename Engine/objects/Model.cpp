@@ -6,53 +6,52 @@
 
 // Inspired By https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part4.cpp
 Model::Model(const char* _filePath, const Vector3D& _delataPosition, const bool& _randomColors, const Color& _flatColor, const Vector3D& _centerOfRotation, const Vector3D& _rotation) {	
-	std::ifstream file(_filePath);
+	File file(_filePath, FILE_READ, false);
 
-	if (file.is_open()) {
-		std::string line, dataTYPE, junk;
+	if (file.isOpen()) {
+		std::string dataTYPE, junk;
 
 		std::vector<Vector3D> vertices;
 
-		while (std::getline(file, line)) {
-			if (!line.empty()) {
-				std::istringstream lineStream(line);
+		file.readLineByLine([&](const std::string& _line) {
+			std::istringstream lineStream(_line);
 
-				lineStream >> dataTYPE;
+			lineStream >> dataTYPE;
 
-				if (dataTYPE == "v") {
-					TYPE x = 0.f, y = 0.f, z = 0.f;
+			if (dataTYPE == "v") {
+				TYPE x = 0.f, y = 0.f, z = 0.f;
 
-					lineStream >> x >> y >> z;
+				lineStream >> x >> y >> z;
 
-					vertices.emplace_back(x, y, z);
-				} else if (dataTYPE == "f") {
-					unsigned int vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
+				vertices.emplace_back(x, y, z);
+			} else if (dataTYPE == "f") {
+				unsigned int vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
 
-					if (line.find("//") == std::string::npos) {
-						lineStream >> vertexIndex1 >> vertexIndex2 >> vertexIndex3;
-					} else {
-						lineStream >> vertexIndex1 >> junk >> vertexIndex2 >> junk >> vertexIndex3;
-					}
-
-					Vector3D triangleVertices[3] = {vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1]};
-
-					Vector3D triangleColors[3]   = { _flatColor, _flatColor, _flatColor };
-
-					if (_randomColors) {
-						using EN::UTIL::randomInt;
-						for (unsigned char i = 0; i < 3; i++) {
-							triangleColors[i] = Color(randomInt(0, 255), randomInt(0, 255), randomInt(0, 255));
-						}
-					}
-
-					this->triangles.emplace_back(triangleVertices, triangleColors, _centerOfRotation, _rotation);
+				if (_line.find("//") == std::string::npos) {
+					lineStream >> vertexIndex1 >> vertexIndex2 >> vertexIndex3;
 				}
-			}
-		}
+				else {
+					lineStream >> vertexIndex1 >> junk >> vertexIndex2 >> junk >> vertexIndex3;
+				}
 
-		EN::UTIL::print("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)\n", 1);
+				Vector3D triangleVertices[3] = { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] };
+
+				Vector3D triangleColors[3] = { _flatColor, _flatColor, _flatColor };
+
+				if (_randomColors) {
+					using EN::MATH::randomInt;
+					for (unsigned char i = 0; i < 3; i++) {
+						triangleColors[i] = Color(randomInt(0, 255), randomInt(0, 255), randomInt(0, 255));
+					}
+				}
+
+				triangles.emplace_back(triangleVertices, triangleColors, _centerOfRotation, _rotation);
+			}
+		});
+
+		EN::LOG::print("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)\n", LOG_TYPE::success);
 	} else {
-		EN::UTIL::print("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!\n", 3);
+		EN::LOG::print("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!\n", LOG_TYPE::error);
 	}
 
 	file.close();

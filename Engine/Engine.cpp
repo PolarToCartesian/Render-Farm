@@ -264,7 +264,7 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 			auto endTime = std::chrono::system_clock::now();
 			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-			EN::UTIL::print("[RENDERING] Rendered " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n", 1);
+			EN::LOG::print("[RENDERING] Rendered " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n", LOG_TYPE::success);
 
 			std::string fileName = "./out/frames/" + std::to_string(nFrame) + ".ppm";
 
@@ -279,7 +279,7 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 
 				auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-				EN::UTIL::print("[WRITING]   Wrote    " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n", 1);
+				EN::LOG::print("[WRITING]   Wrote    " + std::to_string(nFrame) + " / " + std::to_string(_frames) + " (" + std::to_string(elapsed.count()) + "ms)\n", LOG_TYPE::success);
 			});
 
 			this->resetDepthBuffer();
@@ -296,25 +296,26 @@ void Engine::renderAndWriteFrames(const unsigned int& _frames) {
 }
 
 void Engine::writeVideo(const unsigned int& _fps) {	
-	FILE* file = nullptr;
+	File file("./out/video/videoEncoder.py", FILE_WRITE, false);
 
-	if (EN::UTIL::openFile(file, "./out/video/videoEncoder.py", "w")) {
+	if (file.isOpen()) {
 		unsigned int nLines = sizeof(PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES) / sizeof(const char *);
 
 		for (unsigned int i = 0; i < nLines; i++) {
-			fprintf(file, (PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[i] + std::string("\n")).c_str());
+			file.writeNoVerif(PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[i] + std::string("\n"));
 		}
 
-		EN::UTIL::print("[VIDEO] Added Python Script (1/3)\n", 1);
+		EN::LOG::print("[VIDEO] Added Python Script (1/3)\n", LOG_TYPE::success);
 	} else {
-		EN::UTIL::print("[ERROR] While Writing Python File To Encode Video (1/3 failed)\n", 1);
+		EN::LOG::print("[ERROR] While Writing Python File To Encode Video (1/3 failed)\n", LOG_TYPE::error);
 	}
 
-	fclose(file);
+	// Close file here so that the system can execute it
+	file.close();
 
-	EN::UTIL::print("[VIDEO] Writing Video (2/3)\n", 1);
+	EN::LOG::print("[VIDEO] Writing Video (2/3)\n", LOG_TYPE::success);
 
 	system(("cd ./out/video/ && python videoEncoder.py " + std::to_string(_fps)).c_str());
 
-	EN::UTIL::print("[VIDEO] Wrote Video (3/3)\n", 1);
+	EN::LOG::print("[VIDEO] Wrote Video (3/3)\n", LOG_TYPE::success);
 }

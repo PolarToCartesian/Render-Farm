@@ -3,7 +3,8 @@
 #include "../other/pch.h"
 
 #include "Vector3D.h"
-#include "../other/Util.h"
+#include "../util/Math.h"
+#include "../other/Defines.h"
 
 struct Light {
 	Vector3D position;

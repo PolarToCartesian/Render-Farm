@@ -109,7 +109,7 @@ namespace EN {
 
 		Matrix4x4 getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const TYPE& _fov, const TYPE& _zNear, const TYPE& _zFar) {
 			TYPE aspectRatio = _height / static_cast<TYPE>(_width);
-			TYPE a = -std::abs(1.f / std::tan(EN::UTIL::degToRad(_fov / 2.f)));
+			TYPE a = -std::abs(1.f / std::tan(EN::MATH::degToRad(_fov / 2.f)));
 
 			TYPE m[16] = {
 					aspectRatio * a, 0, 0,                                    0,

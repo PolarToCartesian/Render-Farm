@@ -16,15 +16,29 @@ typedef double TYPE;
 constexpr unsigned int RENDERS_AND_WRITES_PER_CYCLE = 5;
 
 // Do not modify past this comment
-constexpr TYPE PI = 3.14159265359;
+constexpr TYPE PI  = 3.14159265359;
 constexpr TYPE TAU = 2 * PI;
 
-const std::unordered_map<const char*, const char*> ainsi_colors({
-	{"GREEN",  "\x1B[32m"},
-	{"ORANGE", "\x1B[32m"},
-	{"RED",    "\x1B[31m"},
-	{"RESET",  "\x1B[0m" }
+// File
+
+constexpr unsigned int FILE_LINE_BUFFER_SIZE = 255;
+
+constexpr const char* FILE_READ  = "r";
+constexpr const char* FILE_WRITE = "w";
+constexpr const char* FILE_READ_WRITE = "r+";
+
+// Logging
+
+const enum class LOG_TYPE : unsigned char {
+	success, normal, warning, error
+};
+
+const std::unordered_map<const char*, const char*> AINSI_COLORS({
+	{"GREEN",  "\x1B[32m"}, {"ORANGE", "\x1B[31;1m"},
+	{"RED",    "\x1B[31m"}, {"RESET",  "\x1B[0m"   }
 });
+
+// Other
 
 constexpr const char* PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[] = {
 	"# python FramesToVideo.py fps",

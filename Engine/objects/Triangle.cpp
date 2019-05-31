@@ -6,12 +6,12 @@ Triangle::Triangle() {  }
 
 Triangle::Triangle(const Vector3D _vertices[3], const Color _colors[3]) {
 	std::memcpy(vertices, _vertices, 3 * sizeof(Vector3D));
-	std::memcpy(colors, _colors, 3 * sizeof(Vector3D));
+	std::memcpy(colors, _colors, 3 * sizeof(Color));
 }
 
 Triangle::Triangle(const Vector3D _vertices[3], const Color _colors[3], const Vector3D _rotationMidPoint, const Vector3D _rotation) {
 	std::memcpy(this->vertices, _vertices, 3 * sizeof(Vector3D));
-	std::memcpy(this->colors, _colors, 3 * sizeof(Vector3D));
+	std::memcpy(this->colors, _colors, 3 * sizeof(Color));
 
 	this->rotationMidPoint = _rotationMidPoint;
 	this->rotation = _rotation;

@@ -22,7 +22,7 @@ namespace EN {
 					totalVertexBrightness += (dotProduct * _lights[lightIndex].intensity) / std::pow(vertexToLight.getLength(), 2);
 				}
 
-				totalVertexBrightness = EN::UTIL::constrain(totalVertexBrightness, 0, 1);
+				totalVertexBrightness = EN::MATH::constrain(totalVertexBrightness, 0, 1);
 
 				_output[v] = (_colorOfVertices[v] * totalVertexBrightness);
 			}

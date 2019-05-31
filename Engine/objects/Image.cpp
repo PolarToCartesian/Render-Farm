@@ -20,21 +20,19 @@ void Image::setColor(const unsigned int& _x, const unsigned int& _y, const Color
 }
 
 void Image::writeToDisk(const char* _fileName) const {
-	FILE* file = nullptr;
+	File file(_fileName, FILE_WRITE, false);
 
-	if (EN::UTIL::openFile(file, _fileName, "w")) {
+	if (file.isOpen()) {
 		// PPM Header
-		fprintf(file, "P3 \n%u %u\n255\n", this->imageWidth, this->imageHeight);
+		file.writeNoVerif("P3 \n" + std::to_string(this->imageWidth) + " " + std::to_string(this->imageHeight) + "\n255\n");
 
 		// PPM Contents
 		for (unsigned int i = 0; i < this->nPixels; i++) {
-			fprintf(file, "%u %u %u\n", static_cast<unsigned int>(this->colorBuffer[i].r), static_cast<unsigned int>(this->colorBuffer[i].g), static_cast<unsigned int>(this->colorBuffer[i].b));
+			file.writeNoVerif(std::to_string((unsigned char)this->colorBuffer[i].r) + " " + std::to_string((unsigned char)this->colorBuffer[i].g) + " " + std::to_string((unsigned char)this->colorBuffer[i].b) + "\n");
 		}
 	} else {
-		std::cout << "[ERROR] While Writing To \"" << _fileName << "\"" << std::endl;
-	}
-	
-	fclose(file);
+		EN::LOG::println("[ERROR] While Writing To \"" + std::string(_fileName) + "\"");
+	}	
 }
 
 Image::~Image() {

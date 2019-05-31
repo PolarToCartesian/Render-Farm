@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../other/pch.h"
-#include "../other/Util.h"
+
+#include "../util/Math.h"
+#include "../other/Defines.h"
 
 struct Matrix4x4 {
 	TYPE m[16] = { 0 }; // r * c

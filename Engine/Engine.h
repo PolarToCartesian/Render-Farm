@@ -17,8 +17,6 @@ Resources :
 #include "objects/Model.h"
 #include "objects/Light.h"
 
-#include "other/Util.h"
-
 class Engine {
 	private:
 		unsigned int width, height;
