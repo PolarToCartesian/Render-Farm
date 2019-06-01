@@ -19,15 +19,4 @@ Coming Soon! If all goes well...
 
 ## Next Up
 
-Cleaner Code For :
-
-New Files :
-
-+ Color.h / Color.cpp
-  * Instead of using a vector
-  * Will Use Unsigned chars (0-255)
-    * Less memory
-    * Faster Calculations
-    * Clearer
-
-And more...
+Idk...
