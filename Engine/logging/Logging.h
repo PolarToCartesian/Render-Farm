@@ -11,27 +11,50 @@ namespace EN {
 
 		template<typename T>
 		void print(const T& _message, const LOG_TYPE& _type = LOG_TYPE::normal, const bool& _bypassMutex = false) {
-			// Add Coloring
-			const char* prepend = "";
-
-			switch (_type) {
-				case LOG_TYPE::success:
-					prepend = AINSI_COLORS.at("GREEN");
-					break;
-				case LOG_TYPE::warning:
-					prepend = AINSI_COLORS.at("ORANGE");
-					break;
-				case LOG_TYPE::error:
-					prepend = AINSI_COLORS.at("RED");
-					break;
-			}
-
+			
 			if (!_bypassMutex) {
 				// We use a mutex so that if multiple threads call print, the message doesn't get messed up!
 				std::lock_guard<std::mutex> lock(printMutex);
 			}
 
-			std::cout << prepend << _message << AINSI_COLORS.at("RESET");
+			#ifdef _WIN32
+				WORD attrib = AINSI_COLORS.at("WHITE");
+
+				switch (_type) {
+					case LOG_TYPE::success:
+						attrib = AINSI_COLORS.at("GREEN");
+						break;
+					case LOG_TYPE::warning:
+						attrib = AINSI_COLORS.at("ORANGE");
+						break;
+					case LOG_TYPE::error:
+						attrib = AINSI_COLORS.at("RED");
+						break;
+				}
+
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), attrib);
+
+				std::cout << _message;
+
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), AINSI_COLORS.at("WHITE"));
+			#else
+				// Add Coloring
+				const char* prepend = "";
+
+				switch (_type) {
+					case LOG_TYPE::success:
+						prepend = AINSI_COLORS.at("GREEN");
+						break;
+					case LOG_TYPE::warning:
+						prepend = AINSI_COLORS.at("ORANGE");
+						break;
+					case LOG_TYPE::error:
+						prepend = AINSI_COLORS.at("RED");
+						break;
+				}
+
+				std::cout << prepend << _message << AINSI_COLORS.at("RESET");
+			#endif	
 		}
 
 		template<typename T>

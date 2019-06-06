@@ -29,40 +29,19 @@ enum class LOG_TYPE : unsigned char {
 	success, normal, warning, error
 };
 
-const std::unordered_map<const char*, const char*> AINSI_COLORS({
-	{"GREEN",  "\x1B[32m"}, {"ORANGE", "\x1B[31;1m"},
-	{"RED",    "\x1B[31m"}, {"RESET",  "\x1B[0m"   }
-});
+#ifdef _WIN32
+	const std::unordered_map<const char*, const WORD> AINSI_COLORS({
+		{"GREEN",  10}, {"ORANGE", 14},
+		{"RED",    12}, {"WHITE",  15}
+	});
+#else
+	const std::unordered_map<const char*, const char*> AINSI_COLORS({
+		{"GREEN",  "\x1B[32m"}, {"ORANGE", "\x1B[31;1m"},
+		{"RED",    "\x1B[31m"}, {"RESET",  "\x1B[0m"   }
+	});
+#endif // _WIN32
 
 // Other
-
-constexpr const char* PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[] = {
-	"# python FramesToVideo.py fps",
-	"# exemple: python FramesToVideo.py 30",
-	"",
-	"import os, cv2, sys",
-	"",
-	"fileName = './../frames/1.ppm'",
-	"if os.path.isfile(fileName):",
-	"	height, width, channels = cv2.imread(fileName).shape",
-	"",
-	"	outputFile = cv2.VideoWriter('./video.avi',cv2.VideoWriter_fourcc(*'DIVX'), int(sys.argv[1]), (width, height))",
-	"",
-	"	i = 1",
-	"	while True:",
-	"		fileName = './../frames/' + str(i) + '.ppm'",
-	"		if os.path.isfile(fileName):",
-	"			outputFile.write(cv2.imread(fileName))",
-	"		else :",
-	"			outputFile.release()",
-	"			exit(0)",
-	"",
-	"		i = i + 1",
-	"else:",
-	"	exit(1)"
-};
-
-// Video
 
 constexpr const char* VIDEO_ENCODING_PYTHON_SOURCE_CODE[] = {
 	"# python FramesToVideo.py fps",

@@ -1,11 +1,10 @@
-#include "Engine/rendering/Renderer.h"
-#include "Engine/files/Video.h"
+#include "Engine/Include.h"
 
 class App : Renderer {
 	public:
 		App() : Renderer(1920 / 2, 1080 / 2) {
 			this->addModel(Model("models/armadillo.txt", Vec3(), false));
-			this->addLight(Light(Vec3(0, 0,-5), Vec3(255, 255, 255), 5));
+			this->addLight(Light(Vec3(0, 0,-5), Color(255, 255, 255), 5));
 			this->camera.position.z = -2.5f;
 			this->renderAndWriteFrames(15 * 20);
 			this->writeVideo(15 * 20, 15);

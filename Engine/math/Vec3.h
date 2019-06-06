@@ -106,8 +106,6 @@ namespace EN {
 /// typedef
 
 typedef Vec3 Point;
-typedef Vec3 Color;
-typedef Vec3 Vector4D;
 
 /// Operator Overloading
 

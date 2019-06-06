@@ -190,15 +190,14 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 
 				// Triangulate :D the pixel color
 
-				Color pixelColor(0);
+				Color pixelColor;
 
 				// For every vertex
 				for (unsigned char c = 0; c < 3; c++) {
-					pixelColor += lightenedVertexColors[c] * VertexPositionWeights[c];
+					pixelColor += lightenedVertexColors[c].r * VertexPositionWeights[c];
 				}
 
 				pixelColor /= VertexPositionWeightSum;
-				pixelColor.colorify();
 
 				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}

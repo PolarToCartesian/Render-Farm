@@ -7,6 +7,9 @@ void Video::addFrame(const std::string& _filename) {
 }
 
 void Video::save(const std::string& _filename, const unsigned int& _fps) {
+	assert(this->frames.size() > 0);
+	assert(_fps > 0);
+
 	std::experimental::filesystem::create_directory("./temp/");
 
 	File file("./temp/videoEncoder.py", FILE_WRITE, false);

@@ -2,6 +2,7 @@
 
 
 #include "../../other/Defines.h"
+#include "../../other/Color.h"
 #include "../../math/Funcs.h"
 #include "../../math/Vec3.h"
 #include "../../other/pch.h"

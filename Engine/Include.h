@@ -1,0 +1,17 @@
+#pragma once
+
+#include "rendering/shapes/Triangle.h"
+#include "rendering/objects/Camera.h"
+#include "rendering/objects/Light.h"
+#include "rendering/shapes/Model.h"
+#include "rendering/Renderer.h"
+#include "logging/Logging.h"
+#include "other/Defines.h"
+#include "other/Color.h"
+#include "math/Mat4x4.h"
+#include "files/Image.h"
+#include "files/Video.h"
+#include "math/Funcs.h"
+#include "files/File.h"
+#include "other/pch.h"
+#include "math/Vec3.h"

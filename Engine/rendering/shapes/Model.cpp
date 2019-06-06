@@ -33,7 +33,7 @@ Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool& _ra
 
 				Vec3 triangleVertices[3] = { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] };
 
-				Vec3 triangleColors[3]   = { _flatColor, _flatColor, _flatColor };
+				Color triangleColors[3]  = { _flatColor, _flatColor, _flatColor };
 
 				if (_randomColors) {
 					using EN::MATH::randomInt;
