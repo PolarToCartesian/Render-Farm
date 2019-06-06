@@ -28,13 +28,13 @@ void Video::save(const std::string& _filename, const unsigned int& _fps) {
 
 	if (this->doLogSaving) EN::LOG::println("[VIDEO] Writing Video (2/3)", LOG_TYPE::success);
 
-	std::string arguments = std::to_string(_fps);
+	std::string arguments = std::to_string(_fps) + " " + _filename;
 
 	std::for_each(this->frames.begin(), this->frames.end(), [&arguments](const std::string& _frameName) {
-		arguments += " " + _frameName;
+		arguments += " \"" + _frameName + "\"";
 	});
 
-	system(("python ./temp/videoEncoder.py " + std::to_string(_fps)).c_str());
+	system(("python ./temp/videoEncoder.py " + arguments).c_str());
 
 	if (this->doLogSaving) EN::LOG::println("[VIDEO] Wrote Video (3/3)", LOG_TYPE::success);
 }

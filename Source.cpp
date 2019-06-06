@@ -3,19 +3,19 @@
 
 class App : Renderer {
 	public:
-		App() : Renderer(1920, 1080) {
-			this->addModel(Model("models/quad.txt", Vec3(), true));
+		App() : Renderer(1920 / 2, 1080 / 2) {
+			this->addModel(Model("models/armadillo.txt", Vec3(), false));
 			this->addLight(Light(Vec3(0, 0,-5), Vec3(255, 255, 255), 5));
-			this->camera.position.z = -1.f;
-			this->renderAndWriteFrames(15 * 5);
-			this->writeVideo(15);
+			this->camera.position.z = -2.5f;
+			this->renderAndWriteFrames(15 * 20);
+			this->writeVideo(15 * 20, 15);
 		}
 
 		void render() override {}
 		void update() override {
-			//this->models[0].rotate(Vec3(0.05f, 0.05f, 0.05f));
+			this->models[0].rotate(Vec3(0.05f, 0.05f, 0.05f));
 
-			this->getLightRef(0).intensity -= 0.05f;
+			this->getLightRef(0).intensity -= 0.005f;
 		}
 };
 

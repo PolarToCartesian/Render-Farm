@@ -21,7 +21,6 @@ void Renderer::calculatePerspectiveMatrix() {
 Renderer::Renderer(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov, const double& _zNear, const double& _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
 	std::experimental::filesystem::create_directory("./out");
 	std::experimental::filesystem::create_directory("./out/frames");
-	std::experimental::filesystem::create_directory("./out/video");
 
 	this->calculatePerspectiveMatrix();
 
@@ -276,27 +275,14 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 	}
 }
 
-void Renderer::writeVideo(const unsigned int& _fps) {	
-	File file("./out/video/videoEncoder.py", FILE_WRITE, false);
+void Renderer::writeVideo(const unsigned int& _nFrames, const unsigned int& _fps) {
+	std::experimental::filesystem::create_directory("./out/video");
 
-	if (file.isOpen()) {
-		unsigned int nLines = sizeof(PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES) / sizeof(const char *);
+	Video video(true);
 
-		for (unsigned int i = 0; i < nLines; i++) {
-			file.writeNoVerif(PYTHON_VIDEO_WRITER_SOURCE_CODE_LINES[i] + std::string("\n"));
-		}
-
-		EN::LOG::println("[VIDEO] Added Python Script (1/3)", LOG_TYPE::success);
-	} else {
-		EN::LOG::println("[ERROR] While Writing Python File To Encode Video (1/3 failed)", LOG_TYPE::error);
+	for (unsigned int i = 1; i < _nFrames+1; i++) {
+		video.addFrame("./out/frames/" + std::to_string(i) + ".ppm");
 	}
 
-	// Close file here so that the system can execute it
-	file.close();
-
-	EN::LOG::println("[VIDEO] Writing Video (2/3)", LOG_TYPE::success);
-
-	system(("cd ./out/video/ && python videoEncoder.py " + std::to_string(_fps)).c_str());
-
-	EN::LOG::println("[VIDEO] Wrote Video (3/3)", LOG_TYPE::success);
+	video.save("./out/video/video.avi", _fps);
 }

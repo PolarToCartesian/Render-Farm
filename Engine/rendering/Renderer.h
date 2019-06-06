@@ -12,10 +12,11 @@ Resources :
 
 #pragma once
 
+#include "../files/Video.h"
 #include "objects/Camera.h"
+#include "../files/Image.h"
 #include "objects/Light.h"
 #include "shapes/Model.h"
-#include "../files/Image.h"
 
 class Renderer {
 	private:
@@ -78,5 +79,5 @@ class Renderer {
 
 		void renderAndWriteFrames(const unsigned int& _nFrames);
 
-		void writeVideo(const unsigned int& _fps);
+		void writeVideo(const unsigned int& _nFrames, const unsigned int& _fps = 30);
 };
