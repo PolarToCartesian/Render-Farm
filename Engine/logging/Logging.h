@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../other/pch.h"
-
 #include "../other/Defines.h"
+#include "../other/pch.h"
 
 namespace EN {
 	namespace LOG {

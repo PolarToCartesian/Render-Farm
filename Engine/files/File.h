@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../other/pch.h"
-
 #include "../other/Defines.h"
-#include "../util/Logging.h"
+#include "../logging/Logging.h"
+#include "../other/pch.h"
 
 class File {
 	private:

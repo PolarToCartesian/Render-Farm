@@ -59,8 +59,7 @@ void File::write(const std::string& _content) {
 		// Write if the file can be written to
 		if (this->permissions != FILE_READ) {
 			this->writeNoVerif(_content);
-		}
-		else {
+		} else {
 			EN::LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Read From Not Written To", LOG_TYPE::error);
 		}
 	} else {

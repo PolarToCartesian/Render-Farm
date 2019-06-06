@@ -1,59 +1,61 @@
-#include "Engine.h"
+#include "Renderer.h"
 
 // Engine Class
 
 // Private Methods
 
-void Engine::resetDepthBuffer() {
+void Renderer::resetDepthBuffer() {
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
 
-unsigned int Engine::getIndexInColorBuffer(const unsigned int& _x, const unsigned int& _y) {
+unsigned int Renderer::getIndexInColorBuffer(const unsigned int& _x, const unsigned int& _y) {
 	return renderImages[this->indexImageBeingRendered]->getIndex(_x, _y);
 }
 
-void Engine::calculatePerspectiveMatrix() {
+void Renderer::calculatePerspectiveMatrix() {
 	this->perspectiveMatrix = EN::MATRIX4X4::getPerspectiveMatrix(this->width, this->height, this->fov, this->zNear, this->zFar);
 }
 
 // Public Methods
 
-Engine::Engine(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov, const TYPE& _zNear, const TYPE& _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
+Renderer::Renderer(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov, const double& _zNear, const double& _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
 	std::experimental::filesystem::create_directory("./out");
 	std::experimental::filesystem::create_directory("./out/frames");
 	std::experimental::filesystem::create_directory("./out/video");
 
 	this->calculatePerspectiveMatrix();
 
-	this->depthBuffer = new TYPE[this->width * this->height];
+	this->depthBuffer = new double[this->width * this->height];
 }
 
-Engine::~Engine() {
+Renderer::~Renderer() {
 	delete[] this->depthBuffer;
 }
 
-unsigned int Engine::getWidth()  const { return this->width; }
-unsigned int Engine::getHeight() const { return this->height; }
+unsigned int Renderer::getWidth()  const { return this->width; }
+unsigned int Renderer::getHeight() const { return this->height; }
 
-unsigned int Engine::addLight(const Light& _light) { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
-Light Engine::copyLight(const unsigned int& _lightId) { return this->lights[_lightId]; }
-void Engine::setLight(const unsigned int& _lightId, const Light _light) { this->lights[_lightId] = _light; }
+unsigned int Renderer::addLight(const Light& _light)                               { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
+Light        Renderer::copyLight(const unsigned int& _lightId) const               { return this->lights[_lightId]; }
+Light&       Renderer::getLightRef(const unsigned int& _lightId)                   { return this->lights[_lightId]; }
+void         Renderer::setLight(const unsigned int& _lightId, const Light& _light) { this->lights[_lightId] = _light; }
 
-unsigned int Engine::addModel(const Model & _model) { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
-Model Engine::copyModel(const unsigned int& _modelId) const { return this->models[_modelId]; }
-void Engine::setModel(const unsigned int& _modelId, const Model _model) { this->models[_modelId] = _model; }
+unsigned int Renderer::addModel(const Model & _model)                              { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
+Model        Renderer::copyModel(const unsigned int& _modelId) const               { return this->models[_modelId]; }
+Model&       Renderer::getModelRef(const unsigned int& _modelId)                   { return this->models[_modelId]; }
+void         Renderer::setModel(const unsigned int& _modelId, const Model _model)  { this->models[_modelId] = _model; }
 
-void Engine::drawPointNoVerif(const unsigned int& _x, const unsigned int& _y, const Color & _color) {
+void Renderer::drawPointNoVerif(const unsigned int& _x, const unsigned int& _y, const Color & _color) {
 	renderImages[this->indexImageBeingRendered]->colorBuffer[getIndexInColorBuffer(_x, _y)] = _color;
 }
 
-void Engine::drawPoint(const unsigned int& _x, const unsigned int& _y, const Color & _color) {
+void Renderer::drawPoint(const unsigned int& _x, const unsigned int& _y, const Color & _color) {
 	if (_x > 0 && _x < this->width && _y > 0 && _y < this->height) {
 		drawPointNoVerif(_x, _y, _color);
 	}
 }
 
-void Engine::drawRectangleNoVerif(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color) {
+void Renderer::drawRectangleNoVerif(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color) {
 	for (unsigned int y = _y; y < _y + _h; y++) {
 		unsigned int baseIndex = y * this->width;
 
@@ -63,7 +65,7 @@ void Engine::drawRectangleNoVerif(const unsigned int& _x, const unsigned int& _y
 	}
 }
 
-void Engine::drawRectangle(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color) {
+void Renderer::drawRectangle(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color) {
 	for (unsigned int y = (_y >= 0) ? _y : 0; y < ((_y + _h < this->height - 1) ? (_y + _h) : (this->height - 1)); y++) {
 		unsigned int baseIndex = y * this->width;
 
@@ -74,9 +76,9 @@ void Engine::drawRectangle(const unsigned int& _x, const unsigned int& _y, const
 }
 
 // Renders a triangle in 3D
-void Engine::drawTriangle3D(const Triangle& _tr) {	
-	Vector3D rotatedVertices[3] = { 0 };
-	std::memcpy(rotatedVertices, _tr.vertices, 3 * sizeof(Vector3D));
+void Renderer::drawTriangle3D(const Triangle& _tr) {	
+	Vec3 rotatedVertices[3] = { 0 };
+	std::memcpy(rotatedVertices, _tr.vertices, 3 * sizeof(Vec3));
 
 	// For Every Vertex
 	for (unsigned char v = 0; v < 3; v++) {
@@ -92,13 +94,13 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 		rotatedVertices[v] += _tr.rotationMidPoint;
 	}
 
-	Vector3D triangleSurfaceNormal = EN::TRIANGLE::getSurfaceNormal(rotatedVertices);
+	Vec3 triangleSurfaceNormal = EN::TRIANGLE::getSurfaceNormal(rotatedVertices);
 
 	// Check if triangle is facing camera
 	if (!this->camera.isTriangleFacingCamera(rotatedVertices, triangleSurfaceNormal)) return;
 
-	Vector3D transformedVertices[3] = { 0 };
-	std::memcpy(transformedVertices, rotatedVertices, 3 * sizeof(Vector3D));
+	Vec3 transformedVertices[3] = { 0 };
+	std::memcpy(transformedVertices, rotatedVertices, 3 * sizeof(Vec3));
 
 	for (unsigned char v = 0; v < 3; v++) {
 		// Camera Translation
@@ -116,21 +118,20 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 		transformedVertices[v].y = ((transformedVertices[v].y + 1.f) / +2.f) * this->height;
 	}
 
-	Color lightenedVertexColors[3];
-	EN::LIGHT::applyLightingToVertices(rotatedVertices, _tr.colors, triangleSurfaceNormal, this->lights, lightenedVertexColors);
+	std::array<Color, 3> lightenedVertexColors = EN::LIGHT::applyLightingToVertices(rotatedVertices, _tr.colors, triangleSurfaceNormal, this->lights);
 
 	// Start Rendering
 	// PreCalculate Values(For Barycentric Interpolation)
 	// Thanks to : https://codeplea.com/triangular-interpolation
 
-	TYPE denominator      = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
-	TYPE precalculated[6] = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
+	double denominator      = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
+	double precalculated[6] = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
 
 	// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
-	Vector3D t0 = EN::VECTOR3D::intify(transformedVertices[0]);
-	Vector3D t1 = EN::VECTOR3D::intify(transformedVertices[1]);
-	Vector3D t2 = EN::VECTOR3D::intify(transformedVertices[2]);
+	Vec3 t0 = EN::VECTOR3D::intify(transformedVertices[0]);
+	Vec3 t1 = EN::VECTOR3D::intify(transformedVertices[1]);
+	Vec3 t2 = EN::VECTOR3D::intify(transformedVertices[2]);
 
 	if (t0.y == t1.y && t0.y == t2.y) return;
 
@@ -149,11 +150,11 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 		bool second_half   = i > t1.y - t0.y || t1.y == t0.y;
 		int segment_height = static_cast<int>(second_half ? t2.y - t1.y : t1.y - t0.y);
 
-		TYPE alpha = (TYPE) i / total_height;
-		TYPE beta  = (TYPE) (i - (second_half ? t1.y - t0.y : 0)) / segment_height;
+		double alpha = (double) i / total_height;
+		double beta  = (double) (i - (second_half ? t1.y - t0.y : 0)) / segment_height;
 
-		Vector3D A = t0 + (t2 - t0) * alpha;
-		Vector3D B = second_half ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
+		Vec3 A = t0 + (t2 - t0) * alpha;
+		Vec3 B = second_half ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
 
 		if (A.x > B.x) std::swap(A, B);
 
@@ -167,12 +168,12 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 			precalculated[4] = (x - transformedVertices[2].x);
 			precalculated[5] = (y - transformedVertices[2].y);
 
-			TYPE VertexPositionWeights[3] = { (precalculated[0] * precalculated[4] + precalculated[1] * precalculated[5]) / denominator, (precalculated[2] * precalculated[4] + precalculated[3] * precalculated[5]) / denominator, 0 };
+			double VertexPositionWeights[3] = { (precalculated[0] * precalculated[4] + precalculated[1] * precalculated[5]) / denominator, (precalculated[2] * precalculated[4] + precalculated[3] * precalculated[5]) / denominator, 0 };
 			VertexPositionWeights[2]      = 1 - VertexPositionWeights[0] - VertexPositionWeights[1];
-			TYPE VertexPositionWeightSum  = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
+			double VertexPositionWeightSum  = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
 
 			// Pixel Depth (w)
-			TYPE w = 0;
+			double w = 0;
 
 			// For every vertex (Barycentric Interpolation)
 			for (unsigned char c = 0; c < 3; c++) {
@@ -198,8 +199,7 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 				}
 
 				pixelColor /= VertexPositionWeightSum;
-				pixelColor.constrain(0, 255);
-				pixelColor.intify();
+				pixelColor.colorify();
 
 				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}
@@ -208,7 +208,7 @@ void Engine::drawTriangle3D(const Triangle& _tr) {
 }
 
 // Renders And Writes to a folder with the name of the title given in the constructor the selected number of frames.
-void Engine::renderAndWriteFrames(const unsigned int& _nFrames) {
+void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 	std::thread writeThreads[RENDERS_AND_WRITES_PER_CYCLE];
 
 	// Allocate images
@@ -276,7 +276,7 @@ void Engine::renderAndWriteFrames(const unsigned int& _nFrames) {
 	}
 }
 
-void Engine::writeVideo(const unsigned int& _fps) {	
+void Renderer::writeVideo(const unsigned int& _fps) {	
 	File file("./out/video/videoEncoder.py", FILE_WRITE, false);
 
 	if (file.isOpen()) {

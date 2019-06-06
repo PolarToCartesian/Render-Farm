@@ -3,6 +3,7 @@
 .vscode/
 models/
 Debug/
+temp/
 *.user
 *.sln
 x64/

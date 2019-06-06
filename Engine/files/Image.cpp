@@ -23,16 +23,19 @@ void Image::writeToDisk(const std::string& _fileName) const {
 	File file(_fileName, FILE_WRITE, false);
 
 	if (file.isOpen()) {
-		// PPM Header
-		file.writeNoVerif("P3 \n" + std::to_string(this->imageWidth) + " " + std::to_string(this->imageHeight) + "\n255\n");
+		std::string fileContents = "P3 \n" + std::to_string(this->imageWidth) + " " + std::to_string(this->imageHeight) + "\n255\n";
 
 		// PPM Contents
 		for (unsigned int i = 0; i < this->nPixels; i++) {
-			file.writeNoVerif(std::to_string((unsigned char)this->colorBuffer[i].r) + " " + std::to_string((unsigned char)this->colorBuffer[i].g) + " " + std::to_string((unsigned char)this->colorBuffer[i].b) + "\n");
+			fileContents += std::to_string(static_cast<unsigned char>(this->colorBuffer[i].r)) + " " + 
+				            std::to_string(static_cast<unsigned char>(this->colorBuffer[i].g)) + " " + 
+				            std::to_string(static_cast<unsigned char>(this->colorBuffer[i].b)) + "\n";
 		}
+
+		file.writeNoVerif(fileContents);
 	} else {
 		EN::LOG::println("[ERROR] While Writing To \"" + _fileName + "\"", LOG_TYPE::error);
-	}	
+	}
 }
 
 Image::~Image() {

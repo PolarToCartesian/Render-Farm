@@ -13,22 +13,22 @@ Resources :
 #pragma once
 
 #include "objects/Camera.h"
-#include "objects/Image.h"
-#include "objects/Model.h"
 #include "objects/Light.h"
+#include "shapes/Model.h"
+#include "../files/Image.h"
 
-class Engine {
+class Renderer {
 	private:
 		unsigned int width, height;
 
-		Matrix4x4 perspectiveMatrix;
+		Mat4x4 perspectiveMatrix;
 
 		unsigned int fov;
-		TYPE zNear, zFar;
+		double zNear, zFar;
 
 		unsigned int indexImageBeingRendered = 0;
 
-		TYPE* depthBuffer = nullptr;
+		double* depthBuffer = nullptr;
 
 		Image * renderImages[RENDERS_AND_WRITES_PER_CYCLE];
 
@@ -46,9 +46,9 @@ class Engine {
 		void calculatePerspectiveMatrix();
 
 	public:
-		Engine(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov = 90, const TYPE& _zNear = 0.1, const TYPE& _zFar = 1000);
+		Renderer(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov = 90, const double& _zNear = 0.1, const double& _zFar = 1000);
 
-		~Engine();
+		~Renderer();
 
 		virtual void update() = 0;
 		virtual void render() = 0;
@@ -57,12 +57,14 @@ class Engine {
 		unsigned int getHeight() const;
 
 		unsigned int addLight(const Light & _light);
-		Light copyLight(const unsigned int& _lightId);
-		void setLight(const unsigned int& _lightId, const Light _light);
+		Light        copyLight(const unsigned int& _lightId) const;
+		Light&       getLightRef(const unsigned int& _lightId);
+		void         setLight(const unsigned int& _lightId, const Light& _light);
 
 		unsigned int addModel(const Model & _model);
-		Model copyModel(const unsigned int& _modelId) const;
-		void setModel(const unsigned int& _modelId, const Model _model);
+		Model        copyModel(const unsigned int& _modelId) const;
+		Model&       getModelRef(const unsigned int& _modelId);
+		void         setModel(const unsigned int& _modelId, const Model _model);
 
 		void drawPointNoVerif(const unsigned int& _x, const unsigned int& _y, const Color & _color);
 

@@ -1,3 +1,3 @@
 import os
 
-os.system("pip install cv2")
+os.system("pip install opencv-python")

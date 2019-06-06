@@ -1,16 +1,15 @@
 #pragma once
 
+#include "../math/Vec3.h"
 #include "../other/pch.h"
-
-#include "../files/File.h"
-#include "Vector3D.h"
+#include "File.h"
 
 class Image {
 	private:
 		unsigned int imageWidth, imageHeight;
 
 		unsigned int nPixels;
-
+		
 	public:
 		Color * colorBuffer;
 
