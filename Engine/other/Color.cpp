@@ -1,7 +1,7 @@
 #include "Color.h"
 
 unsigned char Color::getInBounds(const double& _v) {
-	return (_v > UCHAR_MAX) ? UCHAR_MAX : ( (_v < 0) ? 0 : _v );
+	return (_v > std::numeric_limits<unsigned char>::max()) ? std::numeric_limits<unsigned char>::max() : ( (_v < 0) ? 0 : _v );
 }
 
 Color::Color() : r(0), g(0), b(0) {}
