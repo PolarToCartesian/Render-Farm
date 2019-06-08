@@ -65,12 +65,47 @@ void Renderer::drawRectangleNoVerif(const unsigned int& _x, const unsigned int& 
 }
 
 void Renderer::drawRectangle(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color) {
-	for (unsigned int y = (_y >= 0) ? _y : 0; y < ((_y + _h < this->height - 1) ? (_y + _h) : (this->height - 1)); y++) {
+	for (unsigned int y = _y; y < ((_y + _h > this->height - 1) ? this->height : (_y + _h)); y++) {
 		unsigned int baseIndex = y * this->width;
 
-		for (unsigned int x = (_x >= 0) ? _x : 0; x < ((_x + _w < this->width) ? (_x + _w) : (this->width - 1)); x++) {
+		for (unsigned int x = _x; x < ((_x + _w > this->width - 1) ? this->width : (_x + _w)); x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _color;
 		}
+	}
+}
+
+void Renderer::drawImageNoVerif(const unsigned int& _x, const unsigned int& _y, const Image& _image) {
+	unsigned int sampleX = 0, sampleY = 0;
+	
+	for (unsigned int y = _y; y < _y + _image.getHeight(); y++) {
+		unsigned int baseIndex = y * this->width;
+
+		for (unsigned int x = _x; x < _x + _image.getWidth(); x++) {
+			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _image.sample(sampleX, sampleY);
+			sampleX++;
+		}
+
+		sampleX = 0;
+		sampleY++;
+	}
+}
+
+void Renderer::drawImage(const unsigned int& _x, const unsigned int& _y, const Image& _image) {
+	unsigned int xEnd = (_x + _image.getWidth()  > this->getWidth()  - 1) ? (this->width)  : (_x + _image.getWidth() );
+	unsigned int yEnd = (_y + _image.getHeight() > this->getHeight() - 1) ? (this->height) : (_y + _image.getHeight());
+
+	unsigned int sampleX = 0, sampleY = 0;
+
+	for (unsigned int y = _y; y < yEnd; y++) {
+		unsigned int baseIndex = y * this->width;
+
+		for (unsigned int x = _x; x < xEnd; x++) {
+			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _image.sample(sampleX, sampleY);
+			sampleX++;
+		}
+
+		sampleX = 0;
+		sampleY++;
 	}
 }
 
@@ -190,7 +225,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 
 				// Triangulate :D the pixel color
 
-				unsigned int r = 0, g = 0, b = 0;
+				double r = 0, g = 0, b = 0;
 
 				// For every vertex
 				for (unsigned char c = 0; c < 3; c++) {
@@ -203,7 +238,9 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 				g /= VertexPositionWeightSum;
 				b /= VertexPositionWeightSum;
 
-				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = Color(r, g, b);
+				Color pixelColor(static_cast<unsigned char>(r), static_cast<unsigned char>(g), static_cast<unsigned char>(b));
+
+				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}
 		}
 	}
@@ -231,8 +268,8 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 			auto startTime = std::chrono::system_clock::now();
 		
 			// Call User Defined Functions
-			this->render();
 			this->update();
+			this->render(false);
 
 			// Render Every Model
 			for (unsigned int nModel = 0; nModel < this->models.size(); nModel++) {
@@ -242,6 +279,9 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 					});
 				}
 			}
+
+			// Call User Defined Functions
+			this->render(true);
 
 			auto endTime = std::chrono::system_clock::now();
 			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);

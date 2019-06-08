@@ -2,6 +2,55 @@
 
 // Image Class
 
+Image::Image(const std::string& _filename, const bool& _doLog) {
+	File file(_filename, FILE_READ, _doLog);
+
+	if (file.isOpen()) {
+		file.readLineByLine([this, _filename, _doLog](const std::string& _line, const unsigned int& _lineNumber) {
+			std::istringstream lineStream(_line);
+
+			switch (_lineNumber) {
+				case 1:
+					{
+						std::string ppmType;
+
+						lineStream >> ppmType;
+
+						if (ppmType != "P3") {
+							if (_doLog) EN::LOG::println("[IMAGE] ERROR WHILE READING \"" + _filename + "\". We Only Support P3", LOG_TYPE::error);
+
+							this->~Image();
+
+							return;
+						}
+					}
+					break;
+				case 2:
+					{
+						lineStream >> this->imageWidth >> this->imageHeight;
+
+						this->nPixels = this->imageWidth * this->imageHeight;
+						this->colorBuffer = new Color[this->nPixels];
+					}
+					break;
+				case 3:
+					break;
+
+				default:
+					std::string r, g, b;
+
+					lineStream >> r >> g >> b;
+
+					Color color(std::stoi(r), std::stoi(g), std::stoi(b));
+
+					this->colorBuffer[_lineNumber - 2] = color;
+			}
+		});
+	} else {
+		this->~Image();
+	}
+}
+
 Image::Image(const unsigned int& _imageWidth, const unsigned int& _imageHeight) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
 	this->nPixels = this->imageWidth * this->imageHeight;
 
@@ -17,6 +66,10 @@ unsigned int Image::getHeight() const { return this->imageHeight; }
 
 void Image::setColor(const unsigned int& _x, const unsigned int& _y, const Color& _c) {
 	this->colorBuffer[this->getIndex(_x, _y)] = _c;
+}
+
+Color Image::sample(const unsigned int& _x, const unsigned int& _y) const {
+	return this->colorBuffer[this->getIndex(_x, _y)];
 }
 
 void Image::writeToDisk(const std::string& _fileName) const {

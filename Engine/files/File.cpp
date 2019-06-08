@@ -21,6 +21,9 @@ void File::open(const std::string& _filename, const std::string& _permissions) {
 		this->isFileOpen = (this->filePtr != NULL);
 	#endif
 
+	this->canRead  = (this->isFileOpen && (this->permissions == FILE_READ  || this->permissions == FILE_READ_WRITE));
+	this->canWrite = (this->isFileOpen && (this->permissions == FILE_WRITE || this->permissions == FILE_READ_WRITE));
+
 	if (this->doLogOpeningAndClosing) {
 		if (this->isFileOpen) {
 			EN::LOG::println("[FILE] The File \"" + std::string(_filename) + "\" Was Successfully Opened", LOG_TYPE::success);
@@ -40,10 +43,12 @@ void File::close() {
 			EN::LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Was Successfully Closed", LOG_TYPE::success);
 		}
 
-		this->filePtr = nullptr;
-		this->filename = "";
+		this->filePtr     = nullptr;
+		this->filename    = "";
 		this->permissions = "";
-		this->isFileOpen = false;
+		this->isFileOpen  = false;
+		this->canRead     = false;
+		this->canWrite    = false;
 	} else if (this->doLogOpeningAndClosing) {
 		EN::LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Could Not Be Closed Since It Is Already Closed", LOG_TYPE::warning);
 	}
@@ -57,7 +62,7 @@ void File::write(const std::string& _content) {
 	// Write to file if the file is open
 	if (this->isFileOpen) {
 		// Write if the file can be written to
-		if (this->permissions != FILE_READ) {
+		if (this->canWrite) {
 			this->writeNoVerif(_content);
 		} else {
 			EN::LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Read From Not Written To", LOG_TYPE::error);
@@ -71,7 +76,7 @@ std::string File::read() const {
 	// Read If the file is open
 	if (this->isFileOpen) {
 		// Read File only if the file can be read from
-		if (this->permissions != FILE_WRITE) {
+		if (this->canRead) {
 			// Thanks To : http://www.fundza.com/c4serious/fileIO_reading_all/
 
 			fseek(this->filePtr, 0L, SEEK_END);
@@ -98,11 +103,12 @@ std::string File::read() const {
 	return "";
 }
 
-void File::readLineByLine(const std::function<void(const std::string&)>& _lambda) const {
+void File::readLineByLine(const std::function<void(const std::string&, const unsigned int&)>& _lambda) const {
 	// Read line by line if the file is open
 	if (this->isFileOpen) {
 		// Read File only if the file can be read from
-		if (this->permissions != FILE_WRITE) {
+		if (this->canRead) {
+			unsigned int lineNumber = 1;
 			char line[FILE_LINE_BUFFER_SIZE];
 
 			// For Every Line
@@ -113,7 +119,8 @@ void File::readLineByLine(const std::function<void(const std::string&)>& _lambda
 				}
 
 				// Call the lambda function with the line as argument
-				_lambda(line);
+				_lambda(line, lineNumber);
+				lineNumber++;
 			}
 		} else {
 			EN::LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Written To Not Read From", LOG_TYPE::error);
@@ -123,5 +130,8 @@ void File::readLineByLine(const std::function<void(const std::string&)>& _lambda
 	}
 }
 
-bool File::isOpen()   const { return this->isFileOpen; }
+bool File::isOpen()   const { return  this->isFileOpen; }
 bool File::isClosed() const { return !this->isFileOpen; }
+
+bool File::isReadable() const { return this->canRead;  }
+bool File::isWritable() const { return this->canWrite; }

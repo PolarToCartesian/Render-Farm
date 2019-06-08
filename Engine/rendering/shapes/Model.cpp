@@ -7,22 +7,22 @@ Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool& _ra
 	File file(_filePath, FILE_READ, false);
 
 	if (file.isOpen()) {
-		std::string datadouble, junk;
+		std::string dataType, junk;
 
 		std::vector<Vec3> vertices;
 
-		file.readLineByLine([&](const std::string& _line) {
+		file.readLineByLine([&](const std::string& _line, const unsigned int& _lineNumber) {
 			std::istringstream lineStream(_line);
 
-			lineStream >> datadouble;
+			lineStream >> dataType;
 
-			if (datadouble == "v") {
+			if (dataType == "v") {
 				double x = 0.f, y = 0.f, z = 0.f;
 
 				lineStream >> x >> y >> z;
 
 				vertices.emplace_back(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z);
-			} else if (datadouble == "f") {
+			} else if (dataType == "f") {
 				unsigned int vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
 
 				if (_line.find("/") == std::string::npos) {

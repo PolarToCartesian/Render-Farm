@@ -10,7 +10,8 @@ class App : Renderer {
 			this->writeVideo(15 * 20, 15);
 		}
 
-		void render() override {}
+		void render(const bool& _doRenderOver3D) override {}
+
 		void update() override {
 			this->models[0].rotate(Vec3(0.05f, 0.05f, 0.05f));
 

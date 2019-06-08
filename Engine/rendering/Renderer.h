@@ -52,7 +52,7 @@ class Renderer {
 		~Renderer();
 
 		virtual void update() = 0;
-		virtual void render() = 0;
+		virtual void render(const bool& _doRenderOver3D) = 0;
 
 		unsigned int getWidth()  const;
 		unsigned int getHeight() const;
@@ -74,6 +74,10 @@ class Renderer {
 		void drawRectangleNoVerif(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color);
 
 		void drawRectangle(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color);
+
+		void drawImageNoVerif(const unsigned int& _x, const unsigned int& _y, const Image& _image);
+
+		void drawImage(const unsigned int& _x, const unsigned int& _y, const Image& _image);
 
 		void drawTriangle3D(const Triangle& _tr);
 
