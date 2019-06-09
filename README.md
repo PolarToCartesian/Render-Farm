@@ -42,7 +42,7 @@ The executable will be located in the main Render-Farm/ directory.
 
 ## Thanks To
 
-+ [Barycentric Interpolation](https://github.com/user/repo/blob/branch/other_file.md) https://codeplea.com/triangular-interpolation)
++ [Barycentric Interpolation](https://codeplea.com/triangular-interpolation)
 + [Surface Normal Calculation](https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal)
 + [General 3D Matrix Calculations](https://www.youtube.com/playlist?list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP)
 + [2D Triangle Renderer](https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling)
