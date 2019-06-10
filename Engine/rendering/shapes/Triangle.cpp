@@ -25,21 +25,15 @@ void Triangle::translate(const Vec3& _deltaPosition) {
 	this->applyFunctionToEachVertex([&_deltaPosition](Vec3& _vertex) { _vertex += _deltaPosition; });
 }
 
-// Engine Namespace
+Vec3 Triangle::getSurfaceNormal(const Vec3 _vertices[3]) {
+	//https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
 
-namespace EN {
-	namespace TRIANGLE {
-		Vec3 getSurfaceNormal(const Vec3 _vertices[3]) {
-			//https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
+	Vec3 U = _vertices[1] - _vertices[0];
+	Vec3 V = _vertices[2] - _vertices[0];
 
-			Vec3 U = _vertices[1] - _vertices[0];
-			Vec3 V = _vertices[2] - _vertices[0];
+	double nX = U.y * V.z - U.z * V.y;
+	double nY = U.z * V.x - U.x * V.z;
+	double nZ = U.x * V.y - U.y * V.x;
 
-			double nX = U.y * V.z - U.z * V.y;
-			double nY = U.z * V.x - U.x * V.z;
-			double nZ = U.x * V.y - U.y * V.x;
-
-			return Vec3::normalize(Vec3(nX, nY, nZ));
-		}
-	};
-};
+	return Vec3::normalize(Vec3(nX, nY, nZ));
+}

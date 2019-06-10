@@ -51,6 +51,7 @@ The executable will be located in the main Render-Farm/ directory.
 
 + [x] Seperate Color Class
 + [x] Create An Image Renderer
++ [x] Static Member Functions In Classes
 + [ ] Camera Rotation
 + [ ] PNG or JPEG instead of PPM
 + [ ] Fixing The First Image Being Black Bug

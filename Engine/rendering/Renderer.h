@@ -33,6 +33,8 @@ class Renderer {
 
 		Image * renderImages[RENDERS_AND_WRITES_PER_CYCLE];
 
+		Color backgroundColor;
+
 	public:
 		std::vector<Model> models;
 		std::vector<Light> lights;
@@ -47,7 +49,7 @@ class Renderer {
 		void calculatePerspectiveMatrix();
 
 	public:
-		Renderer(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov = 90, const double& _zNear = 0.1, const double& _zFar = 1000);
+		Renderer(const unsigned int& _width, const unsigned int& _height, const Color& _backgroundColor = Color(51), const unsigned int& _fov = 90, const double& _zNear = 0.1, const double& _zFar = 1000);
 
 		~Renderer();
 

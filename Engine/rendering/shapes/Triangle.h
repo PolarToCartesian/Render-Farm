@@ -17,12 +17,6 @@ struct Triangle {
 	void applyFunctionToEachVertex(const std::function<void(Vec3&)>& _function);
 
 	void translate(const Vec3& _deltaPosition);
-};
 
-// Engine Namespace
-
-namespace EN {
-	namespace TRIANGLE {
-		Vec3 getSurfaceNormal(const Vec3 _vertices[3]);
-	};
+	static Vec3 getSurfaceNormal(const Vec3 _vertices[3]);
 };

@@ -18,7 +18,7 @@ class Image {
 
 	public:
 		Image(const std::string& _filename, const bool& _doLog = false);
-		Image(const unsigned int& _imageWidth, const unsigned int& _imageHeight);
+		Image(const unsigned int& _imageWidth, const unsigned int& _imageHeight, const Color& _backgroundColor = Color(0));
 
 		unsigned int getIndex(const unsigned int& _x, const unsigned int& _y) const;
 

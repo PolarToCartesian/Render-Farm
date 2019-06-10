@@ -51,10 +51,11 @@ Image::Image(const std::string& _filename, const bool& _doLog) {
 	}
 }
 
-Image::Image(const unsigned int& _imageWidth, const unsigned int& _imageHeight) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
+Image::Image(const unsigned int& _imageWidth, const unsigned int& _imageHeight, const Color& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
 	this->nPixels = this->imageWidth * this->imageHeight;
 
 	this->colorBuffer = new Color[this->nPixels];
+	std::fill_n(this->colorBuffer, this->nPixels, _backgroundColor);
 }
 
 unsigned int Image::getIndex(const unsigned int& _x, const unsigned int& _y) const {

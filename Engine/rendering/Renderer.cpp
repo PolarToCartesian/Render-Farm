@@ -18,12 +18,12 @@ void Renderer::calculatePerspectiveMatrix() {
 
 // Public Methods
 
-Renderer::Renderer(const unsigned int& _width, const unsigned int& _height, const unsigned int& _fov, const double& _zNear, const double& _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
+Renderer::Renderer(const unsigned int& _width, const unsigned int& _height, const Color& _backgroundColor, const unsigned int& _fov, const double& _zNear, const double& _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
 	std::experimental::filesystem::create_directory("./out");
 	std::experimental::filesystem::create_directory("./out/frames");
 
 	this->calculatePerspectiveMatrix();
-
+	this->backgroundColor = _backgroundColor;
 	this->depthBuffer = new double[this->width * this->height];
 }
 
@@ -128,7 +128,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 		rotatedVertices[v] += _tr.rotationMidPoint;
 	}
 
-	Vec3 triangleSurfaceNormal = EN::TRIANGLE::getSurfaceNormal(rotatedVertices);
+	Vec3 triangleSurfaceNormal = Triangle::getSurfaceNormal(rotatedVertices);
 
 	// Check if triangle is facing camera
 	if (!this->camera.isTriangleFacingCamera(rotatedVertices, triangleSurfaceNormal)) return;
@@ -203,7 +203,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 			precalculated[5] = (y - transformedVertices[2].y);
 
 			double VertexPositionWeights[3] = { (precalculated[0] * precalculated[4] + precalculated[1] * precalculated[5]) / denominator, (precalculated[2] * precalculated[4] + precalculated[3] * precalculated[5]) / denominator, 0 };
-			VertexPositionWeights[2]      = 1 - VertexPositionWeights[0] - VertexPositionWeights[1];
+			VertexPositionWeights[2]        = 1 - VertexPositionWeights[0] - VertexPositionWeights[1];
 			double VertexPositionWeightSum  = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
 
 			// Pixel Depth (w)
@@ -252,7 +252,7 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 
 	// Allocate images
 	for (unsigned int i = 0; i < RENDERS_AND_WRITES_PER_CYCLE; i++) {
-		this->renderImages[i] = new Image(this->width, this->height);
+		this->renderImages[i] = new Image(this->width, this->height, this->backgroundColor);
 	}
 
 	// Render And Write Frames
@@ -313,7 +313,7 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 			writeThreads[i].join();
 
 			// Reset Images To Black
-			std::fill_n(this->renderImages[i]->colorBuffer, this->width * this->height, 0);
+			std::fill_n(this->renderImages[i]->colorBuffer, this->width * this->height, this->backgroundColor);
 		}
 	}
 }
