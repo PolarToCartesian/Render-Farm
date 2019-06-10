@@ -132,29 +132,24 @@ void Vec3::operator*=(const Mat4x4 & _m) {
 	this->z = r.z;
 }
 
-// Engine Namespace
 
-namespace EN {
-	namespace VECTOR3D {
-		Vec3 normalize(const Vec3& _v) {
-			Vec3 result = _v.copy();
-			result.normalize();
+Vec3 Vec3::intify(const Vec3& _v) {
+	Vec3 result = _v.copy();
+	result.intify();
 
-			return result;
-		}
+	return result;
+}
 
-		Vec3 intify(const Vec3& _v) {
-			Vec3 result = _v.copy();
-			result.intify();
+Vec3 Vec3::normalize(const Vec3& _v) {
+	Vec3 result = _v.copy();
+	result.normalize();
 
-			return result;
-		}
+	return result;
+}
 
-		double dotProduct(const Vec3& _a, const Vec3& _b) {
-			return _a.x* _b.x + _a.y * _b.y + _a.z * _b.z;
-		}
-	};
-};
+double Vec3::dotProduct(const Vec3& _a, const Vec3& _b) {
+	return _a.x * _b.x + _a.y * _b.y + _a.z * _b.z;
+}
 
 /// Operator Overloading
 

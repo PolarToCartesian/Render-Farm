@@ -13,7 +13,7 @@ unsigned int Renderer::getIndexInColorBuffer(const unsigned int& _x, const unsig
 }
 
 void Renderer::calculatePerspectiveMatrix() {
-	this->perspectiveMatrix = EN::MATRIX4X4::getPerspectiveMatrix(this->width, this->height, this->fov, this->zNear, this->zFar);
+	this->perspectiveMatrix = Mat4x4::getPerspectiveMatrix(this->width, this->height, this->fov, this->zNear, this->zFar);
 }
 
 // Public Methods
@@ -120,9 +120,9 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 		rotatedVertices[v] -= _tr.rotationMidPoint;
 
 		// Rotate
-		rotatedVertices[v] *= EN::MATRIX4X4::getRotationXMatrix(_tr.rotation.x);
-		rotatedVertices[v] *= EN::MATRIX4X4::getRotationYMatrix(_tr.rotation.y);
-		rotatedVertices[v] *= EN::MATRIX4X4::getRotationZMatrix(_tr.rotation.z);
+		rotatedVertices[v] *= Mat4x4::getRotationXMatrix(_tr.rotation.x);
+		rotatedVertices[v] *= Mat4x4::getRotationYMatrix(_tr.rotation.y);
+		rotatedVertices[v] *= Mat4x4::getRotationZMatrix(_tr.rotation.z);
 
 		// Rotate Triangle Around Point
 		rotatedVertices[v] += _tr.rotationMidPoint;
@@ -163,9 +163,9 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 
 	// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
-	Vec3 t0 = EN::VECTOR3D::intify(transformedVertices[0]);
-	Vec3 t1 = EN::VECTOR3D::intify(transformedVertices[1]);
-	Vec3 t2 = EN::VECTOR3D::intify(transformedVertices[2]);
+	Vec3 t0 = Vec3::intify(transformedVertices[0]);
+	Vec3 t1 = Vec3::intify(transformedVertices[1]);
+	Vec3 t2 = Vec3::intify(transformedVertices[2]);
 
 	if (t0.y == t1.y && t0.y == t2.y) return;
 
@@ -262,7 +262,7 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 		unsigned int nEndFrame     = nStartFrame + RENDERS_AND_WRITES_PER_CYCLE;
 		if (nEndFrame > _nFrames) nEndFrame = _nFrames;
 
-		EN::LOG::println("\n[RENDERING / WRITING] Starting Cycle " + std::to_string(nCycle + 1) + " (" + std::to_string(nEndFrame - nStartFrame) + " frames)\n", LOG_TYPE::normal);
+		LOG::println("\n[RENDERING / WRITING] Starting Cycle " + std::to_string(nCycle + 1) + " (" + std::to_string(nEndFrame - nStartFrame) + " frames)\n", LOG_TYPE::normal);
 	
 		for (this->indexImageBeingRendered = 0; this->indexImageBeingRendered < nEndFrame - nStartFrame; this->indexImageBeingRendered++) {
 			auto startTime = std::chrono::system_clock::now();
@@ -286,7 +286,7 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 			auto endTime = std::chrono::system_clock::now();
 			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-			EN::LOG::println("[RENDERING] Rendered " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
+			LOG::println("[RENDERING] Rendered " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 
 			std::string fileName = "./out/frames/" + std::to_string(nCurrentFrame + 1) + ".ppm";
 
@@ -300,7 +300,7 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 				auto endTime   = std::chrono::system_clock::now();
 				auto elapsed   = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-				EN::LOG::println("[WRITING]   Wrote    " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
+				LOG::println("[WRITING]   Wrote    " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 			});
 
 			this->resetDepthBuffer();

@@ -15,14 +15,14 @@ std::array<Color, 3> EN::LIGHT::applyLightingToVertices(const Vec3 * _vertices, 
 		for (unsigned int lightIndex = 0; lightIndex < _lights.size(); lightIndex++) {
 			Vec3 vertexToLight = _lights[lightIndex].position - _vertices[v];
 
-			double dotProduct = EN::VECTOR3D::dotProduct(vertexToLight, _triangleSurfaceNormal);
+			double dotProduct = Vec3::dotProduct(vertexToLight, _triangleSurfaceNormal);
 
 			if (dotProduct < 0) dotProduct = 0;
 
 			totalVertexBrightness += (dotProduct * _lights[lightIndex].intensity) / std::pow(vertexToLight.getLength(), 2);
 		}
 
-		totalVertexBrightness = EN::MATH::constrain(totalVertexBrightness, 0, 1);
+		totalVertexBrightness = MATH::constrain(totalVertexBrightness, 0, 1);
 
 		output[v] = (_colorOfVertices[v] * totalVertexBrightness);
 	}

@@ -16,6 +16,11 @@ struct Mat4x4 {
 	unsigned char getIndex(const int& _row, const int& _col) const;
 
 	Mat4x4 operator*(const Mat4x4& _m) const;
+
+	static Mat4x4 getRotationXMatrix(const double& _rotX);
+	static Mat4x4 getRotationYMatrix(const double& _rotY);
+	static Mat4x4 getRotationZMatrix(const double& _rotZ);
+	static Mat4x4 getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const double& _fov, const double& _zNear, const double& _zFar);
 };
 
 // Mat4x4 Functions
@@ -29,14 +34,3 @@ bool operator!=(const Mat4x4& _a, const Mat4x4& _b);
 /// Printing
 
 std::ostream& operator<<(std::ostream& _os, const Mat4x4& _m);
-
-// Object Functions Namespace
-
-namespace EN {
-	namespace MATRIX4X4 {
-		Mat4x4 getRotationXMatrix(const double& _rotX);
-		Mat4x4 getRotationYMatrix(const double& _rotY);
-		Mat4x4 getRotationZMatrix(const double& _rotZ);
-		Mat4x4 getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const double& _fov, const double& _zNear, const double& _zFar);
-	};
-};

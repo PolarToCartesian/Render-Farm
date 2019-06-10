@@ -89,18 +89,11 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 	Vec3 operator*(const Mat4x4 & _m) const;
 
 	void operator*=(const Mat4x4 & _m);
-};
+	
 
-// Engine Namespace
-
-namespace EN {
-	namespace VECTOR3D {
-		Vec3 normalize(const Vec3& _v);
-
-		Vec3 intify(const Vec3& _v);
-
-		double dotProduct(const Vec3& _a, const Vec3& _b);
-	};
+	static Vec3 intify(const Vec3& _v);
+	static Vec3 normalize(const Vec3& _v);
+	static double dotProduct(const Vec3& _a, const Vec3& _b);
 };
 
 /// typedef

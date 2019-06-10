@@ -36,7 +36,7 @@ Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool& _ra
 				Color triangleColors[3]  = { _flatColor, _flatColor, _flatColor };
 
 				if (_randomColors) {
-					using EN::MATH::randomInt;
+					using MATH::randomInt;
 					for (unsigned char i = 0; i < 3; i++) {
 						triangleColors[i] = Color(randomInt(0, 255), randomInt(0, 255), randomInt(0, 255));
 					}
@@ -46,9 +46,9 @@ Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool& _ra
 			}
 		});
 
-		EN::LOG::println("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)", LOG_TYPE::success);
+		LOG::println("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)", LOG_TYPE::success);
 	} else {
-		EN::LOG::println("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!", LOG_TYPE::error);
+		LOG::println("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!", LOG_TYPE::error);
 	}
 
 	file.close();

@@ -39,7 +39,7 @@ namespace EN {
 			double nY = U.z * V.x - U.x * V.z;
 			double nZ = U.x * V.y - U.y * V.x;
 
-			return EN::VECTOR3D::normalize(Vec3(nX, nY, nZ));
+			return Vec3::normalize(Vec3(nX, nY, nZ));
 		}
 	};
 };
