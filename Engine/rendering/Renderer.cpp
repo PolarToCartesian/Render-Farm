@@ -4,7 +4,7 @@
 
 // Private Methods
 
-void Renderer::resetDepthBuffer() {
+inline void Renderer::resetDepthBuffer() {
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
 
@@ -110,7 +110,7 @@ void Renderer::drawImage(const unsigned int& _x, const unsigned int& _y, const I
 }
 
 // Renders a triangle in 3D
-void Renderer::drawTriangle3D(const Triangle& _tr) {	
+void Renderer::drawTriangle3D(const Triangle& _tr) {
 	Vec3 rotatedVertices[3] = { 0 };
 	std::memcpy(rotatedVertices, _tr.vertices, 3 * sizeof(Vec3));
 
@@ -177,7 +177,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 
 	// Render Triangle With The 3 Triangulated :D colors
 	for (unsigned int i = 0; i < static_cast<unsigned int>(total_height); i++) {
-		unsigned int  y = static_cast<unsigned int>(t0.y + i);
+		int y = static_cast<unsigned int>(t0.y + i);
 
 		if (y < 0 || y > this->height - 1) continue;
 
@@ -246,7 +246,6 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	}
 }
 
-// Renders And Writes to a folder with the name of the title given in the constructor the selected number of frames.
 void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 	std::thread writeThreads[RENDERS_AND_WRITES_PER_CYCLE];
 
@@ -267,6 +266,8 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 		for (this->indexImageBeingRendered = 0; this->indexImageBeingRendered < nEndFrame - nStartFrame; this->indexImageBeingRendered++) {
 			auto startTime = std::chrono::system_clock::now();
 		
+			this->resetDepthBuffer();
+
 			// Call User Defined Functions
 			this->update();
 			this->render(false);
@@ -302,8 +303,6 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 
 				LOG::println("[WRITING]   Wrote    " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 			});
-
-			this->resetDepthBuffer();
 
 			nCurrentFrame++;
 		}
