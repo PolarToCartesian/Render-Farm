@@ -57,8 +57,16 @@ The executable will be located in the main Render-Farm/ directory.
 + [x] Use Clearer Types
 + [x] Remove Passing Simple Values By Reference
 + [x] Camera Rotation
++ [X] Read Obj Files Who Have 4 Component Faces
 + [ ] 2D Text Rendering
 + [ ] Ray Marching
 + [ ] PNG or JPEG instead of PPM*
 
 *Low priority
+
+## Test Model Credit
+
++ [town.txt](https://free3d.com/3d-model/environment-23742.html)
++ [quad.txt](https://github.com/triplepointfive/ogldev/blob/master/Content/quad.obj)
++ [teapot.txt](https://graphics.stanford.edu/courses/cs148-10-summer/as3/code/as3/teapot.obj)
++ [armadillo.txt](http://www.prinmath.com/csci5229/OBJ/index.html)

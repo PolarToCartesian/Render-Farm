@@ -23,26 +23,30 @@ Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool _ran
 
 				vertices.emplace_back(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z);
 			} else if (dataType == "f") {
-				unsigned int vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
+				uint32_t vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
+				int64_t vertexIndex4  = -1;
 
 				if (_line.find("/") == std::string::npos) {
 					lineStream >> vertexIndex1 >> vertexIndex2 >> vertexIndex3;
+
+					// Check For 4 Component Face
+					if (!lineStream.str().empty()) lineStream >> vertexIndex4;
 				} else {
 					lineStream >> vertexIndex1 >> junk >> vertexIndex2 >> junk >> vertexIndex3;
+					
+					// Check For 4 Component Face
+					if (!lineStream.str().empty()) lineStream >> junk >> vertexIndex4;
 				}
 
-				Vec3 triangleVertices[3] = { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] };
-
-				Color triangleColors[3]  = { _flatColor, _flatColor, _flatColor };
-
-				if (_randomColors) {
-					using MATH::randomInt;
-					for (unsigned char i = 0; i < 3; i++) {
-						triangleColors[i] = Color(randomInt(0, 255), randomInt(0, 255), randomInt(0, 255));
-					}
+				// Triangle 1
+				triangles.emplace_back(new Vec3[3] { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] }, 
+									   _flatColor, _centerOfRotation, _rotation, _randomColors);
+				
+				// Triangle 2
+				if (vertexIndex4 != -1) {
+					triangles.emplace_back(new Vec3[3] { vertices[vertexIndex1 - 1], vertices[vertexIndex3 - 1], vertices[vertexIndex4 - 1] }, 
+										   _flatColor, _centerOfRotation, _rotation, _randomColors);
 				}
-
-				triangles.emplace_back(triangleVertices, triangleColors, _centerOfRotation, _rotation);
 			}
 		});
 

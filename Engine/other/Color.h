@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../math/Funcs.h"
 #include "pch.h"
 
 class Color {

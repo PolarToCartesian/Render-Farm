@@ -11,8 +11,10 @@ struct Triangle {
 	Color colors[3];
 
 	Triangle();
+	Triangle(const Vec3 _vertices[3], const Color& _color, const bool _useRandomColors = false);
 	Triangle(const Vec3 _vertices[3], const Color _colors[3]);
-	Triangle(const Vec3 _vertices[3], const Color _colors[3], const Vec3& = Vec3(), const Vec3& _rotation = Vec3());
+	Triangle(const Vec3 _vertices[3], const Color& _flatColor, const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3(), const bool _useRandomColors = false);
+	Triangle(const Vec3 _vertices[3], const Color  _colors[3], const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3(), const bool _useRandomColors = false);
 
 	void applyFunctionToEachVertex(const std::function<void(Vec3&)>& _function);
 
