@@ -1,6 +1,6 @@
 #include "File.h"
 
-File::File(const std::string& _filename, const std::string& _permissions, const bool& _doLogOpeningAndClosing) {
+File::File(const std::string& _filename, const std::string& _permissions, const bool _doLogOpeningAndClosing) {
 	this->doLogOpeningAndClosing = _doLogOpeningAndClosing;
 
 	this->open(_filename, _permissions);
@@ -103,7 +103,7 @@ std::string File::read() const {
 	return "";
 }
 
-void File::readLineByLine(const std::function<void(const std::string&, const unsigned int&)>& _lambda) const {
+void File::readLineByLine(const std::function<void(const std::string&, const unsigned int)>& _lambda) const {
 	// Read line by line if the file is open
 	if (this->isFileOpen) {
 		// Read File only if the file can be read from

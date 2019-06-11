@@ -7,20 +7,20 @@
 struct Mat4x4 {
 	double m[16] = { 0 }; // r * c
 
-	Mat4x4(const bool& _isIdentityMatrix = false);
+	Mat4x4(const bool _isIdentityMatrix = false);
 
 	Mat4x4(const double _m[16]);
 
 	Mat4x4(const Mat4x4& _m);
 
-	unsigned char getIndex(const int& _row, const int& _col) const;
+	unsigned char getIndex(const unsigned char _row, const unsigned char _col) const;
 
 	Mat4x4 operator*(const Mat4x4& _m) const;
 
-	static Mat4x4 getRotationXMatrix(const double& _rotX);
-	static Mat4x4 getRotationYMatrix(const double& _rotY);
-	static Mat4x4 getRotationZMatrix(const double& _rotZ);
-	static Mat4x4 getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const double& _fov, const double& _zNear, const double& _zFar);
+	static Mat4x4 getRotationXMatrix(const double _rotX);
+	static Mat4x4 getRotationYMatrix(const double _rotY);
+	static Mat4x4 getRotationZMatrix(const double _rotZ);
+	static Mat4x4 getPerspectiveMatrix(const unsigned int _width, const unsigned int _height, const double _fov, const double _zNear, const double _zFar);
 };
 
 // Mat4x4 Functions

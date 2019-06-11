@@ -8,7 +8,7 @@ inline void Renderer::resetDepthBuffer() {
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
 
-unsigned int Renderer::getIndexInColorBuffer(const unsigned int& _x, const unsigned int& _y) {
+unsigned int Renderer::getIndexInColorBuffer(const uint16_t _x, const uint16_t _y) {
 	return renderImages[this->indexImageBeingRendered]->getIndex(_x, _y);
 }
 
@@ -18,7 +18,7 @@ void Renderer::calculatePerspectiveMatrix() {
 
 // Public Methods
 
-Renderer::Renderer(const unsigned int& _width, const unsigned int& _height, const Color& _backgroundColor, const unsigned int& _fov, const double& _zNear, const double& _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
+Renderer::Renderer(const uint16_t _width, const uint16_t _height, const Color& _backgroundColor, const uint8_t _fov, const double _zNear, const double _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
 	std::experimental::filesystem::create_directory("./out");
 	std::experimental::filesystem::create_directory("./out/frames");
 
@@ -34,53 +34,53 @@ Renderer::~Renderer() {
 unsigned int Renderer::getWidth()  const { return this->width; }
 unsigned int Renderer::getHeight() const { return this->height; }
 
-unsigned int Renderer::addLight(const Light& _light)                               { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
-Light        Renderer::copyLight(const unsigned int& _lightId) const               { return this->lights[_lightId]; }
-Light&       Renderer::getLightRef(const unsigned int& _lightId)                   { return this->lights[_lightId]; }
-void         Renderer::setLight(const unsigned int& _lightId, const Light& _light) { this->lights[_lightId] = _light; }
+unsigned int Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
+Light        Renderer::copyLight(const uint16_t _lightId) const               { return this->lights[_lightId]; }
+Light&       Renderer::getLightRef(const uint16_t _lightId)                   { return this->lights[_lightId]; }
+void         Renderer::setLight(const uint16_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
 
-unsigned int Renderer::addModel(const Model & _model)                              { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
-Model        Renderer::copyModel(const unsigned int& _modelId) const               { return this->models[_modelId]; }
-Model&       Renderer::getModelRef(const unsigned int& _modelId)                   { return this->models[_modelId]; }
-void         Renderer::setModel(const unsigned int& _modelId, const Model _model)  { this->models[_modelId] = _model; }
+unsigned int Renderer::addModel(const Model& _model)                          { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
+Model        Renderer::copyModel(const uint16_t _modelId) const               { return this->models[_modelId]; }
+Model&       Renderer::getModelRef(const uint16_t _modelId)                   { return this->models[_modelId]; }
+void         Renderer::setModel(const uint16_t _modelId, const Model _model)  { this->models[_modelId] = _model; }
 
-void Renderer::drawPointNoVerif(const unsigned int& _x, const unsigned int& _y, const Color & _color) {
+void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color& _color) {
 	renderImages[this->indexImageBeingRendered]->colorBuffer[getIndexInColorBuffer(_x, _y)] = _color;
 }
 
-void Renderer::drawPoint(const unsigned int& _x, const unsigned int& _y, const Color & _color) {
+void Renderer::drawPoint(const uint16_t _x, const uint16_t _y, const Color& _color) {
 	if (_x > 0 && _x < this->width && _y > 0 && _y < this->height) {
 		drawPointNoVerif(_x, _y, _color);
 	}
 }
 
-void Renderer::drawRectangleNoVerif(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color) {
-	for (unsigned int y = _y; y < _y + _h; y++) {
+void Renderer::drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color& _color) {
+	for (uint16_t y = _y; y < _y + _h; y++) {
 		unsigned int baseIndex = y * this->width;
 
-		for (unsigned int x = _x; x < _x + _w; x++) {
+		for (uint16_t x = _x; x < _x + _w; x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _color;
 		}
 	}
 }
 
-void Renderer::drawRectangle(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color) {
-	for (unsigned int y = _y; y < ((_y + _h > this->height - 1) ? this->height : (_y + _h)); y++) {
+void Renderer::drawRectangle(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color& _color) {
+	for (uint16_t y = _y; y < ((_y + _h > this->height - 1) ? this->height : (_y + _h)); y++) {
 		unsigned int baseIndex = y * this->width;
 
-		for (unsigned int x = _x; x < ((_x + _w > this->width - 1) ? this->width : (_x + _w)); x++) {
+		for (uint16_t x = _x; x < ((_x + _w > this->width - 1) ? this->width : (_x + _w)); x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _color;
 		}
 	}
 }
 
-void Renderer::drawImageNoVerif(const unsigned int& _x, const unsigned int& _y, const Image& _image) {
-	unsigned int sampleX = 0, sampleY = 0;
+void Renderer::drawImageNoVerif(const uint16_t _x, const uint16_t _y, const Image& _image) {
+	uint16_t sampleX = 0, sampleY = 0;
 	
-	for (unsigned int y = _y; y < _y + _image.getHeight(); y++) {
-		unsigned int baseIndex = y * this->width;
+	for (uint16_t y = _y; y < _y + _image.getHeight(); y++) {
+		uint32_t baseIndex = y * this->width;
 
-		for (unsigned int x = _x; x < _x + _image.getWidth(); x++) {
+		for (uint16_t x = _x; x < _x + _image.getWidth(); x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _image.sample(sampleX, sampleY);
 			sampleX++;
 		}
@@ -90,16 +90,16 @@ void Renderer::drawImageNoVerif(const unsigned int& _x, const unsigned int& _y, 
 	}
 }
 
-void Renderer::drawImage(const unsigned int& _x, const unsigned int& _y, const Image& _image) {
-	unsigned int xEnd = (_x + _image.getWidth()  > this->getWidth()  - 1) ? (this->width)  : (_x + _image.getWidth() );
-	unsigned int yEnd = (_y + _image.getHeight() > this->getHeight() - 1) ? (this->height) : (_y + _image.getHeight());
+void Renderer::drawImage(const uint16_t _x, const uint16_t _y, const Image& _image) {
+	uint16_t xEnd = (_x + _image.getWidth()  > this->getWidth()  - 1) ? (this->width)  : (_x + _image.getWidth() );
+	uint16_t yEnd = (_y + _image.getHeight() > this->getHeight() - 1) ? (this->height) : (_y + _image.getHeight());
 
-	unsigned int sampleX = 0, sampleY = 0;
+	uint16_t sampleX = 0, sampleY = 0;
 
-	for (unsigned int y = _y; y < yEnd; y++) {
-		unsigned int baseIndex = y * this->width;
+	for (uint16_t y = _y; y < yEnd; y++) {
+		uint32_t baseIndex = y * this->width;
 
-		for (unsigned int x = _x; x < xEnd; x++) {
+		for (uint16_t x = _x; x < xEnd; x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _image.sample(sampleX, sampleY);
 			sampleX++;
 		}
@@ -173,11 +173,11 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	if (t0.y > t2.y) std::swap(t0, t2);
 	if (t1.y > t2.y) std::swap(t1, t2);
 
-	unsigned int total_height = static_cast<unsigned int>(t2.y - t0.y);
+	uint16_t total_height = static_cast<uint16_t>(t2.y - t0.y);
 
 	// Render Triangle With The 3 Triangulated :D colors
-	for (unsigned int i = 0; i < static_cast<unsigned int>(total_height); i++) {
-		int y = static_cast<unsigned int>(t0.y + i);
+	for (uint16_t i = 0; i < total_height; i++) {
+		uint16_t y = static_cast<uint16_t>(t0.y + i);
 
 		if (y < 0 || y > this->height - 1) continue;
 
@@ -194,7 +194,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 
 		// Limit X Between (0 and width - 1) in the loop to avoid trying to set a pixel out of the screen buffer and to maximize performance
 		for (int j = static_cast<int>((A.x < 0) ? 0 : A.x); j <= static_cast<int>((B.x > this->width - 2) ? this->width - 2 : B.x); j++) {
-			unsigned int x = j;
+			uint16_t x = j;
 
 			// Continue Barycentric Interpolation
 			// To calculate the w value (depth of the pixel to dicide if we should render it or not)
@@ -246,7 +246,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	}
 }
 
-void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
+void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 	std::thread writeThreads[RENDERS_AND_WRITES_PER_CYCLE];
 
 	// Allocate images
@@ -314,10 +314,12 @@ void Renderer::renderAndWriteFrames(const unsigned int& _nFrames) {
 			// Reset Images To Black
 			std::fill_n(this->renderImages[i]->colorBuffer, this->width * this->height, this->backgroundColor);
 		}
+
+		std::this_thread::yield();
 	}
 }
 
-void Renderer::writeVideo(const unsigned int& _nFrames, const unsigned int& _fps) {
+void Renderer::writeVideo(const uint32_t _nFrames, const uint16_t _fps) {
 	std::experimental::filesystem::create_directory("./out/video");
 
 	Video video(true);

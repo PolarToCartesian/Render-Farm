@@ -3,7 +3,7 @@
 // Model Struct
 
 // Inspired By https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part4.cpp
-Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool& _randomColors, const Color& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation) {	
+Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool _randomColors, const Color& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation) {	
 	File file(_filePath, FILE_READ, false);
 
 	if (file.isOpen()) {
@@ -11,7 +11,7 @@ Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool& _ra
 
 		std::vector<Vec3> vertices;
 
-		file.readLineByLine([&](const std::string& _line, const unsigned int& _lineNumber) {
+		file.readLineByLine([&](const std::string& _line, const unsigned int _lineNumber) {
 			std::istringstream lineStream(_line);
 
 			lineStream >> dataType;
@@ -54,7 +54,7 @@ Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool& _ra
 	file.close();
 }
 
-Model::Model(const Triangle* _triangles, const unsigned int& _numTriangles) {
+Model::Model(const Triangle* _triangles, const uint64_t _numTriangles) {
 	triangles.reserve(_numTriangles);
 
 	for (unsigned int i = 0; i < _numTriangles; i++) { triangles.push_back(_triangles[i]); }

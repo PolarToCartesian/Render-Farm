@@ -9,7 +9,7 @@ namespace LOG {
 	}
 
 	template<typename T>
-	void print(const T& _message, const LOG_TYPE& _type = LOG_TYPE::normal, const bool& _bypassMutex = false) {
+	void print(const T& _message, const LOG_TYPE& _type = LOG_TYPE::normal, const bool _bypassMutex = false) {
 			
 		if (!_bypassMutex) {
 			// We use a mutex so that if multiple threads call print, the message doesn't get messed up!

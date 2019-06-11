@@ -2,11 +2,11 @@
 
 // Image Class
 
-Image::Image(const std::string& _filename, const bool& _doLog) {
+Image::Image(const std::string& _filename, const bool _doLog) {
 	File file(_filename, FILE_READ, _doLog);
 
 	if (file.isOpen()) {
-		file.readLineByLine([this, _filename, _doLog](const std::string& _line, const unsigned int& _lineNumber) {
+		file.readLineByLine([this, _filename, _doLog](const std::string& _line, const unsigned int _lineNumber) {
 			std::istringstream lineStream(_line);
 
 			switch (_lineNumber) {
@@ -51,25 +51,25 @@ Image::Image(const std::string& _filename, const bool& _doLog) {
 	}
 }
 
-Image::Image(const unsigned int& _imageWidth, const unsigned int& _imageHeight, const Color& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
+Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
 	this->nPixels = this->imageWidth * this->imageHeight;
 
 	this->colorBuffer = new Color[this->nPixels];
 	std::fill_n(this->colorBuffer, this->nPixels, _backgroundColor);
 }
 
-unsigned int Image::getIndex(const unsigned int& _x, const unsigned int& _y) const {
+uint32_t Image::getIndex(const uint16_t _x, const uint16_t _y) const {
 	return _y * this->imageWidth + _x;
 }
 
 unsigned int Image::getWidth()  const { return this->imageWidth; }
 unsigned int Image::getHeight() const { return this->imageHeight; }
 
-void Image::setColor(const unsigned int& _x, const unsigned int& _y, const Color& _c) {
+void Image::setColor(const uint16_t _x, const uint16_t _y, const Color& _c) {
 	this->colorBuffer[this->getIndex(_x, _y)] = _c;
 }
 
-Color Image::sample(const unsigned int& _x, const unsigned int& _y) const {
+Color Image::sample(const uint16_t _x, const uint16_t _y) const {
 	return this->colorBuffer[this->getIndex(_x, _y)];
 }
 

@@ -9,7 +9,7 @@ Triangle::Triangle(const Vec3 _vertices[3], const Color _colors[3]) {
 	std::memcpy(colors, _colors, 3 * sizeof(Color));
 }
 
-Triangle::Triangle(const Vec3 _vertices[3], const Color _colors[3], const Vec3 _rotationMidPoint, const Vec3 _rotation) {
+Triangle::Triangle(const Vec3 _vertices[3], const Color _colors[3], const Vec3& _rotationMidPoint, const Vec3& _rotation) {
 	std::memcpy(this->vertices, _vertices, 3 * sizeof(Vec3));
 	std::memcpy(this->colors, _colors, 3 * sizeof(Color));
 
@@ -18,7 +18,7 @@ Triangle::Triangle(const Vec3 _vertices[3], const Color _colors[3], const Vec3 _
 }
 
 void Triangle::applyFunctionToEachVertex(const std::function<void(Vec3&)>& _function) {
-	for (unsigned int i = 0; i < 3; i++) { _function(this->vertices[i]); }
+	for (unsigned char i = 0; i < 3; i++) { _function(this->vertices[i]); }
 }
 
 void Triangle::translate(const Vec3& _deltaPosition) {

@@ -10,7 +10,7 @@ class App : Renderer {
 			this->writeVideo(15 * 20, 15);
 		}
 
-		void render(const bool& _doRenderOver3D) override {
+		void render(const bool _doRenderOver3D) override {
 			this->drawPointNoVerif(10, 10, Color(255, 0, 0));
 		}
 

@@ -1,12 +1,12 @@
 #include "Video.h"
 
-Video::Video(const bool& _doLogSaving) : doLogSaving(_doLogSaving) {}
+Video::Video(const bool _doLogSaving) : doLogSaving(_doLogSaving) {}
 
 void Video::addFrame(const std::string& _filename) {
 	this->frames.push_back(_filename);
 }
 
-void Video::save(const std::string& _filename, const unsigned int& _fps) {
+void Video::save(const std::string& _filename, const uint16_t _fps) {
 	assert(this->frames.size() > 0);
 	assert(_fps > 0);
 

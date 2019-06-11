@@ -2,80 +2,80 @@
 
 // Vector Object
 
-void Vec3::add(const double& _x, const double& _y, const double& _z, const double& _w, const bool& _useW) {
+void Vec3::add(const double _x, const double _y, const double _z, const double _w, const bool _useW) {
 	this->x += _x; this->y += _y; this->z += _z;
 
 	if (_useW) this->w += _w;
 }
 
-void Vec3::add(const double& _x, const double& _y, const double& _z) { this->x += _x; this->y += _y; this->z += _z; }
-void Vec3::add(const double& _x, const double& _y) { this->x += _x; this->y += _y; }
-void Vec3::add(const Vec3& _v, const bool& _useW) { this->add(_v.x, _v.y, _v.z, _v.w, _useW); }
-void Vec3::add(const double& _n, const bool& _useW) { this->add(_n, _n, _n, _n, _useW); }
+void Vec3::add(const double _x, const double _y, const double _z) { this->x += _x; this->y += _y; this->z += _z; }
+void Vec3::add(const double _x, const double _y) { this->x += _x; this->y += _y; }
+void Vec3::add(const Vec3& _v, const bool _useW) { this->add(_v.x, _v.y, _v.z, _v.w, _useW); }
+void Vec3::add(const double _n, const bool _useW) { this->add(_n, _n, _n, _n, _useW); }
 void Vec3::operator+=(const Vec3& _a) { this->add(_a); }
-void Vec3::operator+=(const double& _a) { this->add(_a); }
+void Vec3::operator+=(const double _a) { this->add(_a); }
 Vec3 Vec3::operator+(const Vec3& _a) const { Vec3 result = this->copy(); result.add(_a); return result; }
-Vec3 Vec3::operator+(const double& _a)   const { Vec3 result = this->copy(); result.add(_a); return result; }
+Vec3 Vec3::operator+(const double _a)   const { Vec3 result = this->copy(); result.add(_a); return result; }
 
 
 
-void Vec3::sub(const double& _x, const double& _y, const double& _z, const double& _w, const bool& _useW) {
+void Vec3::sub(const double _x, const double _y, const double _z, const double _w, const bool _useW) {
 	this->x -= _x; this->y -= _y; this->z -= _z;
 
 	if (_useW) this->w -= _w;
 }
 
-void Vec3::sub(const double& _x, const double& _y, const double& _z) { this->x -= _x; this->y -= _y; this->z -= _z; }
-void Vec3::sub(const double& _x, const double& _y) { this->x -= _x; this->y -= _y; }
-void Vec3::sub(const Vec3& _v, const bool& _useW) { this->sub(_v.x, _v.y, _v.z, _v.w, _useW); }
-void Vec3::sub(const double& _n, const bool& _useW) { this->sub(_n, _n, _n, _n, _useW); }
+void Vec3::sub(const double _x, const double _y, const double _z) { this->x -= _x; this->y -= _y; this->z -= _z; }
+void Vec3::sub(const double _x, const double _y) { this->x -= _x; this->y -= _y; }
+void Vec3::sub(const Vec3& _v, const bool _useW) { this->sub(_v.x, _v.y, _v.z, _v.w, _useW); }
+void Vec3::sub(const double _n, const bool _useW) { this->sub(_n, _n, _n, _n, _useW); }
 void Vec3::operator-=(const Vec3& _a) { this->sub(_a); }
-void Vec3::operator-=(const double& _a) { this->sub(_a); }
+void Vec3::operator-=(const double _a) { this->sub(_a); }
 Vec3 Vec3::operator-(const Vec3& _a) const { Vec3 result = this->copy(); result.sub(_a); return result; }
-Vec3 Vec3::operator-(const double& _a)   const { Vec3 result = this->copy(); result.sub(_a); return result; }
+Vec3 Vec3::operator-(const double _a)   const { Vec3 result = this->copy(); result.sub(_a); return result; }
 
 
-void Vec3::mul(const double& _x, const double& _y, const double& _z, const double& _w, const bool& _useW) {
+void Vec3::mul(const double _x, const double _y, const double _z, const double _w, const bool _useW) {
 	this->x *= _x; this->y *= _y; this->z *= _z;
 
 	if (_useW) this->w *= _w;
 }
 
-void Vec3::mul(const double& _x, const double& _y, const double& _z) { this->x *= _x; this->y *= _y; this->z *= _z; }
-void Vec3::mul(const double& _x, const double& _y) { this->x *= _x; this->y *= _y; }
-void Vec3::mul(const Vec3& _v, const bool& _useW) { this->mul(_v.x, _v.y, _v.z, _v.w, _useW); }
-void Vec3::mul(const double& _n, const bool& _useW) { this->mul(_n, _n, _n, _n, _useW); }
+void Vec3::mul(const double _x, const double _y, const double _z) { this->x *= _x; this->y *= _y; this->z *= _z; }
+void Vec3::mul(const double _x, const double _y) { this->x *= _x; this->y *= _y; }
+void Vec3::mul(const Vec3& _v, const bool _useW) { this->mul(_v.x, _v.y, _v.z, _v.w, _useW); }
+void Vec3::mul(const double _n, const bool _useW) { this->mul(_n, _n, _n, _n, _useW); }
 void Vec3::operator*=(const Vec3& _a) { this->mul(_a); }
-void Vec3::operator*=(const double& _a) { this->mul(_a); }
+void Vec3::operator*=(const double _a) { this->mul(_a); }
 Vec3 Vec3::operator*(const Vec3& _a) const { Vec3 result = this->copy(); result.mul(_a); return result; }
-Vec3 Vec3::operator*(const double& _a)   const { Vec3 result = this->copy(); result.mul(_a); return result; }
+Vec3 Vec3::operator*(const double _a)   const { Vec3 result = this->copy(); result.mul(_a); return result; }
 
 
 
-void Vec3::div(const double& _x, const double& _y, const double& _z, const double& _w, const bool& _useW) {
+void Vec3::div(const double _x, const double _y, const double _z, const double _w, const bool _useW) {
 	this->x /= _x; this->y /= _y; this->z /= _z;
 
 	if (_useW) this->w /= _w;
 }
 
-void Vec3::div(const double& _x, const double& _y, const double& _z) { this->x /= _x; this->y /= _y; this->z /= _z; }
-void Vec3::div(const double& _x, const double& _y) { this->x /= _x; this->y /= _y; }
-void Vec3::div(const Vec3& _v, const bool& _useW) { this->div(_v.x, _v.y, _v.z, _v.w, _useW); }
-void Vec3::div(const double& _n, const bool& _useW) { this->div(_n, _n, _n, _n, _useW); }
+void Vec3::div(const double _x, const double _y, const double _z) { this->x /= _x; this->y /= _y; this->z /= _z; }
+void Vec3::div(const double _x, const double _y) { this->x /= _x; this->y /= _y; }
+void Vec3::div(const Vec3& _v, const bool _useW) { this->div(_v.x, _v.y, _v.z, _v.w, _useW); }
+void Vec3::div(const double _n, const bool _useW) { this->div(_n, _n, _n, _n, _useW); }
 void Vec3::operator/=(const Vec3& _a) { this->div(_a); }
-void Vec3::operator/=(const double& _a) { this->div(_a); }
+void Vec3::operator/=(const double _a) { this->div(_a); }
 Vec3 Vec3::operator/(const Vec3& _a) const { Vec3 result = this->copy(); result.div(_a); return result; }
-Vec3 Vec3::operator/(const double& _a)   const { Vec3 result = this->copy(); result.div(_a); return result; }
+Vec3 Vec3::operator/(const double _a)   const { Vec3 result = this->copy(); result.div(_a); return result; }
 
 
 void Vec3::normalize() { this->div(this->getLength()); }
-void Vec3::setLength(const double& _l) { this->normalize(); this->mul(_l); }
+void Vec3::setLength(const double _l) { this->normalize(); this->mul(_l); }
 
 Vec3 Vec3::copy() const { return Vec3(this->x, this->y, this->z, this->w); }
 
 double Vec3::getLength() const { return std::sqrt(std::pow(this->x, 2) + std::pow(this->y, 2) + std::pow(this->z, 2)); }
 
-void Vec3::constrain(const double& _min, const double& _max) {
+void Vec3::constrain(const double _min, const double _max) {
 	if (this->x < _min) { this->x = _min; }
 	else if (this->x > _max) { this->x = _max; }
 
@@ -86,7 +86,7 @@ void Vec3::constrain(const double& _min, const double& _max) {
 	else if (this->z > _max) { this->z = _max; }
 }
 
-void Vec3::constrainW(const double& _min, const double& _max) {
+void Vec3::constrainW(const double _min, const double _max) {
 	this->constrain(_min, _max);
 
 	if (this->w < _min) { this->w = _min; }

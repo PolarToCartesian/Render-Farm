@@ -20,11 +20,11 @@ Resources :
 
 class Renderer {
 	private:
-		unsigned int width, height;
+		uint16_t width, height;
 
 		Mat4x4 perspectiveMatrix;
 
-		unsigned int fov;
+		uint8_t fov;
 		double zNear, zFar;
 
 		unsigned int indexImageBeingRendered = 0;
@@ -44,46 +44,48 @@ class Renderer {
 	private:
 		void resetDepthBuffer();
 
-		unsigned int getIndexInColorBuffer(const unsigned int& _x, const unsigned int& _y);
+		uint32_t getIndexInColorBuffer(const uint16_t _x, const uint16_t _y);
 
 		void calculatePerspectiveMatrix();
 
 	public:
-		Renderer(const unsigned int& _width, const unsigned int& _height, const Color& _backgroundColor = Color(51), const unsigned int& _fov = 90, const double& _zNear = 0.1, const double& _zFar = 1000);
+		Renderer(const uint16_t _width, const uint16_t _height, const Color& _backgroundColor = Color(51), const uint8_t _fov = 90, const double _zNear = 0.1, const double _zFar = 1000);
 
 		~Renderer();
 
 		virtual void update() = 0;
-		virtual void render(const bool& _doRenderOver3D) = 0;
+		virtual void render(const bool _doRenderOver3D) = 0;
 
 		unsigned int getWidth()  const;
 		unsigned int getHeight() const;
 
-		unsigned int addLight(const Light & _light);
-		Light        copyLight(const unsigned int& _lightId) const;
-		Light&       getLightRef(const unsigned int& _lightId);
-		void         setLight(const unsigned int& _lightId, const Light& _light);
+		unsigned int addLight(const Light& _light);
+		Light        copyLight(const uint16_t _lightId) const;
+		Light&       getLightRef(const uint16_t _lightId);
+		void         setLight(const uint16_t _lightId, const Light& _light);
 
-		unsigned int addModel(const Model & _model);
-		Model        copyModel(const unsigned int& _modelId) const;
-		Model&       getModelRef(const unsigned int& _modelId);
-		void         setModel(const unsigned int& _modelId, const Model _model);
+		unsigned int addModel(const Model& _model);
+		Model        copyModel(const uint16_t _modelId) const;
+		Model&       getModelRef(const uint16_t _modelId);
+		void         setModel(const uint16_t _modelId, const Model _model);
 
-		void drawPointNoVerif(const unsigned int& _x, const unsigned int& _y, const Color & _color);
+		void drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color & _color);
 
-		void drawPoint(const unsigned int& _x, const unsigned int& _y, const Color & _color);
+		void drawPoint(const uint16_t _x, const uint16_t _y, const Color & _color);
 
-		void drawRectangleNoVerif(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color);
+		void drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color& _color);
 
-		void drawRectangle(const unsigned int& _x, const unsigned int& _y, const unsigned int& _w, const unsigned int& _h, const Color & _color);
+		void drawRectangle(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color & _color);
 
-		void drawImageNoVerif(const unsigned int& _x, const unsigned int& _y, const Image& _image);
+		void drawImageNoVerif(const uint16_t _x, const uint16_t _y, const Image& _image);
 
-		void drawImage(const unsigned int& _x, const unsigned int& _y, const Image& _image);
+		void drawImage(const uint16_t _x, const uint16_t _y, const Image& _image);
 
 		void drawTriangle3D(const Triangle& _tr);
 
-		void renderAndWriteFrames(const unsigned int& _nFrames);
+		//void drawSphere(const Vec3& position, const unsigned int radius, const Color& _color);
 
-		void writeVideo(const unsigned int& _nFrames, const unsigned int& _fps = 30);
+		void renderAndWriteFrames(const uint32_t _nFrames);
+
+		void writeVideo(const uint32_t _nFrames, const uint16_t _fps = 30);
 };

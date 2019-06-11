@@ -9,25 +9,25 @@
 
 class Image {
 	private:
-		unsigned int imageWidth = 0, imageHeight = 0;
+		uint16_t imageWidth = 0, imageHeight = 0;
 
-		unsigned int nPixels = 0;
+		uint32_t nPixels = 0;
 		
 	public:
 		Color * colorBuffer = nullptr;
 
 	public:
-		Image(const std::string& _filename, const bool& _doLog = false);
-		Image(const unsigned int& _imageWidth, const unsigned int& _imageHeight, const Color& _backgroundColor = Color(0));
+		Image(const std::string& _filename, const bool _doLog = false);
+		Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color& _backgroundColor = Color(0));
 
-		unsigned int getIndex(const unsigned int& _x, const unsigned int& _y) const;
+		uint32_t getIndex(const uint16_t _x, const uint16_t _y) const;
 
 		unsigned int getWidth()  const;
 		unsigned int getHeight() const;
 
-		void setColor(const unsigned int& _x, const unsigned int& _y, const Color& _c);
+		void setColor(const uint16_t _x, const uint16_t _y, const Color& _c);
 
-		Color sample(const unsigned int& _x, const unsigned int& _y) const;
+		Color sample(const uint16_t _x, const uint16_t _y) const;
 
 		void writeToDisk(const std::string& _fileName) const;
 

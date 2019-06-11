@@ -2,7 +2,7 @@
 
 // Matrix Struct
 
-Mat4x4::Mat4x4(const bool& _isIdentityMatrix) {
+Mat4x4::Mat4x4(const bool _isIdentityMatrix) {
 	if (_isIdentityMatrix) {
 		for (unsigned char i = 1; i < 17; i += 5) {
 			this->m[i - 1] = 1;
@@ -14,7 +14,7 @@ Mat4x4::Mat4x4(const double _m[16]) { std::memcpy(this->m, _m, 16 * sizeof(doubl
 
 Mat4x4::Mat4x4(const Mat4x4& _m) { Mat4x4(_m.m); }
 
-unsigned char Mat4x4::getIndex(const int& _row, const int& _col) const { return _row * 4 + _col; }
+unsigned char Mat4x4::getIndex(const unsigned char _row, const unsigned char _col) const { return _row * 4 + _col; }
 
 Mat4x4 Mat4x4::operator*(const Mat4x4& _m) const {
 	Mat4x4 result(false);
@@ -30,7 +30,7 @@ Mat4x4 Mat4x4::operator*(const Mat4x4& _m) const {
 	return result;
 }
 
-Mat4x4 Mat4x4::getRotationXMatrix(const double& _rotX) {
+Mat4x4 Mat4x4::getRotationXMatrix(const double _rotX) {
 	const double sinX = std::sin(_rotX);
 	const double cosX = std::cos(_rotX);
 
@@ -44,7 +44,7 @@ Mat4x4 Mat4x4::getRotationXMatrix(const double& _rotX) {
 	return Mat4x4(m);
 }
 
-Mat4x4 Mat4x4::getRotationYMatrix(const double& _rotY) {
+Mat4x4 Mat4x4::getRotationYMatrix(const double _rotY) {
 	const double sinY = std::sin(_rotY);
 	const double cosY = std::cos(_rotY);
 
@@ -58,7 +58,7 @@ Mat4x4 Mat4x4::getRotationYMatrix(const double& _rotY) {
 	return Mat4x4(m);
 }
 
-Mat4x4 Mat4x4::getRotationZMatrix(const double& _rotZ) {
+Mat4x4 Mat4x4::getRotationZMatrix(const double _rotZ) {
 	const double sinZ = std::sin(_rotZ);
 	const double cosZ = std::cos(_rotZ);
 
@@ -72,7 +72,7 @@ Mat4x4 Mat4x4::getRotationZMatrix(const double& _rotZ) {
 	return Mat4x4(m);
 }
 
-Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int& _width, const unsigned int& _height, const double& _fov, const double& _zNear, const double& _zFar) {
+Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned int _height, const double _fov, const double _zNear, const double _zFar) {
 	double aspectRatio = _height / static_cast<double>(_width);
 	double a = -std::abs(1.f / std::tan(MATH::degToRad(_fov / 2.f)));
 

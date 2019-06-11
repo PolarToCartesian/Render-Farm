@@ -53,5 +53,9 @@ The executable will be located in the main Render-Farm/ directory.
 + [x] Create An Image Renderer
 + [x] Static Member Functions In Classes
 + [x] Fixing The First Image Being Black Bug
++ [x] Use Clearer Types
++ [x] Remove Passing Simple Values By Reference
++ [ ] 2D Text Rendering
++ [ ] Ray Marching
 + [ ] Camera Rotation
 + [ ] PNG or JPEG instead of PPM

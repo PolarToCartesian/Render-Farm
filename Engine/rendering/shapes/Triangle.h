@@ -12,7 +12,7 @@ struct Triangle {
 
 	Triangle();
 	Triangle(const Vec3 _vertices[3], const Color _colors[3]);
-	Triangle(const Vec3 _vertices[3], const Color _colors[3], const Vec3 _rotationMidPoint = Vec3(), const Vec3 _rotation = Vec3());
+	Triangle(const Vec3 _vertices[3], const Color _colors[3], const Vec3& = Vec3(), const Vec3& _rotation = Vec3());
 
 	void applyFunctionToEachVertex(const std::function<void(Vec3&)>& _function);
 
