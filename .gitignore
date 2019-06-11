@@ -1,3 +1,4 @@
+deleteOutput.bat
 *.vcxproj
 *.filters
 .vscode/
