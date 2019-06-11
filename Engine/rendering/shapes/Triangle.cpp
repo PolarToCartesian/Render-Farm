@@ -2,11 +2,15 @@
 
 // Triangle Class
 
-Triangle::Triangle() {  }
+Triangle::Triangle() {}
 
 Triangle::Triangle(const Vec3 _vertices[3], const Color _colors[3]) {
 	std::memcpy(vertices, _vertices, 3 * sizeof(Vec3));
-	std::memcpy(colors, _colors, 3 * sizeof(Color));
+	std::memcpy(colors,   _colors,   3 * sizeof(Color));
+
+	for (uint8_t i = 0; i < 3; i++) this->rotationMidPoint += _vertices[i];
+
+	this->rotationMidPoint /= 2;
 }
 
 Triangle::Triangle(const Vec3 _vertices[3], const Color _colors[3], const Vec3& _rotationMidPoint, const Vec3& _rotation) {
@@ -23,6 +27,7 @@ void Triangle::applyFunctionToEachVertex(const std::function<void(Vec3&)>& _func
 
 void Triangle::translate(const Vec3& _deltaPosition) {
 	this->applyFunctionToEachVertex([&_deltaPosition](Vec3& _vertex) { _vertex += _deltaPosition; });
+	this->rotationMidPoint += _deltaPosition;
 }
 
 Vec3 Triangle::getSurfaceNormal(const Vec3 _vertices[3]) {

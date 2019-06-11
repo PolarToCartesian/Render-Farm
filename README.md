@@ -46,6 +46,7 @@ The executable will be located in the main Render-Farm/ directory.
 + [Surface Normal Calculation](https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal)
 + [General 3D Matrix Calculations](https://www.youtube.com/playlist?list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP)
 + [2D Triangle Renderer](https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling)
++ [Ray Marcing](http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions)
 
 ## Task List
 
@@ -55,7 +56,9 @@ The executable will be located in the main Render-Farm/ directory.
 + [x] Fixing The First Image Being Black Bug
 + [x] Use Clearer Types
 + [x] Remove Passing Simple Values By Reference
++ [x] Camera Rotation
 + [ ] 2D Text Rendering
 + [ ] Ray Marching
-+ [ ] Camera Rotation
-+ [ ] PNG or JPEG instead of PPM
++ [ ] PNG or JPEG instead of PPM*
+
+*Low priority

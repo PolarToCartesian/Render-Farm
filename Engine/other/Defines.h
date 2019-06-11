@@ -8,7 +8,7 @@
 // Putting it higher doesn't always make the rendering/writing faster and can cause errors
 // Putting it lower  can also make it very slow
 // You can and should try different values to see what suites you the best depending on your hardware
-constexpr unsigned int RENDERS_AND_WRITES_PER_CYCLE = 5;
+constexpr unsigned int RENDERS_AND_WRITES_PER_CYCLE = 40;
 
 /// Do not modify past this comment
 

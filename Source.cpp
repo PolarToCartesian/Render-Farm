@@ -6,8 +6,8 @@ class App : Renderer {
 			this->addModel(Model("models/armadillo.txt", Vec3(), false));
 			this->addLight(Light(Vec3(0, 0,-5), Color(255, 255, 255), 5));
 			this->camera.position.z = -2.5f;
-			this->renderAndWriteFrames(15 * 20);
-			this->writeVideo(15 * 20, 15);
+			this->renderAndWriteFrames(15 * 5);
+			this->writeVideo(15 * 5, 15);
 		}
 
 		void render(const bool _doRenderOver3D) override {
@@ -16,6 +16,9 @@ class App : Renderer {
 
 		void update() override {
 			this->models[0].rotate(Vec3(0.05f, 0.05f, 0.05f));
+
+			this->camera.rotation.x += 0.025f;
+			this->camera.rotation.y += 0.025f;
 
 			this->getLightRef(0).intensity -= 0.005f;
 		}

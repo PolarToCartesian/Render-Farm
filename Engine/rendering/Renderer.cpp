@@ -114,18 +114,32 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	Vec3 rotatedVertices[3] = { 0 };
 	std::memcpy(rotatedVertices, _tr.vertices, 3 * sizeof(Vec3));
 
+	const Mat4x4 cameraRotationXMatrix = Mat4x4::getRotationXMatrix(-this->camera.rotation.x);
+	const Mat4x4 cameraRotationYMatrix = Mat4x4::getRotationYMatrix(-this->camera.rotation.y);
+	const Mat4x4 cameraRotationZMatrix = Mat4x4::getRotationZMatrix(-this->camera.rotation.z);
+
+	const Mat4x4 triangleRotationXMatrix = Mat4x4::getRotationXMatrix(_tr.rotation.x);
+	const Mat4x4 triangleRotationYMatrix = Mat4x4::getRotationYMatrix(_tr.rotation.y);
+	const Mat4x4 triangleRotationZMatrix = Mat4x4::getRotationZMatrix(_tr.rotation.z);
+
 	// For Every Vertex
 	for (unsigned char v = 0; v < 3; v++) {
 		// Rotate Triangle Around Point
 		rotatedVertices[v] -= _tr.rotationMidPoint;
 
-		// Rotate
-		rotatedVertices[v] *= Mat4x4::getRotationXMatrix(_tr.rotation.x);
-		rotatedVertices[v] *= Mat4x4::getRotationYMatrix(_tr.rotation.y);
-		rotatedVertices[v] *= Mat4x4::getRotationZMatrix(_tr.rotation.z);
+		// Rotate Triangle Around Point
+		rotatedVertices[v] *= triangleRotationXMatrix;
+		rotatedVertices[v] *= triangleRotationYMatrix;
+		rotatedVertices[v] *= triangleRotationZMatrix;
 
 		// Rotate Triangle Around Point
 		rotatedVertices[v] += _tr.rotationMidPoint;
+
+		// Apply Camera Rotation
+		rotatedVertices[v] -= this->camera.position;
+		rotatedVertices[v] += this->camera.position + rotatedVertices[v] * (-3) + rotatedVertices[v] * cameraRotationXMatrix 
+																				+ rotatedVertices[v] * cameraRotationYMatrix
+																				+ rotatedVertices[v] * cameraRotationZMatrix;
 	}
 
 	Vec3 triangleSurfaceNormal = Triangle::getSurfaceNormal(rotatedVertices);
