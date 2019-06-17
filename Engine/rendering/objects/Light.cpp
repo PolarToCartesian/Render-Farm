@@ -9,7 +9,7 @@ Light::Light(const Vec3& _position, const Color& _color, const double _intensity
 std::array<Color, 3> EN::LIGHT::applyLightingToVertices(const Vec3* _vertices, const Color* _colorOfVertices, const Vec3& _triangleSurfaceNormal, std::vector<Light>& _lights) {
 	std::array<Color, 3> output{ { Color(0), Color(0), Color(0) } };
 
-	for (unsigned char v = 0; v < 3; v++) {
+	for (uint8_t v = 0; v < 3; v++) {
 		double totalVertexBrightness = 0.f;
 
 		for (unsigned int lightIndex = 0; lightIndex < _lights.size(); lightIndex++) {

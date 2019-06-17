@@ -81,9 +81,9 @@ void Image::writeToDisk(const std::string& _fileName) const {
 
 		// PPM Contents
 		for (unsigned int i = 0; i < this->nPixels; i++) {
-			fileContents += std::to_string(static_cast<unsigned char>(this->colorBuffer[i].r)) + " " + 
-				            std::to_string(static_cast<unsigned char>(this->colorBuffer[i].g)) + " " + 
-				            std::to_string(static_cast<unsigned char>(this->colorBuffer[i].b)) + "\n";
+			fileContents += std::to_string(static_cast<uint8_t>(this->colorBuffer[i].r)) + " " + 
+				            std::to_string(static_cast<uint8_t>(this->colorBuffer[i].g)) + " " + 
+				            std::to_string(static_cast<uint8_t>(this->colorBuffer[i].b)) + "\n";
 		}
 
 		file.writeNoVerif(fileContents);

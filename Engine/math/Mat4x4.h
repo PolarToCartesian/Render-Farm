@@ -13,7 +13,7 @@ struct Mat4x4 {
 
 	Mat4x4(const Mat4x4& _m);
 
-	unsigned char getIndex(const unsigned char _row, const unsigned char _col) const;
+	uint8_t getIndex(const uint8_t _row, const uint8_t _col) const;
 
 	Mat4x4 operator*(const Mat4x4& _m) const;
 

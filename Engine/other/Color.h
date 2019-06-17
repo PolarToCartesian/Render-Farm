@@ -5,14 +5,14 @@
 
 class Color {
 	private:
-		unsigned char getInBounds(const double _v);
+		uint8_t getInBounds(const double _v);
 
 	public:
-		unsigned char r, g, b;
+		uint8_t r, g, b;
 
 		Color();
-		Color(const unsigned char _n);
-		Color(const unsigned char _r, const unsigned char _g, const unsigned char _b);
+		Color(const uint8_t _n);
+		Color(const uint8_t _r, const uint8_t _g, const uint8_t _b);
 
 		void operator+=(const Color& _c);
 		void operator-=(const Color& _c);

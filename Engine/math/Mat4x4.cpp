@@ -4,7 +4,7 @@
 
 Mat4x4::Mat4x4(const bool _isIdentityMatrix) {
 	if (_isIdentityMatrix) {
-		for (unsigned char i = 1; i < 17; i += 5) {
+		for (uint8_t i = 1; i < 17; i += 5) {
 			this->m[i - 1] = 1;
 		}
 	}
@@ -14,14 +14,14 @@ Mat4x4::Mat4x4(const double _m[16]) { std::memcpy(this->m, _m, 16 * sizeof(doubl
 
 Mat4x4::Mat4x4(const Mat4x4& _m) { Mat4x4(_m.m); }
 
-unsigned char Mat4x4::getIndex(const unsigned char _row, const unsigned char _col) const { return _row * 4 + _col; }
+uint8_t Mat4x4::getIndex(const uint8_t _row, const uint8_t _col) const { return _row * 4 + _col; }
 
 Mat4x4 Mat4x4::operator*(const Mat4x4& _m) const {
 	Mat4x4 result(false);
 
-	for (unsigned char row = 0; row < 4; row++) {
-		for (unsigned char col = 0; col < 4; col++) {
-			for (unsigned char k = 0; k < 4; k++) {
+	for (uint8_t row = 0; row < 4; row++) {
+		for (uint8_t col = 0; col < 4; col++) {
+			for (uint8_t k = 0; k < 4; k++) {
 				result.m[getIndex(row, col)] += this->m[getIndex(row, k)] * _m.m[getIndex(k, col)];
 			}
 		}
@@ -93,7 +93,7 @@ Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned in
 bool operator==(const Mat4x4& _a, const Mat4x4& _b) {
 	bool isEqual = true;
 
-	for (unsigned char i = 0; i < 16; i++) {
+	for (uint8_t i = 0; i < 16; i++) {
 		if (_a.m[i] != _b.m[i]) {
 			isEqual = false;
 			break;

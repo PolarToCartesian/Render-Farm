@@ -25,7 +25,7 @@ constexpr const char* FILE_READ_WRITE = "r+";
 
 // Logging
 
-enum class LOG_TYPE : unsigned char {
+enum class LOG_TYPE : uint8_t {
 	success, normal, warning, error
 };
 

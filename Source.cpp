@@ -6,13 +6,17 @@ class App : Renderer {
 			this->addModel(Model("models/town.txt", Vec3(), false, Color(255)));
 			this->addLight(Light(Vec3(), Color(255), 10));
 			//this->addLight(Light(Vec3(0, 0,-5), Color(255, 255, 255), 5));
-			this->camera.position.y = 5.f;
+			this->camera.position.y = 7.f;
 			this->renderAndWriteFrames(15 * 5);
 			this->writeVideo(15 * 5, 15);
 		}
 
 		void render(const bool _doRenderOver3D) override {
 			this->drawPointNoVerif(10, 10, Color(255, 0, 0));
+
+			if (_doRenderOver3D) {
+				this->drawDisk(Vec3(this->getWidth() / 2, this->getHeight() / 2), 30, Color(255));
+			}
 		}
 
 		void update() override {

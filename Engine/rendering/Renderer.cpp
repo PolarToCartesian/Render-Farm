@@ -8,7 +8,7 @@ inline void Renderer::resetDepthBuffer() {
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
 
-unsigned int Renderer::getIndexInColorBuffer(const uint16_t _x, const uint16_t _y) {
+uint32_t Renderer::getIndexInColorBuffer(const uint16_t _x, const uint16_t _y) {
 	return renderImages[this->indexImageBeingRendered]->getIndex(_x, _y);
 }
 
@@ -31,24 +31,24 @@ Renderer::~Renderer() {
 	delete[] this->depthBuffer;
 }
 
-unsigned int Renderer::getWidth()  const { return this->width; }
-unsigned int Renderer::getHeight() const { return this->height; }
+inline uint32_t Renderer::getWidth()  const { return this->width; }
+inline uint32_t Renderer::getHeight() const { return this->height; }
 
-unsigned int Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
-Light        Renderer::copyLight(const uint16_t _lightId) const               { return this->lights[_lightId]; }
-Light&       Renderer::getLightRef(const uint16_t _lightId)                   { return this->lights[_lightId]; }
-void         Renderer::setLight(const uint16_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
+uint64_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
+Light    Renderer::copyLight(const uint16_t _lightId) const               { return this->lights[_lightId]; }
+Light&   Renderer::getLightRef(const uint16_t _lightId)                   { return this->lights[_lightId]; }
+void     Renderer::setLight(const uint16_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
 
-unsigned int Renderer::addModel(const Model& _model)                          { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
-Model        Renderer::copyModel(const uint16_t _modelId) const               { return this->models[_modelId]; }
-Model&       Renderer::getModelRef(const uint16_t _modelId)                   { return this->models[_modelId]; }
-void         Renderer::setModel(const uint16_t _modelId, const Model _model)  { this->models[_modelId] = _model; }
+uint64_t Renderer::addModel(const Model& _model)                          { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
+Model    Renderer::copyModel(const uint16_t _modelId) const               { return this->models[_modelId]; }
+Model&   Renderer::getModelRef(const uint16_t _modelId)                   { return this->models[_modelId]; }
+void     Renderer::setModel(const uint16_t _modelId, const Model _model)  { this->models[_modelId] = _model; }
 
-void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color& _color) {
+inline void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color& _color) {
 	renderImages[this->indexImageBeingRendered]->colorBuffer[getIndexInColorBuffer(_x, _y)] = _color;
 }
 
-void Renderer::drawPoint(const uint16_t _x, const uint16_t _y, const Color& _color) {
+inline void Renderer::drawPoint(const uint16_t _x, const uint16_t _y, const Color& _color) {
 	if (_x > 0 && _x < this->width && _y > 0 && _y < this->height) {
 		drawPointNoVerif(_x, _y, _color);
 	}
@@ -56,7 +56,7 @@ void Renderer::drawPoint(const uint16_t _x, const uint16_t _y, const Color& _col
 
 void Renderer::drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color& _color) {
 	for (uint16_t y = _y; y < _y + _h; y++) {
-		unsigned int baseIndex = y * this->width;
+		const uint32_t baseIndex = y * this->width;
 
 		for (uint16_t x = _x; x < _x + _w; x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _color;
@@ -66,7 +66,7 @@ void Renderer::drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const 
 
 void Renderer::drawRectangle(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color& _color) {
 	for (uint16_t y = _y; y < ((_y + _h > this->height - 1) ? this->height : (_y + _h)); y++) {
-		unsigned int baseIndex = y * this->width;
+		const uint32_t baseIndex = y * this->width;
 
 		for (uint16_t x = _x; x < ((_x + _w > this->width - 1) ? this->width : (_x + _w)); x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _color;
@@ -78,7 +78,7 @@ void Renderer::drawImageNoVerif(const uint16_t _x, const uint16_t _y, const Imag
 	uint16_t sampleX = 0, sampleY = 0;
 	
 	for (uint16_t y = _y; y < _y + _image.getHeight(); y++) {
-		uint32_t baseIndex = y * this->width;
+		const uint32_t baseIndex = y * this->width;
 
 		for (uint16_t x = _x; x < _x + _image.getWidth(); x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _image.sample(sampleX, sampleY);
@@ -123,7 +123,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	const Mat4x4 triangleRotationZMatrix = Mat4x4::getRotationZMatrix(_tr.rotation.z);
 
 	// For Every Vertex
-	for (unsigned char v = 0; v < 3; v++) {
+	for (uint8_t v = 0; v < 3; v++) {
 		// Rotate Triangle Around Point
 		rotatedVertices[v] -= _tr.rotationMidPoint;
 
@@ -150,7 +150,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	Vec3 transformedVertices[3] = { 0 };
 	std::memcpy(transformedVertices, rotatedVertices, 3 * sizeof(Vec3));
 
-	for (unsigned char v = 0; v < 3; v++) {
+	for (uint8_t v = 0; v < 3; v++) {
 		// Camera Translation
 		transformedVertices[v] -= this->camera.position;
 
@@ -166,14 +166,14 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 		transformedVertices[v].y = ((transformedVertices[v].y + 1.f) / +2.f) * this->height;
 	}
 
-	std::array<Color, 3> lightenedVertexColors = EN::LIGHT::applyLightingToVertices(rotatedVertices, _tr.colors, triangleSurfaceNormal, this->lights);
+	const std::array<Color, 3> lightenedVertexColors = EN::LIGHT::applyLightingToVertices(rotatedVertices, _tr.colors, triangleSurfaceNormal, this->lights);
 
 	// Start Rendering
 	// PreCalculate Values(For Barycentric Interpolation)
 	// Thanks to : https://codeplea.com/triangular-interpolation
 
-	double denominator      = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
-	double precalculated[6] = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
+	const double denominator = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
+	double precalculated[6]  = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
 
 	// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
@@ -224,7 +224,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 			double w = 0;
 
 			// For every vertex (Barycentric Interpolation)
-			for (unsigned char c = 0; c < 3; c++) {
+			for (uint8_t c = 0; c < 3; c++) {
 				w += transformedVertices[c].w * VertexPositionWeights[c];
 			}
 
@@ -242,7 +242,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 				double r = 0, g = 0, b = 0;
 
 				// For every vertex
-				for (unsigned char c = 0; c < 3; c++) {
+				for (uint8_t c = 0; c < 3; c++) {
 					r += lightenedVertexColors[c].r * VertexPositionWeights[c];
 					g += lightenedVertexColors[c].g * VertexPositionWeights[c];
 					b += lightenedVertexColors[c].b * VertexPositionWeights[c];
@@ -252,12 +252,42 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 				g /= VertexPositionWeightSum;
 				b /= VertexPositionWeightSum;
 
-				Color pixelColor(static_cast<unsigned char>(r), static_cast<unsigned char>(g), static_cast<unsigned char>(b));
+				Color pixelColor(static_cast<uint8_t>(r), static_cast<uint8_t>(g), static_cast<uint8_t>(b));
 
 				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}
 		}
 	}
+}
+
+void Renderer::drawDisk(const Vec3& _position, const uint16_t _radius, const Color& _color) {
+	const uint32_t radiusSquared = _radius * _radius;
+	const uint16_t centerX = static_cast<uint16_t>(_position.x);
+	const uint16_t centerY = static_cast<uint16_t>(_position.y);
+
+	for (int32_t deltaX = -_radius; deltaX <= _radius; deltaX++) {
+		const uint64_t deltaXSquared = static_cast<uint64_t>(deltaX) * deltaX;
+
+		const uint32_t x = centerX + deltaX;
+
+		if (x < 0 || x >= this->width) continue;
+
+		for (int32_t deltaY = -_radius; deltaY <= _radius; deltaY++) {
+			const uint32_t y = centerY + deltaY;
+			
+			if (y < 0 || y >= this->height) continue;
+
+			if (deltaXSquared + static_cast<uint64_t>(deltaY) * deltaY <= radiusSquared) {
+				this->drawPointNoVerif(x, centerY + deltaY, _color);
+			}
+		}
+	}
+}
+
+void Renderer::drawSphere(const Vec3& _position, const uint16_t _radius, const Color& _color) {
+	// Ray Marching : http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions
+
+	
 }
 
 void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {

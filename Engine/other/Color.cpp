@@ -1,12 +1,12 @@
 #include "Color.h"
 
-unsigned char Color::getInBounds(const double _v) {
-	return static_cast<unsigned char>((_v > std::numeric_limits<unsigned char>::max()) ? std::numeric_limits<unsigned char>::max() : ( (_v < 0) ? 0 : _v ));
+uint8_t Color::getInBounds(const double _v) {
+	return static_cast<uint8_t>((_v > std::numeric_limits<uint8_t>::max()) ? std::numeric_limits<uint8_t>::max() : ( (_v < 0) ? 0 : _v ));
 }
 
 Color::Color() : r(0), g(0), b(0) {}
-Color::Color(const unsigned char _n) : r(_n), g(_n), b(_n) {}
-Color::Color(const unsigned char _r, const unsigned char _g, const unsigned char _b) : r(_r), g(_g), b(_b) {}
+Color::Color(const uint8_t _n) : r(_n), g(_n), b(_n) {}
+Color::Color(const uint8_t _r, const uint8_t _g, const uint8_t _b) : r(_r), g(_g), b(_b) {}
 
 void Color::operator+=(const Color& _c) {
 	this->r = getInBounds(static_cast<double>(this->r) + _c.r);
