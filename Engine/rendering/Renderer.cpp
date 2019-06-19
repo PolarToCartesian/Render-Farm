@@ -24,7 +24,7 @@ Renderer::Renderer(const uint16_t _width, const uint16_t _height, const Color& _
 
 	this->calculatePerspectiveMatrix();
 	this->backgroundColor = _backgroundColor;
-	this->depthBuffer = new double[this->width * this->height];
+	this->depthBuffer = new double[static_cast<uint32_t>(this->width) * this->height];
 }
 
 Renderer::~Renderer() {
@@ -111,8 +111,7 @@ void Renderer::drawImage(const uint16_t _x, const uint16_t _y, const Image& _ima
 
 // Renders a triangle in 3D
 void Renderer::drawTriangle3D(const Triangle& _tr) {
-	Vec3 rotatedVertices[3] = { 0 };
-	std::memcpy(rotatedVertices, _tr.vertices, 3 * sizeof(Vec3));
+	Vec3 rotatedPoints[3] = { _tr.vertices[0].position, _tr.vertices[1].position, _tr.vertices[2].position };
 
 	const Mat4x4 cameraRotationXMatrix = Mat4x4::getRotationXMatrix(-this->camera.rotation.x);
 	const Mat4x4 cameraRotationYMatrix = Mat4x4::getRotationYMatrix(-this->camera.rotation.y);
@@ -125,61 +124,61 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	// For Every Vertex
 	for (uint8_t v = 0; v < 3; v++) {
 		// Rotate Triangle Around Point
-		rotatedVertices[v] -= _tr.rotationMidPoint;
+		rotatedPoints[v] -= _tr.rotationMidPoint;
 
 		// Rotate Triangle Around Point
-		rotatedVertices[v] *= triangleRotationXMatrix;
-		rotatedVertices[v] *= triangleRotationYMatrix;
-		rotatedVertices[v] *= triangleRotationZMatrix;
+		rotatedPoints[v] *= triangleRotationXMatrix;
+		rotatedPoints[v] *= triangleRotationYMatrix;
+		rotatedPoints[v] *= triangleRotationZMatrix;
 
 		// Rotate Triangle Around Point
-		rotatedVertices[v] += _tr.rotationMidPoint;
+		rotatedPoints[v] += _tr.rotationMidPoint;
 
 		// Apply Camera Rotation
-		rotatedVertices[v] -= this->camera.position;
-		rotatedVertices[v] += this->camera.position + rotatedVertices[v] * (-3) + rotatedVertices[v] * cameraRotationXMatrix 
-																				+ rotatedVertices[v] * cameraRotationYMatrix
-																				+ rotatedVertices[v] * cameraRotationZMatrix;
+		rotatedPoints[v] -= this->camera.position;
+		rotatedPoints[v] += this->camera.position + rotatedPoints[v] * (-3) + rotatedPoints[v] * cameraRotationXMatrix
+																			+ rotatedPoints[v] * cameraRotationYMatrix
+																			+ rotatedPoints[v] * cameraRotationZMatrix;
 	}
 
-	Vec3 triangleSurfaceNormal = Triangle::getSurfaceNormal(rotatedVertices);
+	Vec3 triangleSurfaceNormal = Triangle::getSurfaceNormal(rotatedPoints);
 
 	// Check if triangle is facing camera
-	if (!this->camera.isTriangleFacingCamera(rotatedVertices, triangleSurfaceNormal)) return;
+	if (!this->camera.isTriangleFacingCamera(rotatedPoints, triangleSurfaceNormal)) return;
 
-	Vec3 transformedVertices[3] = { 0 };
-	std::memcpy(transformedVertices, rotatedVertices, 3 * sizeof(Vec3));
+	Vec3 transformedPoints[3] = { rotatedPoints[0], rotatedPoints[1], rotatedPoints[2] };
 
 	for (uint8_t v = 0; v < 3; v++) {
 		// Camera Translation
-		transformedVertices[v] -= this->camera.position;
+		transformedPoints[v] -= this->camera.position;
 
 		// Apply Perspective
-		transformedVertices[v] = transformedVertices[v] * this->perspectiveMatrix;
+		transformedPoints[v] = transformedPoints[v] * this->perspectiveMatrix;
 
-		if (transformedVertices[v].w < 0) return;
-		if (transformedVertices[v].w > 0) transformedVertices[v] /= transformedVertices[v].w;
+		if (transformedPoints[v].w < 0) return;
+		if (transformedPoints[v].w > 0) transformedPoints[v] /= transformedPoints[v].w;
 
 		// -1 to 1    to    0-width
-		transformedVertices[v].x = ((transformedVertices[v].x - 1.f) / -2.f) * this->width;
+		transformedPoints[v].x = ((transformedPoints[v].x - 1.f) / -2.f) * this->width;
 		// 1  to -1   to    height-0
-		transformedVertices[v].y = ((transformedVertices[v].y + 1.f) / +2.f) * this->height;
+		transformedPoints[v].y = ((transformedPoints[v].y + 1.f) / +2.f) * this->height;
 	}
 
-	const std::array<Color, 3> lightenedVertexColors = EN::LIGHT::applyLightingToVertices(rotatedVertices, _tr.colors, triangleSurfaceNormal, this->lights);
+	const Color triangleColors[3] = { _tr.vertices[0].color, _tr.vertices[1].color, _tr.vertices[2].color };
+	const std::array<Color, 3> lightenedVertexColors = Light::applyLightingToVertices(rotatedPoints, triangleColors, triangleSurfaceNormal, this->lights);
 
 	// Start Rendering
 	// PreCalculate Values(For Barycentric Interpolation)
 	// Thanks to : https://codeplea.com/triangular-interpolation
 
-	const double denominator = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
-	double precalculated[6]  = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
+	const double denominator = (transformedPoints[1].y - transformedPoints[2].y) * (transformedPoints[0].x - transformedPoints[2].x) + (transformedPoints[2].x - transformedPoints[1].x) * (transformedPoints[0].y - transformedPoints[2].y);
+	double precalculated[6]  = { (transformedPoints[1].y - transformedPoints[2].y),  (transformedPoints[2].x - transformedPoints[1].x),  (transformedPoints[2].y - transformedPoints[0].y),  (transformedPoints[0].x - transformedPoints[2].x), 0, 0 };
 
 	// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
-	Vec3 t0 = Vec3::intify(transformedVertices[0]);
-	Vec3 t1 = Vec3::intify(transformedVertices[1]);
-	Vec3 t2 = Vec3::intify(transformedVertices[2]);
+	Vec3 t0 = Vec3::intify(transformedPoints[0]);
+	Vec3 t1 = Vec3::intify(transformedPoints[1]);
+	Vec3 t2 = Vec3::intify(transformedPoints[2]);
 
 	if (t0.y == t1.y && t0.y == t2.y) return;
 
@@ -213,8 +212,8 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 			// Continue Barycentric Interpolation
 			// To calculate the w value (depth of the pixel to dicide if we should render it or not)
 
-			precalculated[4] = (x - transformedVertices[2].x);
-			precalculated[5] = (y - transformedVertices[2].y);
+			precalculated[4] = (x - transformedPoints[2].x);
+			precalculated[5] = (y - transformedPoints[2].y);
 
 			double VertexPositionWeights[3] = { (precalculated[0] * precalculated[4] + precalculated[1] * precalculated[5]) / denominator, (precalculated[2] * precalculated[4] + precalculated[3] * precalculated[5]) / denominator, 0 };
 			VertexPositionWeights[2]        = 1 - VertexPositionWeights[0] - VertexPositionWeights[1];
@@ -225,7 +224,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 
 			// For every vertex (Barycentric Interpolation)
 			for (uint8_t c = 0; c < 3; c++) {
-				w += transformedVertices[c].w * VertexPositionWeights[c];
+				w += transformedPoints[c].w * VertexPositionWeights[c];
 			}
 
 			// Calculate W (depth of pixel)
@@ -278,6 +277,8 @@ void Renderer::drawDisk(const Vec3& _position, const uint16_t _radius, const Col
 			if (y < 0 || y >= this->height) continue;
 
 			if (deltaXSquared + static_cast<uint64_t>(deltaY) * deltaY <= radiusSquared) {
+				Color pixelColor = _color;
+
 				this->drawPointNoVerif(x, centerY + deltaY, _color);
 			}
 		}

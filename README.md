@@ -18,6 +18,8 @@ cd Render-Farm/setup/
 python install_python_dependencies_pip.py
 ```
 
+You should also if you want to, install a ppm image viewer.
+
 You can delete :
 
 + Readme.md
@@ -60,7 +62,6 @@ The executable will be located in the main Render-Farm/ directory.
 ## Task List
 
 + [ ] 2D Text Rendering
-+ [ ] Ray Marching*
 + [ ] PNG or JPEG instead of PPM*
 
 *Low priority / Not sure if it will be implemented

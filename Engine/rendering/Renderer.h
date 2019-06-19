@@ -59,15 +59,15 @@ class Renderer {
 		uint32_t getWidth()  const;
 		uint32_t getHeight() const;
 
-		uint64_t addLight(const Light& _light);
-		Light        copyLight(const uint16_t _lightId) const;
-		Light&       getLightRef(const uint16_t _lightId);
-		void         setLight(const uint16_t _lightId, const Light& _light);
+		uint64_t  addLight(const Light& _light);
+		Light     copyLight(const uint16_t _lightId) const;
+		Light&    getLightRef(const uint16_t _lightId);
+		void      setLight(const uint16_t _lightId, const Light& _light);
 
-		uint64_t addModel(const Model& _model);
-		Model        copyModel(const uint16_t _modelId) const;
-		Model&       getModelRef(const uint16_t _modelId);
-		void         setModel(const uint16_t _modelId, const Model _model);
+		uint64_t  addModel(const Model& _model);
+		Model     copyModel(const uint16_t _modelId) const;
+		Model&    getModelRef(const uint16_t _modelId);
+		void      setModel(const uint16_t _modelId, const Model _model);
 
 		void drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color & _color);
 

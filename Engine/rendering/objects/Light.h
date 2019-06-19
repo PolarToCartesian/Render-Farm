@@ -2,9 +2,8 @@
 
 
 #include "../../other/Defines.h"
-#include "../../other/Color.h"
+#include "../../math/Vertex.h"
 #include "../../math/Funcs.h"
-#include "../../math/Vec3.h"
 #include "../../other/pch.h"
 
 struct Light {
@@ -14,12 +13,6 @@ struct Light {
 	double intensity = 1;
 
 	Light(const Vec3& _position, const Color& _color, const double _intensity = 5.f);
-};
 
-// Engine Namespace
-
-namespace EN {
-	namespace LIGHT {
-		std::array<Color, 3> applyLightingToVertices(const Vec3* _vertices, const Color* _colorOfVertices, const Vec3& _triangleSurfaceNormal, std::vector<Light>& _lights);
-	};
+	static std::array<Color, 3> applyLightingToVertices(const Vec3 _points[3], const Color _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights);
 };

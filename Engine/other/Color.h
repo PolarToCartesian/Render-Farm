@@ -32,3 +32,7 @@ Color operator+(const Color& _c, const double _n);
 Color operator-(const Color& _c, const double _n);
 Color operator/(const Color& _c, const double _n);
 Color operator*(const Color& _c, const double _n);
+
+/// Printing
+
+std::ostream& operator<<(std::ostream& _os, const Color& _c);

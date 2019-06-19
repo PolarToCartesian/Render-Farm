@@ -89,3 +89,9 @@ Color operator*(const Color& _c, const double _n) {
 
 	return r;
 }
+
+/// Printing
+
+std::ostream& operator<<(std::ostream& _os, const Color& _c) {
+	return _os << "R : " << std::to_string(_c.r) << ", G : " << std::to_string(_c.g) << ", B : " << std::to_string(_c.b);
+}

@@ -3,13 +3,13 @@
 // Model Struct
 
 // Inspired By https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part4.cpp
-Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool _randomColors, const Color& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation) {	
+Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bool _randomColors, const Color& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation) {	
 	File file(_filePath, FILE_READ, false);
 
 	if (file.isOpen()) {
 		std::string dataType, junk;
 
-		std::vector<Vec3> vertices;
+		std::vector<Vertex> vertices;
 
 		file.readLineByLine([&](const std::string& _line, const unsigned int _lineNumber) {
 			std::istringstream lineStream(_line);
@@ -21,31 +21,34 @@ Model::Model(const char* _filePath, const Vec3& _delataPosition, const bool _ran
 
 				lineStream >> x >> y >> z;
 
-				vertices.emplace_back(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z);
+				vertices.emplace_back(Vec3(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z), _randomColors, Color(_flatColor));
 			} else if (dataType == "f") {
-				uint32_t vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0;
-				int64_t vertexIndex4  = -1;
+				uint32_t vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0, vertexIndex4 = 0;
 
 				if (_line.find("/") == std::string::npos) {
 					lineStream >> vertexIndex1 >> vertexIndex2 >> vertexIndex3;
 
 					// Check For 4 Component Face
-					if (!lineStream.str().empty()) lineStream >> vertexIndex4;
+					if (!lineStream.str().empty()) {
+						lineStream >> vertexIndex4;
+					}
 				} else {
 					lineStream >> vertexIndex1 >> junk >> vertexIndex2 >> junk >> vertexIndex3;
 					
 					// Check For 4 Component Face
-					if (!lineStream.str().empty()) lineStream >> junk >> vertexIndex4;
+					if (!lineStream.str().empty()) {
+						lineStream >> junk >> vertexIndex4;
+					}
 				}
 
 				// Triangle 1
-				triangles.emplace_back(new Vec3[3] { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] }, 
-									   _flatColor, _centerOfRotation, _rotation, _randomColors);
-				
+				const Vertex triangle1Vertices[] = { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] };
+				triangles.emplace_back(triangle1Vertices, _centerOfRotation, _rotation);
+
 				// Triangle 2
-				if (vertexIndex4 != -1) {
-					triangles.emplace_back(new Vec3[3] { vertices[vertexIndex1 - 1], vertices[vertexIndex3 - 1], vertices[vertexIndex4 - 1] }, 
-										   _flatColor, _centerOfRotation, _rotation, _randomColors);
+				if (vertexIndex4 > 0) {
+					const Vertex triangle2Vertices[] = { vertices[vertexIndex1 - 1], vertices[vertexIndex3 - 1], vertices[vertexIndex4 - 1] };
+					triangles.emplace_back(triangle2Vertices, _centerOfRotation, _rotation);
 				}
 			}
 		});
