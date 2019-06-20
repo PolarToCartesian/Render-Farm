@@ -8,7 +8,7 @@ inline void Renderer::resetDepthBuffer() {
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
 
-uint32_t Renderer::getIndexInColorBuffer(const uint16_t _x, const uint16_t _y) {
+inline uint32_t Renderer::getIndexInColorBuffer(const uint16_t _x, const uint16_t _y) {
 	return renderImages[this->indexImageBeingRendered]->getIndex(_x, _y);
 }
 
@@ -34,15 +34,21 @@ Renderer::~Renderer() {
 inline uint32_t Renderer::getWidth()  const { return this->width; }
 inline uint32_t Renderer::getHeight() const { return this->height; }
 
-uint64_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
-Light    Renderer::copyLight(const uint16_t _lightId) const               { return this->lights[_lightId]; }
-Light&   Renderer::getLightRef(const uint16_t _lightId)                   { return this->lights[_lightId]; }
-void     Renderer::setLight(const uint16_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
+inline uint64_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
+inline Light    Renderer::copyLight(const uint16_t _lightId) const               { return this->lights[_lightId]; }
+inline Light&   Renderer::getLightRef(const uint16_t _lightId)                   { return this->lights[_lightId]; }
+inline void     Renderer::setLight(const uint16_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
 
-uint64_t Renderer::addModel(const Model& _model)                          { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
-Model    Renderer::copyModel(const uint16_t _modelId) const               { return this->models[_modelId]; }
-Model&   Renderer::getModelRef(const uint16_t _modelId)                   { return this->models[_modelId]; }
-void     Renderer::setModel(const uint16_t _modelId, const Model _model)  { this->models[_modelId] = _model; }
+inline uint64_t Renderer::addModel(const Model& _model)                          { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
+inline Model    Renderer::copyModel(const uint16_t _modelId) const               { return this->models[_modelId]; }
+inline Model&   Renderer::getModelRef(const uint16_t _modelId)                   { return this->models[_modelId]; }
+inline void     Renderer::setModel(const uint16_t _modelId, const Model _model)  { this->models[_modelId] = _model; }
+
+inline void Renderer::drawModel(const uint16_t _modelId) {
+	this->models[_modelId].applyFunctionToEachTriangle([this](Triangle& _tr) {
+		this->drawTriangle3D(_tr);
+	});
+}
 
 inline void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color& _color) {
 	renderImages[this->indexImageBeingRendered]->colorBuffer[getIndexInColorBuffer(_x, _y)] = _color;
@@ -313,19 +319,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 
 			// Call User Defined Functions
 			this->update();
-			this->render(false);
-
-			// Render Every Model
-			for (unsigned int nModel = 0; nModel < this->models.size(); nModel++) {
-				if (this->models[nModel].doRender) {
-					this->models[nModel].applyFunctionToEachTriangle([this](Triangle& _tr) {
-						this->drawTriangle3D(_tr);
-					});
-				}
-			}
-
-			// Call User Defined Functions
-			this->render(true);
+			this->render();
 
 			auto endTime = std::chrono::system_clock::now();
 			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);

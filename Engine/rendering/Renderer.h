@@ -35,10 +35,10 @@ class Renderer {
 
 		Color backgroundColor;
 
-	public:
 		std::vector<Model> models;
 		std::vector<Light> lights;
 
+	public:
 		Camera camera;
 
 	private:
@@ -54,7 +54,7 @@ class Renderer {
 		~Renderer();
 
 		virtual void update() = 0;
-		virtual void render(const bool _doRenderOver3D) = 0;
+		virtual void render() = 0;
 
 		uint32_t getWidth()  const;
 		uint32_t getHeight() const;
@@ -68,6 +68,8 @@ class Renderer {
 		Model    copyModel(const uint16_t _modelId) const;
 		Model&   getModelRef(const uint16_t _modelId);
 		void     setModel(const uint16_t _modelId, const Model _model);
+
+		void drawModel(const uint16_t _modelId);
 
 		void drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color & _color);
 

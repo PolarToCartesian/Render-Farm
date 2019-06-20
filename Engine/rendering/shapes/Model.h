@@ -10,8 +10,6 @@
 struct Model {
 	std::vector<Triangle> triangles;
 
-	bool doRender = true;
-
 	Model(const std::string& _filePath, const Vec3& _delataPosition = Vec3(0), const bool _randomColors = false, 
 		  const Color& _flatColor = Color(255), const Vec3& _centerOfRotation = Vec3(0), const Vec3& _rotation = Vec3(0));
 
