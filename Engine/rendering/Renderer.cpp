@@ -194,30 +194,28 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 
 		if (y < 0 || y > this->height - 1) continue;
 
-		bool second_half   = i > t1.y - t0.y || t1.y == t0.y;
-		int segment_height = static_cast<int>(second_half ? t2.y - t1.y : t1.y - t0.y);
+		const bool second_half   = i > t1.y - t0.y || t1.y == t0.y;
+		const int segment_height = static_cast<int>(second_half ? t2.y - t1.y : t1.y - t0.y);
 
-		double alpha = (double) i / total_height;
-		double beta  = (double) (i - (second_half ? t1.y - t0.y : 0)) / segment_height;
+		const double alpha = i / static_cast<double>(total_height);
+		const double beta  = static_cast<double>(i - (second_half ? t1.y - t0.y : 0)) / segment_height;
 
 		Vec3 A = t0 + (t2 - t0) * alpha;
 		Vec3 B = second_half ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
 
 		if (A.x > B.x) std::swap(A, B);
 
+		precalculated[5] = (y - transformedPoints[2].y);
+
 		// Limit X Between (0 and width - 1) in the loop to avoid trying to set a pixel out of the screen buffer and to maximize performance
 		for (int j = static_cast<int>((A.x < 0) ? 0 : A.x); j <= static_cast<int>((B.x > this->width - 2) ? this->width - 2 : B.x); j++) {
-			uint16_t x = j;
-
-			// Continue Barycentric Interpolation
-			// To calculate the w value (depth of the pixel to dicide if we should render it or not)
-
+			const uint16_t x = j;
+			
 			precalculated[4] = (x - transformedPoints[2].x);
-			precalculated[5] = (y - transformedPoints[2].y);
 
 			double VertexPositionWeights[3] = { (precalculated[0] * precalculated[4] + precalculated[1] * precalculated[5]) / denominator, (precalculated[2] * precalculated[4] + precalculated[3] * precalculated[5]) / denominator, 0 };
 			VertexPositionWeights[2]        = 1 - VertexPositionWeights[0] - VertexPositionWeights[1];
-			double VertexPositionWeightSum  = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
+			const double VertexPositionWeightSum  = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
 
 			// Pixel Depth (w)
 			double w = 0;
@@ -231,7 +229,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 			w /= VertexPositionWeightSum;
 
 			// Render Pixel if it is in front of the pixel already there
-			unsigned int pixelIndex = this->getIndexInColorBuffer(x, y);
+			const uint32_t pixelIndex = this->getIndexInColorBuffer(x, y);
 
 			if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1) {
 				this->depthBuffer[pixelIndex] = w;
@@ -251,7 +249,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 				g /= VertexPositionWeightSum;
 				b /= VertexPositionWeightSum;
 
-				Color pixelColor(static_cast<uint8_t>(r), static_cast<uint8_t>(g), static_cast<uint8_t>(b));
+				const Color pixelColor(static_cast<uint8_t>(r), static_cast<uint8_t>(g), static_cast<uint8_t>(b));
 
 				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}

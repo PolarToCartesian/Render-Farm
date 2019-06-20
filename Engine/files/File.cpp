@@ -28,8 +28,7 @@ void File::open(const std::string& _filename, const std::string& _permissions) {
 		if (this->isFileOpen) {
 			LOG::println("[FILE] The File \"" + std::string(_filename) + "\" Was Successfully Opened", LOG_TYPE::success);
 		} else {
-			LOG::println("[FILE] The File \"" + std::string(_filename) + "\" Was Unable To Be Opened", LOG_TYPE::error);
-			perror("[FILE] The Error Was: ");
+			perror("");
 		}
 	}
 }

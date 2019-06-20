@@ -3,10 +3,10 @@
 
 /*
 Resources :
-	- https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part4.cpp
+	- https://codeplea.com/triangular-interpolation
 	- https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 	- https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
-	- https://codeplea.com/triangular-interpolation
+	- https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part4.cpp
 	- StackOverflow (do I even have to mention it?)
 */
 
@@ -31,7 +31,7 @@ class Renderer {
 
 		double* depthBuffer = nullptr;
 
-		Image * renderImages[RENDERS_AND_WRITES_PER_CYCLE];
+		Image* renderImages[RENDERS_AND_WRITES_PER_CYCLE];
 
 		Color backgroundColor;
 
@@ -59,15 +59,15 @@ class Renderer {
 		uint32_t getWidth()  const;
 		uint32_t getHeight() const;
 
-		uint64_t  addLight(const Light& _light);
-		Light     copyLight(const uint16_t _lightId) const;
-		Light&    getLightRef(const uint16_t _lightId);
-		void      setLight(const uint16_t _lightId, const Light& _light);
+		uint64_t addLight(const Light& _light);
+		Light    copyLight(const uint16_t _lightId) const;
+		Light&   getLightRef(const uint16_t _lightId);
+		void     setLight(const uint16_t _lightId, const Light& _light);
 
-		uint64_t  addModel(const Model& _model);
-		Model     copyModel(const uint16_t _modelId) const;
-		Model&    getModelRef(const uint16_t _modelId);
-		void      setModel(const uint16_t _modelId, const Model _model);
+		uint64_t addModel(const Model& _model);
+		Model    copyModel(const uint16_t _modelId) const;
+		Model&   getModelRef(const uint16_t _modelId);
+		void     setModel(const uint16_t _modelId, const Model _model);
 
 		void drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color & _color);
 

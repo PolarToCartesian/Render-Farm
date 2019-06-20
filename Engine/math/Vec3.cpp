@@ -2,6 +2,13 @@
 
 // Vector Object
 
+Vec3::Vec3() : x(0), y(0), z(0), w(0) {}
+Vec3::Vec3(const double _n) : x(_n), y(_n), z(_n), w(_n) {}
+Vec3::Vec3(const double _x, const double _y) : x(_x), y(_y), z(0), w(0) {}
+Vec3::Vec3(const double _x, const double _y, const double _z) : x(_x), y(_y), z(_z), w(0) {}
+Vec3::Vec3(const double _x, const double _y, const double _z, const double _w) : x(_x), y(_y), z(_z), w(_w) {}
+Vec3::Vec3(const Vec3& _v) : x(_v.x), y(_v.y), z(_v.z), w(_v.w) {  }
+
 void Vec3::add(const double _x, const double _y, const double _z, const double _w, const bool _useW) {
 	this->x += _x; this->y += _y; this->z += _z;
 
