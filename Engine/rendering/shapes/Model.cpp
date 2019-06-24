@@ -3,7 +3,7 @@
 // Model Struct
 
 // Inspired By https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part4.cpp
-Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bool _randomColors, const Color& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation) {	
+Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bool _randomColors, const Color<>& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation) {
 	File file(_filePath, FILE_READ, false);
 
 	if (file.isOpen()) {
@@ -21,7 +21,7 @@ Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bo
 
 				lineStream >> x >> y >> z;
 
-				vertices.emplace_back(Vec3(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z), _randomColors, Color(_flatColor));
+				vertices.emplace_back(Vec3(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z), _randomColors, Color<>(_flatColor));
 			} else if (dataType == "f") {
 				uint32_t vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0, vertexIndex4 = 0;
 

@@ -3,10 +3,10 @@
 class App : Renderer {
 	public:
 		App() : Renderer(1920 / 2, 1080 / 2) {
-			this->addModel(Model("models/dragon.txt", Vec3(), true, Color(255)));
-			this->addLight(Light(Vec3(0, 0, -4), Color(255), 15));
-			this->camera.position.y = 4;
-			this->camera.position.z = -8;
+			this->addModel(Model("models/armadillo.txt", Vec3(), false, Color<>(255)));
+			this->addLight(Light(Vec3(0, 0, -4), Color<>(255), 2));
+			this->camera.position.y = 0.5;
+			this->camera.position.z = -2;
 			this->renderAndWriteFrames(15 * 5);
 			this->writeVideo(15 * 5, 15);
 		}
@@ -17,8 +17,6 @@ class App : Renderer {
 
 		void update() override {
 			this->getModelRef(0).rotate(Vec3(0.f, 0.1f, 0.f));
-
-			//this->camera.rotation.y += 0.05f;
 		}
 };
 

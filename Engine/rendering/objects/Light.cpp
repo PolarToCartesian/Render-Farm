@@ -2,12 +2,12 @@
 
 // Light Struct
 
-Light::Light(const Vec3& _position, const Color& _color, const double _intensity) : position(_position), color(_color), intensity(_intensity) {}
+Light::Light(const Vec3& _position, const Color<>& _color, const double _intensity) : position(_position), color(_color), intensity(_intensity) {}
 
 // Engine Namespace
 
-std::array<Color, 3> Light::applyLightingToVertices(const Vec3 _points[3], const Color _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights) {
-	std::array<Color, 3> output{ { Color(0), Color(0), Color(0) } };
+std::array<Color<>, 3> Light::applyLightingToVertices(const Vec3 _points[3], const Color<> _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights) {
+	std::array<Color<>, 3> output{ { Color<>(0), Color<>(0), Color<>(0) } };
 
 	for (uint8_t v = 0; v < 3; v++) {
 		double totalVertexBrightness = 0.f;

@@ -30,7 +30,7 @@ Image::Image(const std::string& _filename, const bool _doLog) {
 						lineStream >> this->imageWidth >> this->imageHeight;
 
 						this->nPixels = this->imageWidth * this->imageHeight;
-						this->colorBuffer = new Color[this->nPixels];
+						this->colorBuffer = new Color<>[this->nPixels];
 					}
 					break;
 				case 3:
@@ -41,7 +41,7 @@ Image::Image(const std::string& _filename, const bool _doLog) {
 
 					lineStream >> r >> g >> b;
 
-					Color color(std::stoi(r), std::stoi(g), std::stoi(b));
+					Color<> color(std::stoi(r), std::stoi(g), std::stoi(b));
 
 					this->colorBuffer[_lineNumber - 2] = color;
 			}
@@ -51,10 +51,10 @@ Image::Image(const std::string& _filename, const bool _doLog) {
 	}
 }
 
-Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
+Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
 	this->nPixels = this->imageWidth * this->imageHeight;
 
-	this->colorBuffer = new Color[this->nPixels];
+	this->colorBuffer = new Color<>[this->nPixels];
 	std::fill_n(this->colorBuffer, this->nPixels, _backgroundColor);
 }
 
@@ -65,11 +65,11 @@ uint32_t Image::getIndex(const uint16_t _x, const uint16_t _y) const {
 unsigned int Image::getWidth()  const { return this->imageWidth; }
 unsigned int Image::getHeight() const { return this->imageHeight; }
 
-void Image::setColor(const uint16_t _x, const uint16_t _y, const Color& _c) {
+void Image::setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c) {
 	this->colorBuffer[this->getIndex(_x, _y)] = _c;
 }
 
-Color Image::sample(const uint16_t _x, const uint16_t _y) const {
+Color<> Image::sample(const uint16_t _x, const uint16_t _y) const {
 	return this->colorBuffer[this->getIndex(_x, _y)];
 }
 

@@ -18,7 +18,7 @@ void Renderer::calculatePerspectiveMatrix() {
 
 // Public Methods
 
-Renderer::Renderer(const uint16_t _width, const uint16_t _height, const Color& _backgroundColor, const uint8_t _fov, const double _zNear, const double _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
+Renderer::Renderer(const uint16_t _width, const uint16_t _height, const Color<>& _backgroundColor, const uint8_t _fov, const double _zNear, const double _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar) {
 	std::experimental::filesystem::create_directory("./out");
 	std::experimental::filesystem::create_directory("./out/frames");
 
@@ -34,33 +34,33 @@ Renderer::~Renderer() {
 inline uint32_t Renderer::getWidth()  const { return this->width; }
 inline uint32_t Renderer::getHeight() const { return this->height; }
 
-inline uint64_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
-inline Light    Renderer::copyLight(const uint16_t _lightId) const               { return this->lights[_lightId]; }
-inline Light&   Renderer::getLightRef(const uint16_t _lightId)                   { return this->lights[_lightId]; }
-inline void     Renderer::setLight(const uint16_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
+uint64_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
+Light    Renderer::copyLight(const uint16_t _lightId) const               { return this->lights[_lightId]; }
+Light&   Renderer::getLightRef(const uint16_t _lightId)                   { return this->lights[_lightId]; }
+void     Renderer::setLight(const uint16_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
 
-inline uint64_t Renderer::addModel(const Model& _model)                          { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
-inline Model    Renderer::copyModel(const uint16_t _modelId) const               { return this->models[_modelId]; }
-inline Model&   Renderer::getModelRef(const uint16_t _modelId)                   { return this->models[_modelId]; }
-inline void     Renderer::setModel(const uint16_t _modelId, const Model _model)  { this->models[_modelId] = _model; }
+uint64_t Renderer::addModel(const Model& _model)                          { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
+Model    Renderer::copyModel(const uint16_t _modelId) const               { return this->models[_modelId]; }
+Model&   Renderer::getModelRef(const uint16_t _modelId)                   { return this->models[_modelId]; }
+void     Renderer::setModel(const uint16_t _modelId, const Model _model)  { this->models[_modelId] = _model; }
 
-inline void Renderer::drawModel(const uint16_t _modelId) {
+void Renderer::drawModel(const uint16_t _modelId) {
 	this->models[_modelId].applyFunctionToEachTriangle([this](Triangle& _tr) {
 		this->drawTriangle3D(_tr);
 	});
 }
 
-inline void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color& _color) {
+inline void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color<>& _color) {
 	renderImages[this->indexImageBeingRendered]->colorBuffer[getIndexInColorBuffer(_x, _y)] = _color;
 }
 
-inline void Renderer::drawPoint(const uint16_t _x, const uint16_t _y, const Color& _color) {
+inline void Renderer::drawPoint(const uint16_t _x, const uint16_t _y, const Color<>& _color) {
 	if (_x > 0 && _x < this->width && _y > 0 && _y < this->height) {
 		drawPointNoVerif(_x, _y, _color);
 	}
 }
 
-void Renderer::drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color& _color) {
+void Renderer::drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color<>& _color) {
 	for (uint16_t y = _y; y < _y + _h; y++) {
 		const uint32_t baseIndex = y * this->width;
 
@@ -70,7 +70,7 @@ void Renderer::drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const 
 	}
 }
 
-void Renderer::drawRectangle(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color& _color) {
+void Renderer::drawRectangle(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color<>& _color) {
 	for (uint16_t y = _y; y < ((_y + _h > this->height - 1) ? this->height : (_y + _h)); y++) {
 		const uint32_t baseIndex = y * this->width;
 
@@ -97,13 +97,13 @@ void Renderer::drawImageNoVerif(const uint16_t _x, const uint16_t _y, const Imag
 }
 
 void Renderer::drawImage(const uint16_t _x, const uint16_t _y, const Image& _image) {
-	uint16_t xEnd = (_x + _image.getWidth()  > this->getWidth()  - 1) ? (this->width)  : (_x + _image.getWidth() );
-	uint16_t yEnd = (_y + _image.getHeight() > this->getHeight() - 1) ? (this->height) : (_y + _image.getHeight());
+	const uint16_t xEnd = (_x + _image.getWidth()  > this->getWidth()  - 1) ? (this->width)  : (_x + _image.getWidth() );
+	const uint16_t yEnd = (_y + _image.getHeight() > this->getHeight() - 1) ? (this->height) : (_y + _image.getHeight());
 
 	uint16_t sampleX = 0, sampleY = 0;
 
 	for (uint16_t y = _y; y < yEnd; y++) {
-		uint32_t baseIndex = y * this->width;
+		const uint32_t baseIndex = y * this->width;
 
 		for (uint16_t x = _x; x < xEnd; x++) {
 			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _image.sample(sampleX, sampleY);
@@ -147,7 +147,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 																			+ rotatedPoints[v] * cameraRotationZMatrix;
 	}
 
-	Vec3 triangleSurfaceNormal = Triangle::getSurfaceNormal(rotatedPoints);
+	const Vec3 triangleSurfaceNormal = Triangle::getSurfaceNormal(rotatedPoints);
 
 	// Check if triangle is facing camera
 	if (!this->camera.isTriangleFacingCamera(rotatedPoints, triangleSurfaceNormal)) return;
@@ -170,8 +170,8 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 		transformedPoints[v].y = ((transformedPoints[v].y + 1.f) / +2.f) * this->height;
 	}
 
-	const Color triangleColors[3] = { _tr.vertices[0].color, _tr.vertices[1].color, _tr.vertices[2].color };
-	const std::array<Color, 3> lightenedVertexColors = Light::applyLightingToVertices(rotatedPoints, triangleColors, triangleSurfaceNormal, this->lights);
+	const Color<> triangleColors[3] = { _tr.vertices[0].color, _tr.vertices[1].color, _tr.vertices[2].color };
+	const std::array<Color<>, 3> lightenedVertexColors = Light::applyLightingToVertices(rotatedPoints, triangleColors, triangleSurfaceNormal, this->lights);
 
 	// Start Rendering
 	// PreCalculate Values(For Barycentric Interpolation)
@@ -192,11 +192,11 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	if (t0.y > t2.y) std::swap(t0, t2);
 	if (t1.y > t2.y) std::swap(t1, t2);
 
-	uint16_t total_height = static_cast<uint16_t>(t2.y - t0.y);
+	const uint16_t total_height = static_cast<uint16_t>(t2.y - t0.y);
 
 	// Render Triangle With The 3 Triangulated :D colors
 	for (uint16_t i = 0; i < total_height; i++) {
-		uint16_t y = static_cast<uint16_t>(t0.y + i);
+		const uint16_t y = static_cast<uint16_t>(t0.y + i);
 
 		if (y < 0 || y > this->height - 1) continue;
 
@@ -255,7 +255,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 				g /= VertexPositionWeightSum;
 				b /= VertexPositionWeightSum;
 
-				const Color pixelColor(static_cast<uint8_t>(r), static_cast<uint8_t>(g), static_cast<uint8_t>(b));
+				const Color<> pixelColor(static_cast<uint8_t>(r), static_cast<uint8_t>(g), static_cast<uint8_t>(b));
 
 				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}
@@ -263,13 +263,13 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 	}
 }
 
-void Renderer::drawDisk(const Vec3& _position, const uint16_t _radius, const Color& _color) {
-	const uint32_t radiusSquared = _radius * _radius;
+void Renderer::drawDisk(const Vec3& _position, const uint16_t _radius, const Color<>& _color) {
+	const uint32_t radiusSquared = static_cast<uint32_t>(std::pow(_radius, 2));
 	const uint16_t centerX = static_cast<uint16_t>(_position.x);
 	const uint16_t centerY = static_cast<uint16_t>(_position.y);
 
 	for (int32_t deltaX = -_radius; deltaX <= _radius; deltaX++) {
-		const uint64_t deltaXSquared = static_cast<uint64_t>(deltaX) * deltaX;
+		const uint64_t deltaXSquared = static_cast<uint32_t>(std::pow(deltaX, 2));
 
 		const uint32_t x = centerX + deltaX;
 
@@ -281,39 +281,38 @@ void Renderer::drawDisk(const Vec3& _position, const uint16_t _radius, const Col
 			if (y < 0 || y >= this->height) continue;
 
 			if (deltaXSquared + static_cast<uint64_t>(deltaY) * deltaY <= radiusSquared) {
-				Color pixelColor = _color;
-
 				this->drawPointNoVerif(x, centerY + deltaY, _color);
 			}
 		}
 	}
 }
 
-void Renderer::drawSphere(const Vec3& _position, const uint16_t _radius, const Color& _color) {
+void Renderer::drawSphere(const Vec3& _position, const uint16_t _radius, const Color<>& _color) {
 	// Ray Marching : http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions
 
-	
+	// To make better
+	this->drawDisk(_position, _radius, _color);
 }
 
 void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 	std::thread writeThreads[RENDERS_AND_WRITES_PER_CYCLE];
 
 	// Allocate images
-	for (unsigned int i = 0; i < RENDERS_AND_WRITES_PER_CYCLE; i++) {
+	for (uint8_t i = 0; i < RENDERS_AND_WRITES_PER_CYCLE; i++) {
 		this->renderImages[i] = new Image(this->width, this->height, this->backgroundColor);
 	}
 
 	// Render And Write Frames
 	for (unsigned int nCycle = 0; nCycle < std::ceil(_nFrames / (double) RENDERS_AND_WRITES_PER_CYCLE); nCycle++) {
-		unsigned int nStartFrame   = nCycle * RENDERS_AND_WRITES_PER_CYCLE;
-		unsigned int nCurrentFrame = nStartFrame;
-		unsigned int nEndFrame     = nStartFrame + RENDERS_AND_WRITES_PER_CYCLE;
+		const uint32_t nStartFrame   = nCycle * RENDERS_AND_WRITES_PER_CYCLE;
+		uint32_t nCurrentFrame = nStartFrame;
+		uint32_t nEndFrame     = nStartFrame + RENDERS_AND_WRITES_PER_CYCLE;
 		if (nEndFrame > _nFrames) nEndFrame = _nFrames;
 
 		LOG::println("\n[RENDERING / WRITING] Starting Cycle " + std::to_string(nCycle + 1) + " (" + std::to_string(nEndFrame - nStartFrame) + " frames)\n", LOG_TYPE::normal);
 	
 		for (this->indexImageBeingRendered = 0; this->indexImageBeingRendered < nEndFrame - nStartFrame; this->indexImageBeingRendered++) {
-			auto startTime = std::chrono::system_clock::now();
+			const auto startTime = std::chrono::system_clock::now();
 		
 			this->resetDepthBuffer();
 
@@ -321,8 +320,8 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 			this->update();
 			this->render();
 
-			auto endTime = std::chrono::system_clock::now();
-			auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+			const auto endTime = std::chrono::system_clock::now();
+			const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
 			LOG::println("[RENDERING] Rendered " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 
@@ -331,12 +330,12 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 			const Image* imageBeingRenderedPtr = renderImages[this->indexImageBeingRendered];
 
 			writeThreads[this->indexImageBeingRendered] = std::thread([nCurrentFrame, &_nFrames, &fileName, &imageBeingRenderedPtr]() {
-				auto startTime = std::chrono::system_clock::now();
+				const auto startTime = std::chrono::system_clock::now();
 
 				imageBeingRenderedPtr->writeToDisk(fileName);
 
-				auto endTime   = std::chrono::system_clock::now();
-				auto elapsed   = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+				const auto endTime   = std::chrono::system_clock::now();
+				const auto elapsed   = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
 				LOG::println("[WRITING]   Wrote    " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 			});
@@ -344,7 +343,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 			nCurrentFrame++;
 		}
 
-		for (unsigned int i = 0; i < nEndFrame - nStartFrame; i++) {
+		for (uint8_t i = 0; i < nEndFrame - nStartFrame; i++) {
 			// Join Threads
 			writeThreads[i].join();
 

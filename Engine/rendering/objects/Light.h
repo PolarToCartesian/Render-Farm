@@ -8,11 +8,11 @@
 
 struct Light {
 	Vec3 position;
-	Color color;
+	Color<> color;
 
 	double intensity = 1;
 
-	Light(const Vec3& _position, const Color& _color, const double _intensity = 5.f);
+	Light(const Vec3& _position, const Color<>& _color, const double _intensity = 5.f);
 
-	static std::array<Color, 3> applyLightingToVertices(const Vec3 _points[3], const Color _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights);
+	static std::array<Color<>, 3> applyLightingToVertices(const Vec3 _points[3], const Color<> _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights);
 };
