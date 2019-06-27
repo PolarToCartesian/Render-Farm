@@ -17,10 +17,10 @@ class File {
 		std::string permissions;
 
 	public:
-		File(const std::string& _filename, const std::string& _permissions = FILE_READ_WRITE, const bool _doLogOpeningAndClosing = true);
+		File(const std::string _filename, const std::string _permissions = FILE_READ_WRITE, const bool _doLogOpeningAndClosing = true);
 		~File();
 
-		void open(const std::string& _filename, const std::string& _permissions = FILE_READ_WRITE);
+		void open(const std::string _filename, const std::string _permissions = FILE_READ_WRITE);
 
 		std::string read() const;
 		void readLineByLine(const std::function<void(const std::string&, const unsigned int)>& _lambda) const;

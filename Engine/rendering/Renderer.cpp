@@ -325,7 +325,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 
 			LOG::println("[RENDERING] Rendered " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 
-			std::string fileName = "./out/frames/" + std::to_string(nCurrentFrame + 1) + ".ppm";
+			const std::string fileName = "./out/frames/" + std::to_string(nCurrentFrame + 1) + ".ppm";
 
 			const Image* imageBeingRenderedPtr = renderImages[this->indexImageBeingRendered];
 

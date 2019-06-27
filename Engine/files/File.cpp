@@ -1,6 +1,6 @@
 #include "File.h"
 
-File::File(const std::string& _filename, const std::string& _permissions, const bool _doLogOpeningAndClosing) {
+File::File(const std::string _filename, const std::string _permissions, const bool _doLogOpeningAndClosing) {
 	this->doLogOpeningAndClosing = _doLogOpeningAndClosing;
 
 	this->open(_filename, _permissions);
@@ -10,7 +10,7 @@ File::~File() {
 	if (this->isFileOpen) this->close();
 }
 
-void File::open(const std::string& _filename, const std::string& _permissions) {
+void File::open(const std::string _filename, const std::string _permissions) {
 	this->filename = _filename;
 	this->permissions = _permissions;
 
@@ -21,16 +21,16 @@ void File::open(const std::string& _filename, const std::string& _permissions) {
 		this->isFileOpen = (this->filePtr != NULL);
 	#endif
 
-	this->canRead  = (this->isFileOpen && (this->permissions == FILE_READ  || this->permissions == FILE_READ_WRITE));
-	this->canWrite = (this->isFileOpen && (this->permissions == FILE_WRITE || this->permissions == FILE_READ_WRITE));
-
 	if (this->doLogOpeningAndClosing) {
 		if (this->isFileOpen) {
 			LOG::println("[FILE] The File \"" + std::string(_filename) + "\" Was Successfully Opened", LOG_TYPE::success);
 		} else {
-			perror("");
+			perror("[FILE] Error While Opening");
 		}
 	}
+
+	this->canRead  = (this->isFileOpen && (this->permissions == FILE_READ  || this->permissions == FILE_READ_WRITE));
+	this->canWrite = (this->isFileOpen && (this->permissions == FILE_WRITE || this->permissions == FILE_READ_WRITE));
 }
 
 void File::close() {

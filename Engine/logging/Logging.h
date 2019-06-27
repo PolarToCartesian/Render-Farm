@@ -65,6 +65,6 @@ namespace LOG {
 		std::lock_guard<std::mutex> lock(printMutex);
 
 		print(_message, _type, true);
-		print("\n", _type, true);
+		print("\n", LOG_TYPE::normal, true);
 	}
 };
