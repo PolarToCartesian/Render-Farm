@@ -61,6 +61,7 @@ The executable will be located in the main Render-Farm/ directory.
 
 ## Task List
 
++ [+] No more errors while writing
 + [ ] 2D Text Rendering
 + [ ] PNG or JPEG instead of PPM*
 

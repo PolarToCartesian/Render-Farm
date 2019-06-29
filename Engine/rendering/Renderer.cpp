@@ -329,7 +329,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 
 			const Image* imageBeingRenderedPtr = renderImages[this->indexImageBeingRendered];
 
-			writeThreads[this->indexImageBeingRendered] = std::thread([nCurrentFrame, &_nFrames, &fileName, &imageBeingRenderedPtr]() {
+			writeThreads[this->indexImageBeingRendered] = std::thread([nCurrentFrame, _nFrames, fileName, imageBeingRenderedPtr]() {
 				const auto startTime = std::chrono::system_clock::now();
 
 				imageBeingRenderedPtr->writeToDisk(fileName);
