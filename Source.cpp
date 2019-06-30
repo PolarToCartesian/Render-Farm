@@ -4,12 +4,12 @@ class App : Renderer {
 	public:
 		App() : Renderer(1920 / 2, 1080 / 2) {
 			this->addModel(Model("models/armadillo.txt", Vec3(), false, Color<>(255)));
-			this->addLight(Light(Vec3(0, 0, -2), Color<>(255), 2));
+			this->addLight(Light(Vec3(0, 0, -2), Color<>(255), 1));
 			this->camera.position.y = 0.5;
 			this->camera.position.z = -2;
 
-			uint32_t fps = 60; // frames per second
-			uint32_t duration = 30; // seconds
+			uint32_t fps = 30; // frames per second
+			uint32_t duration = 5; // seconds
 			uint32_t nFrames = fps * duration;
 
 			this->renderAndWriteFrames(nFrames);
@@ -21,13 +21,13 @@ class App : Renderer {
 		}
 
 		void update() override {
-			this->getModelRef(0).rotate(Vec3(0.f, 0.25f, 0.f));
+			this->getModelRef(0).rotate(Vec3(0.f, 0.05f, 0.f));
 		}
 };
 
 int main() {
 	auto start = std::chrono::system_clock::now();
-	App app;
+	App app;	
 	auto end = std::chrono::system_clock::now();
 	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 	std::cout << elapsed.count() << "ms" << std::endl;

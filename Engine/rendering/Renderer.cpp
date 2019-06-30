@@ -241,21 +241,19 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 				this->depthBuffer[pixelIndex] = w;
 
 				// Triangulate :D the pixel color
-
-				double r = 0, g = 0, b = 0;
+				Color<double> pixelColor(0);
 
 				// For every vertex
 				for (uint8_t c = 0; c < 3; c++) {
-					r += lightenedVertexColors[c].r * VertexPositionWeights[c];
-					g += lightenedVertexColors[c].g * VertexPositionWeights[c];
-					b += lightenedVertexColors[c].b * VertexPositionWeights[c];
+					pixelColor += Color<double>(lightenedVertexColors[c]) * VertexPositionWeights[c];
 				}
 
-				r /= VertexPositionWeightSum;
-				g /= VertexPositionWeightSum;
-				b /= VertexPositionWeightSum;
+				pixelColor /= VertexPositionWeightSum;
 
-				const Color<> pixelColor(static_cast<uint8_t>(r), static_cast<uint8_t>(g), static_cast<uint8_t>(b));
+
+
+				pixelColor.constrain(0, 255);
+
 
 				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}
@@ -285,13 +283,6 @@ void Renderer::drawDisk(const Vec3& _position, const uint16_t _radius, const Col
 			}
 		}
 	}
-}
-
-void Renderer::drawSphere(const Vec3& _position, const uint16_t _radius, const Color<>& _color) {
-	// Ray Marching : http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions
-
-	// To make better
-	this->drawDisk(_position, _radius, _color);
 }
 
 void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {

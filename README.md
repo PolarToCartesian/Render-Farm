@@ -62,7 +62,8 @@ The executable will be located in the main Render-Farm/ directory.
 ## Task List
 
 + [+] No more errors while writing
-+ [ ] 2D Text Rendering
++ [ ] 2D Text Rendering*
 + [ ] PNG or JPEG instead of PPM*
++ [ ] Comment the code in english and in french in a detailed manner.
 
 *Low priority / Not sure if it will be implemented

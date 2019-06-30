@@ -5,11 +5,6 @@
 
 template <typename T = uint8_t>
 class Color {
-	private:
-		T getInBounds(const double _v) {
-			return static_cast<T>((_v > std::numeric_limits<T>::max()) ? std::numeric_limits<T>::max() : ((_v < 0) ? 0 : _v));
-		}
-
 	public:
 		T r, g, b;
 
@@ -18,65 +13,79 @@ class Color {
 		Color(const T _r, const T _g, const T _b) : r(_r), g(_g), b(_b) {}
 
 		template <typename T2>
+		Color(const Color<T2>& _color) {
+			this->r = static_cast<T>(_color.r);
+			this->g = static_cast<T>(_color.g);
+			this->b = static_cast<T>(_color.b);
+		}
+
+		template <typename T2>
 		void operator+=(const Color<T2>& _c) {
-			this->r = getInBounds(static_cast<double>(this->r) + _c.r);
-			this->g = getInBounds(static_cast<double>(this->g) + _c.g);
-			this->b = getInBounds(static_cast<double>(this->b) + _c.b);
+			this->r = static_cast<T2>(this->r + _c.r);
+			this->g = static_cast<T2>(this->g + _c.g);
+			this->b = static_cast<T2>(this->b + _c.b);
 		}
 
 		template <typename T2>
 		void operator-=(const Color<T2>& _c) {
-			this->r = getInBounds(static_cast<double>(this->r) - _c.r);
-			this->g = getInBounds(static_cast<double>(this->g) - _c.g);
-			this->b = getInBounds(static_cast<double>(this->b) - _c.b);
+			this->r = static_cast<T2>(this->r - _c.r);
+			this->g = static_cast<T2>(this->g - _c.g);
+			this->b = static_cast<T2>(this->b - _c.b);
 		}
 
 		template <typename T2>
 		void operator*=(const Color<T2>& _c) {
-			this->r = getInBounds(static_cast<double>(this->r) * _c.r);
-			this->g = getInBounds(static_cast<double>(this->g) * _c.g);
-			this->b = getInBounds(static_cast<double>(this->b) * _c.b);
+			this->r = static_cast<T2>(this->r * _c.r);
+			this->g = static_cast<T2>(this->g * _c.g);
+			this->b = static_cast<T2>(this->b * _c.b);
 		}
 
 		template <typename T2>
 		void operator/=(const Color<T2>& _c) {
-			this->r = getInBounds(static_cast<double>(this->r) / _c.r);
-			this->g = getInBounds(static_cast<double>(this->g) / _c.g);
-			this->b = getInBounds(static_cast<double>(this->b) / _c.b);
+			this->r = static_cast<T2>(this->r / _c.r);
+			this->g = static_cast<T2>(this->g / _c.g);
+			this->b = static_cast<T2>(this->b / _c.b);
 		}
 
 		template <typename T2>
 		void operator+=(const T2 _n) {
-			this->r = getInBounds(static_cast<double>(this->r) + _n);
-			this->g = getInBounds(static_cast<double>(this->g) + _n);
-			this->b = getInBounds(static_cast<double>(this->b) + _n);
+			this->r = static_cast<T2>(this->r + _n);
+			this->g = static_cast<T2>(this->g + _n);
+			this->b = static_cast<T2>(this->b + _n);
 		}
 
 		template <typename T2>
 		void operator-=(const T2 _n) {
-			this->r = getInBounds(static_cast<double>(this->r) - _n);
-			this->g = getInBounds(static_cast<double>(this->g) - _n);
-			this->b = getInBounds(static_cast<double>(this->b) - _n);
+			this->r = static_cast<T2>(this->r - _n);
+			this->g = static_cast<T2>(this->g - _n);
+			this->b = static_cast<T2>(this->b - _n);
 		}
 
 		template <typename T2>
 		void operator*=(const T2 _n) {
-			this->r = getInBounds(static_cast<double>(this->r) * _n);
-			this->g = getInBounds(static_cast<double>(this->g) * _n);
-			this->b = getInBounds(static_cast<double>(this->b) * _n);
+			this->r = static_cast<T2>(this->r * _n);
+			this->g = static_cast<T2>(this->g * _n);
+			this->b = static_cast<T2>(this->b * _n);
 		}
 
 		template <typename T2>
 		void operator/=(const T2 _n) {
-			this->r = getInBounds(static_cast<double>(this->r) / _n);
-			this->g = getInBounds(static_cast<double>(this->g) / _n);
-			this->b = getInBounds(static_cast<double>(this->b) / _n);
+			this->r = static_cast<T2>(this->r / _n);
+			this->g = static_cast<T2>(this->g / _n);
+			this->b = static_cast<T2>(this->b / _n);
+		}
+
+		template <typename T2>
+		void constrain(const T2 _min, const T2 _max) {
+			this->r = (this->r < _min) ? _min : (this->r > _max) ? _max : this->r;
+			this->g = (this->g < _min) ? _min : (this->g > _max) ? _max : this->g;
+			this->b = (this->b < _min) ? _min : (this->b > _max) ? _max : this->b;
 		}
 };
 
 template <typename T>
 Color<T> operator+(const Color<T>& _c, const double _n) {
-	Color<T> r(_c.r, _c.g, _c.b);
+	Color<T> r(_c);
 
 	r += _n;
 
@@ -85,7 +94,7 @@ Color<T> operator+(const Color<T>& _c, const double _n) {
 
 template <typename T>
 Color<T> operator-(const Color<T>& _c, const double _n) {
-	Color<T> r(_c.r, _c.g, _c.b);
+	Color<T> r(_c);
 
 	r -= _n;
 
@@ -94,7 +103,7 @@ Color<T> operator-(const Color<T>& _c, const double _n) {
 
 template <typename T>
 Color<T> operator/(const Color<T>& _c, const double _n) {
-	Color<T> r(_c.r, _c.g, _c.b);
+	Color<T> r(_c);
 
 	r /= _n;
 
@@ -103,7 +112,7 @@ Color<T> operator/(const Color<T>& _c, const double _n) {
 
 template <typename T>
 Color<T> operator*(const Color<T>& _c, const double _n) {
-	Color<T> r(_c.r, _c.g, _c.b);
+	Color<T> r(_c);
 
 	r *= _n;
 

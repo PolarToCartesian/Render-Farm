@@ -87,8 +87,6 @@ class Renderer {
 
 		void drawDisk(const Vec3& _position, const uint16_t _radius, const Color<>& _color);
 
-		void drawSphere(const Vec3& _position, const uint16_t _radius, const Color<>& _color);
-
 		void renderAndWriteFrames(const uint32_t _nFrames);
 
 		void writeVideo(const uint32_t _nFrames, const uint16_t _fps = 30);
