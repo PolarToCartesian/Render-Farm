@@ -17,6 +17,7 @@ class Image {
 		Color<> * colorBuffer = nullptr;
 
 	public:
+		Image(const Image& _img);
 		Image(const std::string& _filename, const bool _doLog = false);
 		Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor = Color<>());
 
@@ -28,6 +29,8 @@ class Image {
 		void setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c);
 
 		Color<> sample(const uint16_t _x, const uint16_t _y) const;
+
+		void resize(const uint16_t _width, const uint16_t _height);
 
 		void writeToDisk(const std::string& _fileName) const;
 

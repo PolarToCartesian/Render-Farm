@@ -72,16 +72,16 @@ class Renderer {
 		void drawModel(const uint16_t _modelId);
 
 		void drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color<>& _color);
-
 		void drawPoint(const uint16_t _x, const uint16_t _y, const Color<>& _color);
 
 		void drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color<>& _color);
-
 		void drawRectangle(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color<>& _color);
 
 		void drawImageNoVerif(const uint16_t _x, const uint16_t _y, const Image& _image);
-
 		void drawImage(const uint16_t _x, const uint16_t _y, const Image& _image);
+
+		void drawImageNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _width, const uint16_t _height, const Image& _image);
+		void drawImage(const uint16_t _x, const uint16_t _y, const uint16_t _width, const uint16_t _height, const Image& _image);
 
 		void drawTriangle3D(const Triangle& _tr);
 

@@ -24,7 +24,7 @@ Renderer::Renderer(const uint16_t _width, const uint16_t _height, const Color<>&
 
 	this->calculatePerspectiveMatrix();
 	this->backgroundColor = _backgroundColor;
-	this->depthBuffer = new double[static_cast<uint32_t>(this->width) * this->height];
+	this->depthBuffer = new double[static_cast<uint32_t>(this->width * this->height)];
 }
 
 Renderer::~Renderer() {
@@ -81,38 +81,58 @@ void Renderer::drawRectangle(const uint16_t _x, const uint16_t _y, const uint16_
 }
 
 void Renderer::drawImageNoVerif(const uint16_t _x, const uint16_t _y, const Image& _image) {
-	uint16_t sampleX = 0, sampleY = 0;
+	uint16_t screenX = _x, screenY = _y;
 	
-	for (uint16_t y = _y; y < _y + _image.getHeight(); y++) {
-		const uint32_t baseIndex = y * this->width;
+	for (uint16_t sampleY = 0; sampleY < _image.getHeight(); sampleY++) {
+		const uint32_t baseScreenIndex = screenY * this->width;
+		const uint32_t baseSampleIndex = sampleY * _image.getWidth();
 
-		for (uint16_t x = _x; x < _x + _image.getWidth(); x++) {
-			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _image.sample(sampleX, sampleY);
-			sampleX++;
+		for (uint16_t sampleX = 0; sampleX < _image.getWidth(); sampleX++) {
+			this->renderImages[this->indexImageBeingRendered]->colorBuffer[baseScreenIndex + screenX] = _image.sample(sampleX, sampleY);
+
+			screenX++;
 		}
 
-		sampleX = 0;
-		sampleY++;
+		screenY++;
+		screenX = _x;
 	}
 }
 
 void Renderer::drawImage(const uint16_t _x, const uint16_t _y, const Image& _image) {
-	const uint16_t xEnd = (_x + _image.getWidth()  > this->getWidth()  - 1) ? (this->width)  : (_x + _image.getWidth() );
-	const uint16_t yEnd = (_y + _image.getHeight() > this->getHeight() - 1) ? (this->height) : (_y + _image.getHeight());
+	uint16_t screenX = _x, screenY = _y;
 
-	uint16_t sampleX = 0, sampleY = 0;
+	const uint16_t endY = (_y + _image.getHeight() >= this->height) ? this->height - _y - 1 : _image.getHeight();
+	const uint16_t endX = (_x + _image.getWidth()  >= this->width)  ? this->width  - _x - 1 : _image.getWidth();
+	
+	for (uint16_t sampleY = 0; sampleY < endY; sampleY++) {
+		const uint32_t baseScreenIndex = screenY * this->width;
+		const uint32_t baseSampleIndex = sampleY * _image.getWidth();
 
-	for (uint16_t y = _y; y < yEnd; y++) {
-		const uint32_t baseIndex = y * this->width;
+		for (uint16_t sampleX = 0; sampleX < endX; sampleX++) {
+			this->renderImages[this->indexImageBeingRendered]->colorBuffer[baseScreenIndex + screenX] = _image.sample(sampleX, sampleY);
 
-		for (uint16_t x = _x; x < xEnd; x++) {
-			renderImages[this->indexImageBeingRendered]->colorBuffer[baseIndex + x] = _image.sample(sampleX, sampleY);
-			sampleX++;
+			screenX++;
 		}
 
-		sampleX = 0;
-		sampleY++;
+		screenY++;
+		screenX = _x;
 	}
+}
+
+void Renderer::drawImageNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _width, const uint16_t _height, const Image& _image) {
+	Image img(_image);
+
+	img.resize(_width, _height);
+
+	this->drawImageNoVerif(_x, _y, img);
+}
+
+void Renderer::drawImage(const uint16_t _x, const uint16_t _y, const uint16_t _width, const uint16_t _height, const Image& _image) {
+	Image img(_image);
+	
+	img.resize(_width, _height);
+
+	this->drawImage(_x, _y, img);
 }
 
 // Renders a triangle in 3D
@@ -250,10 +270,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr) {
 
 				pixelColor /= VertexPositionWeightSum;
 
-
-
 				pixelColor.constrain(0, 255);
-
 
 				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 			}

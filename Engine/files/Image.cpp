@@ -2,6 +2,15 @@
 
 // Image Class
 
+Image::Image(const Image& _img) {
+	this->imageWidth = _img.imageWidth;
+	this->imageHeight = _img.imageHeight;
+	this->nPixels = _img.nPixels;
+
+	this->colorBuffer = new Color<>[this->nPixels];
+	std::memcpy(this->colorBuffer, _img.colorBuffer, this->nPixels * sizeof(Color<>));
+}
+
 Image::Image(const std::string& _filename, const bool _doLog) {
 	File file(_filename, FILE_READ, _doLog);
 
@@ -71,6 +80,29 @@ void Image::setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c) {
 
 Color<> Image::sample(const uint16_t _x, const uint16_t _y) const {
 	return this->colorBuffer[this->getIndex(_x, _y)];
+}
+
+void Image::resize(const uint16_t _width, const uint16_t _height) {
+	Image newImage = Image(_width, _height);
+	
+	for (uint16_t x = 0; x < _width; x++) {
+		for (uint16_t y = 0; y < _height; y++) {
+			const uint16_t sampleX = static_cast<uint16_t>((x / static_cast<double>(_width))  * this->imageWidth);
+			const uint16_t sampleY = static_cast<uint16_t>((y / static_cast<double>(_height)) * this->imageHeight);
+			const Color<> pixelColor = this->sample(sampleX, sampleY);
+
+			newImage.setColor(x, y, pixelColor);
+		}
+	}
+
+	delete[] this->colorBuffer;
+
+	this->imageWidth  = _width;
+	this->imageHeight = _height;
+	this->nPixels = this->imageWidth * this->imageHeight;
+	this->colorBuffer = new Color<>[this->nPixels];
+	
+	std::memcpy(this->colorBuffer, newImage.colorBuffer, this->nPixels * sizeof(Color<>));
 }
 
 void Image::writeToDisk(const std::string& _fileName) const {
