@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../other/Defines.h"
-#include "../logging/Logging.h"
+#include "../cmd/Logging.h"
 #include "../other/pch.h"
 
 class File {

@@ -317,7 +317,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 		uint32_t nEndFrame     = nStartFrame + RENDERS_AND_WRITES_PER_CYCLE;
 		if (nEndFrame > _nFrames) nEndFrame = _nFrames;
 
-		LOG::println("\n[RENDERING / WRITING] Starting Cycle " + std::to_string(nCycle + 1) + " (" + std::to_string(nEndFrame - nStartFrame) + " frames)\n", LOG_TYPE::normal);
+		CMD::println("\n[RENDERING / WRITING] Starting Cycle " + std::to_string(nCycle + 1) + " (" + std::to_string(nEndFrame - nStartFrame) + " frames)\n", LOG_TYPE::normal);
 	
 		for (this->indexImageBeingRendered = 0; this->indexImageBeingRendered < nEndFrame - nStartFrame; this->indexImageBeingRendered++) {
 			const auto startTime = std::chrono::system_clock::now();
@@ -331,7 +331,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 			const auto endTime = std::chrono::system_clock::now();
 			const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-			LOG::println("[RENDERING] Rendered " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
+			CMD::println("[RENDERING] Rendered " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 
 			const std::string fileName = "./out/frames/" + std::to_string(nCurrentFrame + 1) + ".ppm";
 
@@ -345,7 +345,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 				const auto endTime   = std::chrono::system_clock::now();
 				const auto elapsed   = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-				LOG::println("[WRITING]   Wrote    " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
+				CMD::println("[WRITING]   Wrote    " + std::to_string(nCurrentFrame + 1) + " / " + std::to_string(_nFrames) + " (" + std::to_string(elapsed.count()) + "ms)", LOG_TYPE::success);
 			});
 
 			nCurrentFrame++;

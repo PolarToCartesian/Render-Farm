@@ -53,9 +53,9 @@ Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bo
 			}
 		});
 
-		LOG::println("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)", LOG_TYPE::success);
+		CMD::println("[READING] Read File \"" + std::string(_filePath) + "\" (" + std::to_string(this->triangles.size()) + " trianlges)", LOG_TYPE::success);
 	} else {
-		LOG::println("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!", LOG_TYPE::error);
+		CMD::println("[ERROR] The File \"" + std::string(_filePath) + "\" Was Unbale To Be Opened!", LOG_TYPE::error);
 	}
 
 	file.close();
@@ -66,6 +66,8 @@ Model::Model(const Triangle* _triangles, const uint64_t _numTriangles) {
 
 	for (unsigned int i = 0; i < _numTriangles; i++) { triangles.push_back(_triangles[i]); }
 }
+
+Model::Model() {}
 
 void Model::applyFunctionToEachTriangle(const std::function<void(Triangle&)>& _function) {
 	std::for_each(this->triangles.begin(), this->triangles.end(), _function);

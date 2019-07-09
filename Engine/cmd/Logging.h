@@ -3,7 +3,7 @@
 #include "../other/Defines.h"
 #include "../other/pch.h"
 
-namespace LOG {
+namespace CMD {
 	namespace {
 		std::mutex printMutex;
 	}

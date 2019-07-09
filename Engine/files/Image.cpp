@@ -26,7 +26,7 @@ Image::Image(const std::string& _filename, const bool _doLog) {
 						lineStream >> ppmType;
 
 						if (ppmType != "P3") {
-							if (_doLog) LOG::println("[IMAGE] ERROR WHILE READING \"" + _filename + "\". We Only Support P3", LOG_TYPE::error);
+							if (_doLog) CMD::println("[IMAGE] ERROR WHILE READING \"" + _filename + "\". We Only Support P3", LOG_TYPE::error);
 
 							this->~Image();
 
@@ -120,7 +120,7 @@ void Image::writeToDisk(const std::string& _fileName) const {
 
 		file.writeNoVerif(fileContents);
 	} else {
-		LOG::println("[ERROR] While Writing To \"" + _fileName + "\"", LOG_TYPE::error);
+		CMD::println("[ERROR] While Writing To \"" + _fileName + "\"", LOG_TYPE::error);
 	}
 }
 

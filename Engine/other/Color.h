@@ -83,8 +83,8 @@ class Color {
 		}
 };
 
-template <typename T>
-Color<T> operator+(const Color<T>& _c, const double _n) {
+template <typename T, typename T2>
+Color<T> operator+(const Color<T>& _c, const T2& _n) {
 	Color<T> r(_c);
 
 	r += _n;
@@ -92,8 +92,8 @@ Color<T> operator+(const Color<T>& _c, const double _n) {
 	return r;
 }
 
-template <typename T>
-Color<T> operator-(const Color<T>& _c, const double _n) {
+template <typename T, typename T2>
+Color<T> operator-(const Color<T>& _c, const T2& _n) {
 	Color<T> r(_c);
 
 	r -= _n;
@@ -101,20 +101,20 @@ Color<T> operator-(const Color<T>& _c, const double _n) {
 	return r;
 }
 
-template <typename T>
-Color<T> operator/(const Color<T>& _c, const double _n) {
+template <typename T, typename T2>
+Color<T> operator*(const Color<T>& _c, const T2& _n) {
 	Color<T> r(_c);
 
-	r /= _n;
+	r *= _n;
 
 	return r;
 }
 
-template <typename T>
-Color<T> operator*(const Color<T>& _c, const double _n) {
+template <typename T, typename T2>
+Color<T> operator/(const Color<T>& _c, const T2& _n) {
 	Color<T> r(_c);
 
-	r *= _n;
+	r /= _n;
 
 	return r;
 }

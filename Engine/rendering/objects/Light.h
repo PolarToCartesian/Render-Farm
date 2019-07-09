@@ -2,6 +2,7 @@
 
 
 #include "../../other/Defines.h"
+#include "../../cmd/Logging.h"
 #include "../../math/Vertex.h"
 #include "../../math/Funcs.h"
 #include "../../other/pch.h"
@@ -10,7 +11,7 @@ struct Light {
 	Vec3 position;
 	Color<> color;
 
-	double intensity = 1;
+	double intensity;
 
 	Light(const Vec3& _position, const Color<>& _color, const double _intensity = 5.f);
 

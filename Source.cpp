@@ -3,9 +3,11 @@
 class App : Renderer {
 	public:
 		App() : Renderer(1920 / 2, 1080 / 2) {
-			this->addModel(Model("models/armadillo.txt", Vec3(), false, Color<>(255)));
+			//this->addModel(Model("models/armadillo.txt", Vec3(), false, Color<>(255)));
+			this->addModel(Box(Vec3(0), 1, true, Color<>(255), Vec3(0)).model);
 			this->addLight(Light(Vec3(0, 0, -2), Color<>(255), 1));
-			this->camera.position.y = 0.5;
+			//this->camera.position.y = 0.5;
+			this->camera.position.y = 1;
 			this->camera.position.z = -2;
 
 			uint32_t fps = 30; // frames per second

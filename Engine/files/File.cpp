@@ -23,7 +23,7 @@ void File::open(const std::string _filename, const std::string _permissions) {
 
 	if (this->doLogOpeningAndClosing) {
 		if (this->isFileOpen) {
-			LOG::println("[FILE] The File \"" + std::string(_filename) + "\" Was Successfully Opened", LOG_TYPE::success);
+			CMD::println("[FILE] The File \"" + std::string(_filename) + "\" Was Successfully Opened", LOG_TYPE::success);
 		} else {
 			perror("[FILE] Error While Opening");
 		}
@@ -39,7 +39,7 @@ void File::close() {
 		fclose(this->filePtr);
 
 		if (this->doLogOpeningAndClosing) {
-			LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Was Successfully Closed", LOG_TYPE::success);
+			CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Was Successfully Closed", LOG_TYPE::success);
 		}
 
 		this->filePtr     = nullptr;
@@ -49,7 +49,7 @@ void File::close() {
 		this->canRead     = false;
 		this->canWrite    = false;
 	} else if (this->doLogOpeningAndClosing) {
-		LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Could Not Be Closed Since It Is Already Closed", LOG_TYPE::warning);
+		CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Could Not Be Closed Since It Is Already Closed", LOG_TYPE::warning);
 	}
 }
 
@@ -64,10 +64,10 @@ void File::write(const std::string& _content) {
 		if (this->canWrite) {
 			this->writeNoVerif(_content);
 		} else {
-			LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Read From Not Written To", LOG_TYPE::error);
+			CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Read From Not Written To", LOG_TYPE::error);
 		}
 	} else {
-		LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Not Be Written To Because It Is Closed", LOG_TYPE::error);
+		CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Not Be Written To Because It Is Closed", LOG_TYPE::error);
 	}
 }
 
@@ -90,13 +90,13 @@ std::string File::read() const {
 
 				return std::string(charBuffer);
 			} else {
-				LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Encountered An Memory Error While Reading", LOG_TYPE::error);
+				CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Encountered An Memory Error While Reading", LOG_TYPE::error);
 			}
 		} else {
-			LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Written To Not Read From", LOG_TYPE::error);
+			CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Written To Not Read From", LOG_TYPE::error);
 		}
 	} else {
-		LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Not Be Read From Because It Is Closed", LOG_TYPE::error);
+		CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Not Be Read From Because It Is Closed", LOG_TYPE::error);
 	}
 
 	return "";
@@ -122,10 +122,10 @@ void File::readLineByLine(const std::function<void(const std::string&, const uns
 				lineNumber++;
 			}
 		} else {
-			LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Written To Not Read From", LOG_TYPE::error);
+			CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Only Be Written To Not Read From", LOG_TYPE::error);
 		}
 	} else {
-		LOG::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Not Be Read From Because It Is Closed", LOG_TYPE::error);
+		CMD::println("[FILE] The File \"" + std::string(this->filename) + "\" Can Not Be Read From Because It Is Closed", LOG_TYPE::error);
 	}
 }
 

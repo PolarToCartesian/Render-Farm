@@ -63,6 +63,7 @@ The executable will be located in the main Render-Farm/ directory.
 
 + [+] No more errors while writing
 + [+] Image Resizing
++ [ ] Physics Engine
 + [ ] 2D Text Rendering*
 + [ ] Comment the code in english and in french in a detailed manner.
 
