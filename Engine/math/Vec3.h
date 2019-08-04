@@ -83,9 +83,6 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 
 	void intifyW();
 
-	void colorify();
-	void colorifyW();
-
 	Vec3 operator*(const Mat4x4 & _m) const;
 
 	void operator*=(const Mat4x4 & _m);

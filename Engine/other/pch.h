@@ -7,13 +7,11 @@
 #include <sstream>
 #include <cstring>
 #include <cassert>
-#include <fcntl.h>
 #include <vector>
 #include <thread>
 #include <cmath>
 #include <array>
 #include <mutex>
-#include <io.h>
 
 #ifdef _WIN32
 	#define NOMINMAX

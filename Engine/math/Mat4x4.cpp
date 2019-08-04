@@ -2,11 +2,12 @@
 
 // Matrix Struct
 
-Mat4x4::Mat4x4(const bool _isIdentityMatrix) {
-	if (_isIdentityMatrix) {
-		for (uint8_t i = 1; i < 17; i += 5) {
+Mat4x4::Mat4x4(const bool _isIdentityMatrix)
+{
+	if (_isIdentityMatrix)
+	{
+		for (uint8_t i = 1; i < 17; i += 5)
 			this->m[i - 1] = 1;
-		}
 	}
 }
 
@@ -19,18 +20,16 @@ uint8_t Mat4x4::getIndex(const uint8_t _row, const uint8_t _col) const { return 
 Mat4x4 Mat4x4::operator*(const Mat4x4& _m) const {
 	Mat4x4 result(false);
 
-	for (uint8_t row = 0; row < 4; row++) {
-		for (uint8_t col = 0; col < 4; col++) {
-			for (uint8_t k = 0; k < 4; k++) {
+	for (uint8_t row = 0; row < 4; row++)
+		for (uint8_t col = 0; col < 4; col++)
+			for (uint8_t k = 0; k < 4; k++)
 				result.m[getIndex(row, col)] += this->m[getIndex(row, k)] * _m.m[getIndex(k, col)];
-			}
-		}
-	}
 
 	return result;
 }
 
-Mat4x4 Mat4x4::getRotationXMatrix(const double _rotX) {
+Mat4x4 Mat4x4::getRotationXMatrix(const double _rotX)
+{
 	const double sinX = std::sin(_rotX);
 	const double cosX = std::cos(_rotX);
 
@@ -44,7 +43,8 @@ Mat4x4 Mat4x4::getRotationXMatrix(const double _rotX) {
 	return Mat4x4(m);
 }
 
-Mat4x4 Mat4x4::getRotationYMatrix(const double _rotY) {
+Mat4x4 Mat4x4::getRotationYMatrix(const double _rotY)
+{
 	const double sinY = std::sin(_rotY);
 	const double cosY = std::cos(_rotY);
 
@@ -58,7 +58,8 @@ Mat4x4 Mat4x4::getRotationYMatrix(const double _rotY) {
 	return Mat4x4(m);
 }
 
-Mat4x4 Mat4x4::getRotationZMatrix(const double _rotZ) {
+Mat4x4 Mat4x4::getRotationZMatrix(const double _rotZ)
+{
 	const double sinZ = std::sin(_rotZ);
 	const double cosZ = std::cos(_rotZ);
 
@@ -72,7 +73,8 @@ Mat4x4 Mat4x4::getRotationZMatrix(const double _rotZ) {
 	return Mat4x4(m);
 }
 
-Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned int _height, const double _fov, const double _zNear, const double _zFar) {
+Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned int _height, const double _fov, const double _zNear, const double _zFar)
+{
 	double aspectRatio = _height / static_cast<double>(_width);
 	double a = -std::abs(1.f / std::tan(MATH::degToRad(_fov / 2.f)));
 
@@ -90,7 +92,8 @@ Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned in
 
 /// Overloading
 
-bool operator==(const Mat4x4& _a, const Mat4x4& _b) {
+bool operator==(const Mat4x4& _a, const Mat4x4& _b)
+{
 	bool isEqual = true;
 
 	for (uint8_t i = 0; i < 16; i++) {
@@ -107,7 +110,8 @@ bool operator!=(const Mat4x4& _a, const Mat4x4& _b) { return !operator==(_a, _b)
 
 /// Printing
 
-std::ostream& operator<<(std::ostream& _os, const Mat4x4& _m) {
+std::ostream& operator<<(std::ostream& _os, const Mat4x4& _m)
+{
 	for (int i = 0; i < 16; i++) {
 		_os << _m.m[i] << " ";
 

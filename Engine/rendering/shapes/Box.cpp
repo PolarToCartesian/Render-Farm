@@ -1,6 +1,7 @@
 #include "Box.h"
 
-Box::Box(const Vec3& _center, const double sideLength, const bool _randomColor, const Color<>& _color, const Vec3& _rotation) {
+Box::Box(const Vec3& _center, const double sideLength, const bool _randomColor, const Color<>& _color, const Vec3& _rotation)
+{
 	const double hsl = sideLength / 2.f;
 
 	const Vertex vertices[8] = {
@@ -42,7 +43,6 @@ Box::Box(const Vec3& _center, const double sideLength, const bool _randomColor, 
 
 	model.triangles.reserve(12);
 
-	for (uint8_t i = 0; i < 12; i++) {
+	for (uint8_t i = 0; i < 12; i++)
 		model.triangles.push_back(triangles[i]);
-	}
 }

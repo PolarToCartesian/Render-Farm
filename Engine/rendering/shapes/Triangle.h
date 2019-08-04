@@ -11,7 +11,7 @@ struct Triangle {
 
 	Triangle();
 	Triangle(const Vertex _vertices[3]);
-	Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint, const Vec3& _rotation = Vec3());
+	Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3());
 
 	void applyFunctionToEachVertex(const std::function<void(Vertex&)>& _function);
 
