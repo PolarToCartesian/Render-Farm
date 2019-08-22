@@ -50,7 +50,8 @@ The executable will be located in the main Render-Farm/ directory.
 + [Surface Normal Calculation](https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal)
 + [General 3D Matrix Calculations](https://www.youtube.com/playlist?list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP)
 + [2D Triangle Renderer](https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling)
-+ [Ray Marcing](http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions)
++ [Specular Lighting / Texturing / Phong Shading](https://www.youtube.com/watch?v=Is6D5rnWEvs&list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g&index=11&t=1512s)
++ [Calculating The Reflexion Vector](https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector)
 
 ### Test Models
 
@@ -58,5 +59,3 @@ The executable will be located in the main Render-Farm/ directory.
 + [quad.txt](https://github.com/triplepointfive/ogldev/blob/master/Content/quad.obj)
 + [teapot.txt](https://graphics.stanford.edu/courses/cs148-10-summer/as3/code/as3/teapot.obj)
 + [armadillo.txt](http://www.prinmath.com/csci5229/OBJ/index.html)
-
-*Low priority / Not sure if it will be implemented
