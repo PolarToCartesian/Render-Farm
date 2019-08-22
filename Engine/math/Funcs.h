@@ -6,7 +6,7 @@
 namespace MATH {
 	unsigned int randomInt(const unsigned int _min, const unsigned int _max);
 
-	double degToRad(const double _deg);
+	float degToRad(const float _deg);
 
-	double constrain(const double _x, const double _min, const double _max);
+	float constrain(const float _x, const float _min, const float _max);
 };

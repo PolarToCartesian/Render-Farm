@@ -2,25 +2,41 @@
 
 // Light Struct
 
-Light::Light(const Vec3& _position, const Color<>& _color, const double _intensity) : position(_position), color(_color), intensity(_intensity) {}
+Light::Light(const Vec3& _position, const Color<>& _color, const float _intensity) : position(_position), color(_color), intensity(_intensity) {}
 
 // Engine Namespace
 
-std::array<Color<>, 3> Light::applyLightingToVertices(const Vec3 _points[3], const Color<> _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights)
+std::array<Color<>, 3> Light::applyLightingToVertices(const Vec3 _points[3], const Color<> _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights, const Vec3& _cameraPosition, const float _reflectivity)
 {
 	Color<float> vertexColorsWithLighting[3];
 
-	for (const Light& light : _lights)
-	{
-		for (uint8_t v = 0; v < 3; v++)
-		{
-			const Vec3 vertexToLight = light.position - _points[v];
+	for (const Light& light : _lights) {
+		for (uint8_t v = 0; v < 3; v++) {
+			const Vec3 vertexToLight = Vec3::normalize(light.position - _points[v]);
+
+			float diffuseDotProduct = Vec3::dotProduct(vertexToLight, _triangleSurfaceNormal);
+			if (diffuseDotProduct   < 0) diffuseDotProduct = 0;
+
+			const float brightness = diffuseDotProduct * light.intensity;
+
+			const Color<float> diffuse = (Color<float>(light.color) / 255.f) * brightness;
+
+			vertexColorsWithLighting[v] += diffuse * (Color<float>(_colors[v]) / 255.f);
 			
-			const double dotProduct = MATH::constrain(Vec3::dotProduct(vertexToLight, _triangleSurfaceNormal), 0, 1);
+			// Specular (https://www.youtube.com/watch?v=Is6D5rnWEvs&list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g&index=11&t=1512s)
 
-			const double brightness = MATH::constrain((dotProduct * light.intensity) / std::pow(vertexToLight.getLength(), 2), 0, 1);
+			const Vec3 lightToVertex = Vec3::normalize(vertexToLight * (-1));
+			const Vec3 vertexToCamera = Vec3::normalize(_cameraPosition - _points[v]);
 
-			vertexColorsWithLighting[v] += (Color<float>(light.color) / 255.f) * (Color<float>(_colors[v]) / 255.f) * brightness;
+			// https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector
+			const float dotLightToVertexAndSurfaceNormal = Vec3::dotProduct(_triangleSurfaceNormal, lightToVertex);
+
+			const Vec3 reflectedLight = Vec3::normalize(lightToVertex - (_triangleSurfaceNormal * dotLightToVertexAndSurfaceNormal * 2));
+
+			float specularDotProduct = Vec3::dotProduct(vertexToCamera, reflectedLight);
+			if (specularDotProduct   < 0) specularDotProduct = 0;
+
+			vertexColorsWithLighting[v] += (Color<float>(light.color) / 255.f) * _reflectivity * std::pow(specularDotProduct, 5);
 		}
 	}
 

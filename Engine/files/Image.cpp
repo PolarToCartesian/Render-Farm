@@ -100,8 +100,8 @@ void Image::resize(const uint16_t _width, const uint16_t _height)
 	{
 		for (uint16_t y = 0; y < _height; y++)
 		{
-			const uint16_t sampleX = static_cast<uint16_t>((x / static_cast<double>(_width))  * this->imageWidth);
-			const uint16_t sampleY = static_cast<uint16_t>((y / static_cast<double>(_height)) * this->imageHeight);
+			const uint16_t sampleX = static_cast<uint16_t>((x / static_cast<float>(_width))  * this->imageWidth);
+			const uint16_t sampleY = static_cast<uint16_t>((y / static_cast<float>(_height)) * this->imageHeight);
 			const Color<> pixelColor = this->sample(sampleX, sampleY);
 
 			newImage.setColor(x, y, pixelColor);

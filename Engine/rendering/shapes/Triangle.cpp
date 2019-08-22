@@ -4,17 +4,16 @@
 
 Triangle::Triangle() {}
 
-Triangle::Triangle(const Vertex _vertices[3]) {
+Triangle::Triangle(const Vertex _vertices[3], const float _reflectivity) : reflectivity(_reflectivity) {
 	std::memcpy(this->vertices, _vertices, 3 * sizeof(Vertex));
 
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i++)
 		this->rotationMidPoint += this->vertices[i].position;
-	}
 
 	this->rotationMidPoint /= 3;
 }
 
-Triangle::Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint, const Vec3& _rotation) : rotationMidPoint(_rotationMidPoint), rotation(_rotation) {
+Triangle::Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint, const Vec3& _rotation, const float _reflectivity) : reflectivity(_reflectivity), rotationMidPoint(_rotationMidPoint), rotation(_rotation) {
 	std::memcpy(this->vertices, _vertices, 3 * sizeof(Vertex));
 }
 
@@ -33,9 +32,9 @@ Vec3 Triangle::getSurfaceNormal(const Vec3 _points[3]) {
 	Vec3 U = _points[1] - _points[0];
 	Vec3 V = _points[2] - _points[0];
 
-	double nX = U.y * V.z - U.z * V.y;
-	double nY = U.z * V.x - U.x * V.z;
-	double nZ = U.x * V.y - U.y * V.x;
+	float nX = U.y * V.z - U.z * V.y;
+	float nY = U.z * V.x - U.x * V.z;
+	float nZ = U.x * V.y - U.y * V.x;
 
 	return Vec3::normalize(Vec3(nX, nY, nZ));
 }

@@ -25,11 +25,11 @@ class Renderer {
 		Mat4x4 perspectiveMatrix;
 
 		uint8_t fov;
-		double zNear, zFar;
+		float zNear, zFar;
 
 		unsigned int indexImageBeingRendered = 0;
 
-		double* depthBuffer = nullptr;
+		float* depthBuffer = nullptr;
 
 		Image* renderImages[RENDERS_AND_WRITES_PER_CYCLE];
 
@@ -49,7 +49,7 @@ class Renderer {
 		void calculatePerspectiveMatrix();
 
 	public:
-		Renderer(const uint16_t _width, const uint16_t _height, const Color<>& _backgroundColor = Color<>(51), const uint8_t _fov = 90, const double _zNear = 0.1, const double _zFar = 1000);
+		Renderer(const uint16_t _width, const uint16_t _height, const Color<>& _backgroundColor = Color<>(51), const uint8_t _fov = 90, const float _zNear = 0.1, const float _zFar = 1000);
 
 		~Renderer();
 

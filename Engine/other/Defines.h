@@ -12,8 +12,8 @@ constexpr uint8_t RENDERS_AND_WRITES_PER_CYCLE = 40;
 
 /// Do not modify past this comment
 
-constexpr double PI  = 3.14159265359;
-constexpr double TAU = 2 * PI;
+constexpr float PI  = static_cast<float>(3.14159265359);
+constexpr float TAU = static_cast<float>(2 * PI);
 
 // File
 

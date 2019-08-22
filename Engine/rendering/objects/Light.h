@@ -11,9 +11,9 @@ struct Light {
 	Vec3 position;
 	Color<> color;
 
-	double intensity;
+	float intensity;
 
-	Light(const Vec3& _position, const Color<>& _color, const double _intensity = 5.f);
+	Light(const Vec3& _position, const Color<>& _color, const float _intensity = 5.f);
 
-	static std::array<Color<>, 3> applyLightingToVertices(const Vec3 _points[3], const Color<> _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights);
+	static std::array<Color<>, 3> applyLightingToVertices(const Vec3 _points[3], const Color<> _colors[3], const Vec3& _triangleSurfaceNormal, const std::vector<Light>& _lights, const Vec3& _cameraPosition, const float _reflectivity);
 };

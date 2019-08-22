@@ -9,9 +9,11 @@ struct Triangle {
 	Vec3 rotation;
 	Vec3 rotationMidPoint;
 
+	float reflectivity = 0.25f;
+
 	Triangle();
-	Triangle(const Vertex _vertices[3]);
-	Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3());
+	Triangle(const Vertex _vertices[3], const float _reflectivity = 0.25f);
+	Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3(), const float _reflectivity = 0.25f);
 
 	void applyFunctionToEachVertex(const std::function<void(Vertex&)>& _function);
 

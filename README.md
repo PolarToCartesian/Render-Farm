@@ -59,12 +59,4 @@ The executable will be located in the main Render-Farm/ directory.
 + [teapot.txt](https://graphics.stanford.edu/courses/cs148-10-summer/as3/code/as3/teapot.obj)
 + [armadillo.txt](http://www.prinmath.com/csci5229/OBJ/index.html)
 
-## Task List
-
-+ [+] No more errors while writing
-+ [+] Image Resizing
-+ [ ] Physics Engine
-+ [ ] 2D Text Rendering*
-+ [ ] Comment the code in english and in french in a detailed manner.
-
 *Low priority / Not sure if it will be implemented

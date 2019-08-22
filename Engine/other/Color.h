@@ -23,73 +23,76 @@ class Color {
 		template <typename T2>
 		void operator+=(const Color<T2>& _c)
 		{
-			this->r = static_cast<T2>(this->r + _c.r);
-			this->g = static_cast<T2>(this->g + _c.g);
-			this->b = static_cast<T2>(this->b + _c.b);
+			this->r = static_cast<T>(this->r + _c.r);
+			this->g = static_cast<T>(this->g + _c.g);
+			this->b = static_cast<T>(this->b + _c.b);
 		}
 
 		template <typename T2>
 		void operator-=(const Color<T2>& _c)
 		{
-			this->r = static_cast<T2>(this->r - _c.r);
-			this->g = static_cast<T2>(this->g - _c.g);
-			this->b = static_cast<T2>(this->b - _c.b);
+			this->r = static_cast<T>(this->r - _c.r);
+			this->g = static_cast<T>(this->g - _c.g);
+			this->b = static_cast<T>(this->b - _c.b);
 		}
 
 		template <typename T2>
 		void operator*=(const Color<T2>& _c)
 		{
-			this->r = static_cast<T2>(this->r * _c.r);
-			this->g = static_cast<T2>(this->g * _c.g);
-			this->b = static_cast<T2>(this->b * _c.b);
+			this->r = static_cast<T>(this->r * _c.r);
+			this->g = static_cast<T>(this->g * _c.g);
+			this->b = static_cast<T>(this->b * _c.b);
 		}
 
 		template <typename T2>
 		void operator/=(const Color<T2>& _c)
 		{
-			this->r = static_cast<T2>(this->r / _c.r);
-			this->g = static_cast<T2>(this->g / _c.g);
-			this->b = static_cast<T2>(this->b / _c.b);
+			this->r = static_cast<T>(this->r / _c.r);
+			this->g = static_cast<T>(this->g / _c.g);
+			this->b = static_cast<T>(this->b / _c.b);
 		}
 
 		template <typename T2>
 		void operator+=(const T2 _n)
 		{
-			this->r = static_cast<T2>(this->r + _n);
-			this->g = static_cast<T2>(this->g + _n);
-			this->b = static_cast<T2>(this->b + _n);
+			this->r = static_cast<T>(this->r + _n);
+			this->g = static_cast<T>(this->g + _n);
+			this->b = static_cast<T>(this->b + _n);
 		}
 
 		template <typename T2>
 		void operator-=(const T2 _n)
 		{
-			this->r = static_cast<T2>(this->r - _n);
-			this->g = static_cast<T2>(this->g - _n);
-			this->b = static_cast<T2>(this->b - _n);
+			this->r = static_cast<T>(this->r - _n);
+			this->g = static_cast<T>(this->g - _n);
+			this->b = static_cast<T>(this->b - _n);
 		}
 
 		template <typename T2>
 		void operator*=(const T2 _n)
 		{
-			this->r = static_cast<T2>(this->r * _n);
-			this->g = static_cast<T2>(this->g * _n);
-			this->b = static_cast<T2>(this->b * _n);
+			this->r = static_cast<T>(this->r * _n);
+			this->g = static_cast<T>(this->g * _n);
+			this->b = static_cast<T>(this->b * _n);
 		}
 
 		template <typename T2>
 		void operator/=(const T2 _n)
 		{
-			this->r = static_cast<T2>(this->r / _n);
-			this->g = static_cast<T2>(this->g / _n);
-			this->b = static_cast<T2>(this->b / _n);
+			this->r = static_cast<T>(this->r / _n);
+			this->g = static_cast<T>(this->g / _n);
+			this->b = static_cast<T>(this->b / _n);
 		}
 
 		template <typename T2>
 		void constrain(const T2 _min, const T2 _max)
 		{
-			this->r = (this->r < _min) ? _min : (this->r > _max) ? _max : this->r;
-			this->g = (this->g < _min) ? _min : (this->g > _max) ? _max : this->g;
-			this->b = (this->b < _min) ? _min : (this->b > _max) ? _max : this->b;
+			const T min = static_cast<T>(_min);
+			const T max = static_cast<T>(_max);
+
+			this->r = (this->r < min) ? min : ((this->r > max) ? max : this->r);
+			this->g = (this->g < min) ? min : ((this->g > max) ? max : this->g);
+			this->b = (this->b < min) ? min : ((this->b > max) ? max : this->b);
 		}
 };
 

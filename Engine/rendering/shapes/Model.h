@@ -12,7 +12,7 @@ struct Model {
 
 	Model();
 
-	Model(const std::string& _filePath, const Vec3& _delataPosition = Vec3(0), const bool _randomColors = false, const Color<>& _flatColor = Color<>(255), const Vec3& _centerOfRotation = Vec3(0), const Vec3& _rotation = Vec3(0));
+	Model(const std::string& _filePath, const Vec3& _delataPosition = Vec3(0), const bool _randomColors = false, const Color<>& _flatColor = Color<>(255), const Vec3& _centerOfRotation = Vec3(0), const Vec3& _rotation = Vec3(0), const float _reflectivity = 0.25f);
 
 	Model(const Triangle* _triangles, const uint64_t _numTriangles);
 

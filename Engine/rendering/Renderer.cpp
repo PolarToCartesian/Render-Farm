@@ -19,14 +19,14 @@ void Renderer::calculatePerspectiveMatrix()
 
 // Public Methods
 
-Renderer::Renderer(const uint16_t _width, const uint16_t _height, const Color<>& _backgroundColor, const uint8_t _fov, const double _zNear, const double _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar)
+Renderer::Renderer(const uint16_t _width, const uint16_t _height, const Color<>& _backgroundColor, const uint8_t _fov, const float _zNear, const float _zFar) : width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar)
 {
 	std::experimental::filesystem::create_directory("./out");
 	std::experimental::filesystem::create_directory("./out/frames");
 
 	this->calculatePerspectiveMatrix();
 	this->backgroundColor = _backgroundColor;
-	this->depthBuffer = new double[static_cast<uint32_t>(this->width * this->height)];
+	this->depthBuffer = new float[static_cast<uint32_t>(this->width * this->height)];
 }
 
 Renderer::~Renderer()
@@ -152,9 +152,8 @@ void Renderer::drawImage(const uint16_t _x, const uint16_t _y, const uint16_t _w
 }
 
 // Renders a triangle in 3D
-void Renderer::drawTriangle3D(const Triangle& _tr)
-{
-	Vec3 rotatedVertices[3] = { _tr.vertices[0].position, _tr.vertices[1].position, _tr.vertices[2].position };
+void Renderer::drawTriangle3D(const Triangle& _tr) {
+	Vec3 rotatedVertices[3] = { (_tr.vertices[0].position) + Vec3(0, 0, 0, 1), _tr.vertices[1].position + Vec3(0, 0, 0, 1), _tr.vertices[2].position + Vec3(0, 0, 0, 1) };
 
 	const Mat4x4 cameraRotationXMatrix = Mat4x4::getRotationXMatrix(-this->camera.rotation.x);
 	const Mat4x4 cameraRotationYMatrix = Mat4x4::getRotationYMatrix(-this->camera.rotation.y);
@@ -165,8 +164,7 @@ void Renderer::drawTriangle3D(const Triangle& _tr)
 	const Mat4x4 triangleRotationZMatrix = Mat4x4::getRotationZMatrix(_tr.rotation.z);
 
 	// For Every Vertex
-	for (uint8_t v = 0; v < 3; v++)
-	{
+	for (uint8_t v = 0; v < 3; v++) {
 		// Rotate Triangle Around Point
 		rotatedVertices[v] -= _tr.rotationMidPoint;
 
@@ -216,14 +214,14 @@ void Renderer::drawTriangle3D(const Triangle& _tr)
 
 	// Get the color of each vertex w/ lighting
 	const Color<> triangleColors[3] = { _tr.vertices[0].color, _tr.vertices[1].color, _tr.vertices[2].color };
-	const std::array<Color<>, 3> lightenedVertexColors = Light::applyLightingToVertices(rotatedVertices, triangleColors, triangleSurfaceNormal, this->lights);
+	const std::array<Color<>, 3> lightenedVertexColors = Light::applyLightingToVertices(rotatedVertices, triangleColors, triangleSurfaceNormal, this->lights, this->camera.position, _tr.reflectivity);
 
 	// Start Rendering
 	// PreCalculate Values(For Barycentric Interpolation)
 	// Thanks to : https://codeplea.com/triangular-interpolation
 
-	const double denominator = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
-	double precalculated[6]  = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
+	const float denominator = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
+	float precalculated[6]  = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
 
 	// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
@@ -250,8 +248,8 @@ void Renderer::drawTriangle3D(const Triangle& _tr)
 		const bool second_half   = i > t1.y - t0.y || t1.y == t0.y;
 		const int segment_height = static_cast<int>(second_half ? t2.y - t1.y : t1.y - t0.y);
 
-		const double alpha = i / static_cast<double>(total_height);
-		const double beta  = static_cast<double>(i - (second_half ? t1.y - t0.y : 0)) / segment_height;
+		const float alpha = i / static_cast<float>(total_height);
+		const float beta  = static_cast<float>(i - (second_half ? t1.y - t0.y : 0)) / segment_height;
 
 		Vec3 A = t0 + (t2 - t0) * alpha;
 		Vec3 B = second_half ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
@@ -268,12 +266,12 @@ void Renderer::drawTriangle3D(const Triangle& _tr)
 			
 			precalculated[4] = (x - transformedVertices[2].x);
 
-			double VertexPositionWeights[3] = { (precalculated[0] * precalculated[4] + precalculated[1] * precalculated[5]) / denominator, (precalculated[2] * precalculated[4] + precalculated[3] * precalculated[5]) / denominator, 0 };
+			float VertexPositionWeights[3] = { (precalculated[0] * precalculated[4] + precalculated[1] * precalculated[5]) / denominator, (precalculated[2] * precalculated[4] + precalculated[3] * precalculated[5]) / denominator, 0 };
 			VertexPositionWeights[2]        = 1 - VertexPositionWeights[0] - VertexPositionWeights[1];
-			const double VertexPositionWeightSum  = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
+			const float VertexPositionWeightSum  = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
 
 			// Pixel Depth (w)
-			double w = 0;
+			float w = 0;
 
 			// For every vertex (Barycentric Interpolation)
 			for (uint8_t c = 0; c < 3; c++)
@@ -290,11 +288,11 @@ void Renderer::drawTriangle3D(const Triangle& _tr)
 				this->depthBuffer[pixelIndex] = w;
 
 				// Triangulate the pixel color
-				Color<double> pixelColor(0);
+				Color<float> pixelColor(0);
 
 				// For every vertex
 				for (uint8_t c = 0; c < 3; c++)
-					pixelColor += Color<double>(lightenedVertexColors[c]) * VertexPositionWeights[c];
+					pixelColor += Color<float>(lightenedVertexColors[c]) * VertexPositionWeights[c];
 
 				pixelColor /= VertexPositionWeightSum;
 
@@ -343,7 +341,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames)
 		this->renderImages[i] = new Image(this->width, this->height, this->backgroundColor);
 
 	// Render And Write Frames
-	for (unsigned int nCycle = 0; nCycle < std::ceil(_nFrames / (double) RENDERS_AND_WRITES_PER_CYCLE); nCycle++)
+	for (unsigned int nCycle = 0; nCycle < std::ceil(_nFrames / (float) RENDERS_AND_WRITES_PER_CYCLE); nCycle++)
 	{
 		const uint32_t nStartFrame = nCycle * RENDERS_AND_WRITES_PER_CYCLE;
 		uint32_t nCurrentFrame = nStartFrame;
