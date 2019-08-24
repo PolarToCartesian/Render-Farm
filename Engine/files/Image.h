@@ -36,3 +36,5 @@ class Image {
 
 		~Image();
 };
+
+typedef Image Texture;

@@ -26,7 +26,7 @@ void Triangle::translate(const Vec3& _deltaPosition) {
 	this->rotationMidPoint += _deltaPosition;
 }
 
-Vec3 Triangle::getSurfaceNormal(const Vec3 _points[3]) {
+Vec3 Triangle::getSurfaceNormal(const std::array<Vec3, 3>& _points) {
 	//https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
 
 	Vec3 U = _points[1] - _points[0];

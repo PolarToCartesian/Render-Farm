@@ -73,6 +73,12 @@ Mat4x4 Mat4x4::getRotationZMatrix(const float _rotZ)
 	return Mat4x4(m);
 }
 
+Mat4x4 Mat4x4::getRotationMatrix(const float _rotX, const float _rotY, const float _rotZ) {
+	return Mat4x4::getRotationXMatrix(_rotX) *
+		   Mat4x4::getRotationYMatrix(_rotY) *
+		   Mat4x4::getRotationZMatrix(_rotZ);
+}
+
 Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned int _height, const float _fov, const float _zNear, const float _zFar)
 {
 	float aspectRatio = _height / static_cast<float>(_width);

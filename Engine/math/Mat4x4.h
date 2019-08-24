@@ -20,6 +20,7 @@ struct Mat4x4 {
 	static Mat4x4 getRotationXMatrix(const float _rotX);
 	static Mat4x4 getRotationYMatrix(const float _rotY);
 	static Mat4x4 getRotationZMatrix(const float _rotZ);
+	static Mat4x4 getRotationMatrix(const float _rotX, const float _rotY, const float _rotZ);
 	static Mat4x4 getPerspectiveMatrix(const unsigned int _width, const unsigned int _height, const float _fov, const float _zNear, const float _zFar);
 };
 

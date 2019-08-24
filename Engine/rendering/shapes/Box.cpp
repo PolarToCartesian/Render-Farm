@@ -15,7 +15,7 @@ Box::Box(const Vec3& _center, const float sideLength, const bool _randomColor, c
 		Vertex(_center + Vec3(-hsl, -hsl, +hsl), _randomColor, _color), // 7
 	};
 
-	const Triangle triangles[12] = {
+	const Triangle trs[12] = {
 		// Front Face
 		Triangle(new Vertex[3] { vertices[0], vertices[1], vertices[2] }, _rotationMidPoint, _rotation, _reflectivity),
 		Triangle(new Vertex[3] { vertices[0], vertices[2], vertices[3] }, _rotationMidPoint, _rotation, _reflectivity),
@@ -41,8 +41,8 @@ Box::Box(const Vec3& _center, const float sideLength, const bool _randomColor, c
 		Triangle(new Vertex[3] { vertices[7], vertices[3], vertices[2] }, _rotationMidPoint, _rotation, _reflectivity),
 	};
 
-	model.triangles.reserve(12);
+	this->triangles.reserve(12);
 
 	for (uint8_t i = 0; i < 12; i++)
-		model.triangles.push_back(triangles[i]);
+		this->triangles.push_back(trs[i]);
 }

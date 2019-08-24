@@ -19,5 +19,5 @@ struct Triangle {
 
 	void translate(const Vec3& _deltaPosition);
 
-	static Vec3 getSurfaceNormal(const Vec3 _points[3]);
+	static Vec3 getSurfaceNormal(const std::array<Vec3, 3>& _points);
 };

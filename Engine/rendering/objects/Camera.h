@@ -7,5 +7,5 @@ struct Camera {
 	Vec3 position;
 	Vec3 rotation;
 
-	bool isTriangleFacingCamera(Vec3 _points[3], const Vec3& _triangleSurfaceNormal) const;
+	bool isTriangleFacingCamera(const std::array<Vec3, 3>& _points, const Vec3& _triangleSurfaceNormal) const;
 };
