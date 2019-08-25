@@ -60,30 +60,23 @@ void Renderer::drawModels() {
 		// Init Variables
 
 		struct VertexNormalCalcInfo {
-			Vec3 position;
 			Vec3 normal;
 			float sumWeights;
 		};
 
-		std::vector<VertexNormalCalcInfo> vertexNormalCalc;
+		//  We use a hash table to divide render times by 20 (according to my rough estimates)!
+		//  1) hashed rotated vertex    2) Info About rotated Vertex To Calculate Normal
+		std::unordered_map<std::string, VertexNormalCalcInfo> vertexNormalCalc;
 		vertexNormalCalc.reserve(3 * model.triangles.size());
 
 		// Lambdas
 
-		auto getIndexOfRotatedVertex = [&vertexNormalCalc](const Vec3& _rotatedVertex) -> std::tuple<bool, uint64_t> {
-			for (uint64_t i = vertexNormalCalc.size(); i--;) {
-				if (vertexNormalCalc[i].position == _rotatedVertex) {
-					return { true, i };
-				}
-			}
-
-			return { false, 0 };
+		auto hashRotatedVertex = [](const Vec3& _rotatedVertex) -> std::string {
+			return "x" + std::to_string(_rotatedVertex.x) + "y" + std::to_string(_rotatedVertex.y) + "z" + std::to_string(_rotatedVertex.z);
 		};
 
-		auto getVertexNormal = [&vertexNormalCalc, getIndexOfRotatedVertex](const Vec3& _rotatedVertex) -> Vec3 {
-			auto [exists, index] = getIndexOfRotatedVertex(_rotatedVertex);
-
-			return vertexNormalCalc[index].normal;
+		auto getVertexNormal = [&vertexNormalCalc, hashRotatedVertex](const Vec3& _rotatedVertex) -> Vec3 {
+			return vertexNormalCalc[hashRotatedVertex(_rotatedVertex)].normal;
 		};
 
 		// Calculate If Needed
@@ -98,26 +91,25 @@ void Renderer::drawModels() {
 		}
 
 		if (doVertexNormalsNeedToBeCalculated) {
-			for (const std::array<Vec3, 3> & rotatedVertices : rotatedVerticesOfTriangles) {
-				const Vec3 normal = Triangle::getSurfaceNormal(rotatedVertices);
-				const float weight = 1;
+			for (const std::array<Vec3, 3>& rotatedVertices : rotatedVerticesOfTriangles) {
+				const Vec3 normal  = Triangle::getSurfaceNormal(rotatedVertices);
+				const float weight = 1; //*
 
 				for (const Vec3& rotatedVertex : rotatedVertices) {
-					auto [exists, index] = getIndexOfRotatedVertex(rotatedVertex);
+					const std::string hashedRotatedVertex = hashRotatedVertex(rotatedVertex);
 
-					if (!exists) {
-						vertexNormalCalc.push_back({ rotatedVertex, Vec3(), 0 });
-						index = vertexNormalCalc.size() - 1;
+					if (vertexNormalCalc.find(hashedRotatedVertex) == vertexNormalCalc.end()) {
+						vertexNormalCalc.insert({ hashedRotatedVertex, { Vec3(), 0 } });
 					}
 
-					vertexNormalCalc[index].normal += normal * weight;
-					vertexNormalCalc[index].sumWeights += weight;
+					vertexNormalCalc[hashedRotatedVertex].normal += normal * weight;
+					vertexNormalCalc[hashedRotatedVertex].sumWeights += weight;
 				}
 			}
 
-			for (uint64_t i = 0; i < vertexNormalCalc.size(); i++)
-				vertexNormalCalc[i].normal /= vertexNormalCalc[i].sumWeights;
-
+			for (auto& it : vertexNormalCalc) {
+				it.second.normal /= it.second.sumWeights;
+			}
 		}
 
 		// Render
@@ -471,8 +463,10 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames)
 			this->renderQueue.clear();
 
 			// Call User Defined Functions
-			this->update();
+			// Do Not Update If It Is The First Frame
+			if (nCycle == 0 && this->indexImageBeingRendered == 0) this->update();
 			this->render();
+
 
 			this->drawModels();
 

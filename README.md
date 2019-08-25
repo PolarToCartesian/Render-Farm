@@ -4,11 +4,16 @@
 
 This Tool Is A Rendering Engine Who's Output Is A Video Clip. This Tool Is A Simplistic Attempt At Recreating The Software Used In 3D Animated Movies.
 
-Now With A Phong Renderer!
+## Features
 
-## Warning
-
-CODE WILL BE CLEANED!
++ Phong Renderer
++ Gouraud Renderer
++ OBJ File Parsing
++ Diffuse Lighting
++ Specular Lighting
++ Object Rotation
++ Camera Movement
++ Camera Rotation
 
 ## Requirements
 
