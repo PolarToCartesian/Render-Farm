@@ -11,9 +11,11 @@ struct Triangle {
 
 	float reflectivity = 0.25f;
 
+	bool isSmoothed; // use phong
+
 	Triangle();
-	Triangle(const Vertex _vertices[3], const float _reflectivity = 0.25f);
-	Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3(), const float _reflectivity = 0.25f);
+	Triangle(const Vertex _vertices[3], const float _reflectivity = 0.25f, const bool _isSmoothed = false);
+	Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3(), const float _reflectivity = 0.25f, const bool _isSmoothed = false);
 
 	void applyFunctionToEachVertex(const std::function<void(Vertex&)>& _function);
 

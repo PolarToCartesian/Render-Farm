@@ -4,7 +4,7 @@
 
 Triangle::Triangle() {}
 
-Triangle::Triangle(const Vertex _vertices[3], const float _reflectivity) : reflectivity(_reflectivity) {
+Triangle::Triangle(const Vertex _vertices[3], const float _reflectivity, const bool _isSmoothed) : isSmoothed(_isSmoothed), reflectivity(_reflectivity) {
 	std::memcpy(this->vertices, _vertices, 3 * sizeof(Vertex));
 
 	for (uint8_t i = 0; i < 3; i++)
@@ -13,7 +13,7 @@ Triangle::Triangle(const Vertex _vertices[3], const float _reflectivity) : refle
 	this->rotationMidPoint /= 3;
 }
 
-Triangle::Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint, const Vec3& _rotation, const float _reflectivity) : reflectivity(_reflectivity), rotationMidPoint(_rotationMidPoint), rotation(_rotation) {
+Triangle::Triangle(const Vertex _vertices[3], const Vec3& _rotationMidPoint, const Vec3& _rotation, const float _reflectivity, const bool _isSmoothed) : isSmoothed(_isSmoothed), reflectivity(_reflectivity), rotationMidPoint(_rotationMidPoint), rotation(_rotation) {
 	std::memcpy(this->vertices, _vertices, 3 * sizeof(Vertex));
 }
 

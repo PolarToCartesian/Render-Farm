@@ -6,8 +6,8 @@ Light::Light(const Vec3& _position, const Color<>& _color, const float _intensit
 
 // Engine Namespace
 
-Color<> Light::getColorWithLighting(const Vec3& _point, const Color<>& _baseColor, const Vec3& _normal, const std::vector<Light>& _lights, const Vec3& _cameraPosition, const float _reflectivity) {
-	Color<float> colorWithSpecularLighting;
+Color<> Light::getDiffusedLighting(const Vec3& _point, const Color<>& _baseColor, const Vec3& _normal, const std::vector<Light>& _lights, const Vec3& _cameraPosition) {
+	Color<float> outColor;
 
 	for (const Light& light : _lights) {
 		const Vec3 pointToLight = Vec3::normalize(light.position - _point);
@@ -19,8 +19,18 @@ Color<> Light::getColorWithLighting(const Vec3& _point, const Color<>& _baseColo
 
 		const Color<float> diffuse = (Color<float>(light.color) / 255.f) * brightness;
 
-		colorWithSpecularLighting += diffuse * (Color<float>(_baseColor) / 255.f);
+		outColor += diffuse * (Color<float>(_baseColor) / 255.f);
+	}
 
+	outColor.constrain(0, 1);
+
+	return Color<>(outColor * 255.f);
+}
+
+Color<> Light::getSpecularLighting(const Vec3& _point, const Vec3& _normal, const std::vector<Light>& _lights, const Vec3& _cameraPosition, const float _reflectivity) {
+	Color<float> outColor;
+
+	for (const Light& light : _lights) {
 		// Specular (https://www.youtube.com/watch?v=Is6D5rnWEvs&list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g&index=11&t=1512s)
 
 		const Vec3 lightToPoint = Vec3::normalize(_point - light.position);
@@ -34,11 +44,21 @@ Color<> Light::getColorWithLighting(const Vec3& _point, const Color<>& _baseColo
 		float specularDotProduct = Vec3::dotProduct(pointToCamera, reflectedLight);
 		if (specularDotProduct < 0) specularDotProduct = 0;
 
-		colorWithSpecularLighting += (Color<float>(light.color) / 255.f) * _reflectivity * std::pow(specularDotProduct, 5);
+		outColor += (Color<float>(light.color) / 255.f) * _reflectivity * std::pow(specularDotProduct, 5);
 	}
 
-	for (uint8_t v = 0; v < 3; v++)
-		colorWithSpecularLighting.constrain(0, 1);
+	outColor.constrain(0, 1);
 
-	return Color<>(colorWithSpecularLighting * 255.f);
+	return Color<>(outColor * 255.f);
+}
+
+Color<> Light::getColorWithLighting(const Vec3& _point, const Color<>& _baseColor, const Vec3& _normal, const std::vector<Light>& _lights, const Vec3& _cameraPosition, const float _reflectivity) {
+	Color<float> outColor;
+
+	outColor += Color<float>(Light::getDiffusedLighting(_point, _baseColor, _normal, _lights, _cameraPosition)) / 255.f;
+	outColor += Color<float>(Light::getSpecularLighting(_point, _normal, _lights, _cameraPosition, _reflectivity)) / 255.f;
+
+	outColor.constrain(0, 1);
+
+	return Color<>(outColor * 255.f);
 }

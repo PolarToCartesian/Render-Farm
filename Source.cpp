@@ -7,7 +7,7 @@ public:
 	int i = 1;
 
 	App() : Renderer(1920, 1080) {
-		this->addModel(Model("models/teapot.txt", Vec3(), false, Color<>(255), Vec3(0), Vec3(), 1));
+		this->addModel(Model("models/f-16.txt", Vec3(), false, Color<>(255), Vec3(0), Vec3(), 1));
 		//this->addModel(Box(Vec3(0), 1, true, Color<>(255, 0, 255), Vec3(0)).model);
 		//this->addModel(Model("models/f-16.txt", Vec3(), false, Color<>(82, 81, 89), Vec3(0), Vec3(0, 4, 0), 0.5));
 
@@ -20,10 +20,10 @@ public:
 			}
 		}*/
 
-		this->addLight(Light(Vec3(0, 0, -4), Color<>(255), 1));
+		this->addLight(Light(Vec3(0, 2, -4), Color<>(255), 1));
 		this->camera.position.x = 0;
-		this->camera.position.y = 0.75;
-		this->camera.position.z = -4;
+		this->camera.position.y = 0.5;
+		this->camera.position.z = -3;
 
 		const uint32_t fps = 30; // frames per second
 		const uint32_t duration = 5; // seconds

@@ -21,9 +21,8 @@ void Renderer::drawModels() {
 	for (const uint32_t modelId : this->renderQueue) {
 		Model& model = this->getModelRef(modelId);
 
-		// Calculate Vertex Normals
-
 		std::vector<std::array<Vec3, 3>> rotatedVerticesOfTriangles;
+		rotatedVerticesOfTriangles.reserve(model.triangles.size());
 
 		model.applyFunctionToEachTriangle([this, &rotatedVerticesOfTriangles](Triangle& _tr) {
 			std::array<Vec3, 3> rotatedVertices {
@@ -48,13 +47,17 @@ void Renderer::drawModels() {
 				// Apply Camera Rotation
 				rotatedVertices[v] -= this->camera.position;
 				rotatedVertices[v] += this->camera.position + rotatedVertices[v] * (-3)
-					+ rotatedVertices[v] * cameraRotationXMatrix
-					+ rotatedVertices[v] * cameraRotationYMatrix
-					+ rotatedVertices[v] * cameraRotationZMatrix;
+								   + rotatedVertices[v] * cameraRotationXMatrix
+								   + rotatedVertices[v] * cameraRotationYMatrix
+								   + rotatedVertices[v] * cameraRotationZMatrix;
 			}
 
 			rotatedVerticesOfTriangles.push_back(rotatedVertices);
 		});
+
+		// Calculate Vertex Normals
+
+		// Init Variables
 
 		struct VertexNormalCalcInfo {
 			Vec3 position;
@@ -63,47 +66,59 @@ void Renderer::drawModels() {
 		};
 
 		std::vector<VertexNormalCalcInfo> vertexNormalCalc;
+		vertexNormalCalc.reserve(3 * model.triangles.size());
 
-		for (const std::array<Vec3, 3>& rotatedVertices : rotatedVerticesOfTriangles) {
-			const Vec3 normal = Triangle::getSurfaceNormal(rotatedVertices);
-			const float weight = 1;
+		// Lambdas
 
-			for (const Vec3& rotatedVertex : rotatedVertices) {
-				
-				bool exists = false;
-				uint64_t index = 0;
-				for (uint64_t i = 0; i < vertexNormalCalc.size(); i++) {
-					if (vertexNormalCalc[i].position == rotatedVertex) {
-						exists = true;
-						index = i;
-						break;
-					}
-				}
-
-				if (!exists) {
-					vertexNormalCalc.push_back({ rotatedVertex, Vec3(), 0 });
-					index = vertexNormalCalc.size() - 1;
-				}
-
-				vertexNormalCalc[index].normal += normal * weight;
-				vertexNormalCalc[index].sumWeights += weight;
-
-			}
-		}
-
-		for (uint64_t i = 0; i < vertexNormalCalc.size(); i++) {
-			vertexNormalCalc[i].normal /= vertexNormalCalc[i].sumWeights;
-		}
-
-		auto getVertexNormal = [&vertexNormalCalc](const Vec3& rotatedVertex) -> Vec3 {
-			for (uint64_t i = 0; i < vertexNormalCalc.size(); i++) {
-				if (vertexNormalCalc[i].position == rotatedVertex) {
-					return vertexNormalCalc[i].normal;
+		auto getIndexOfRotatedVertex = [&vertexNormalCalc](const Vec3& _rotatedVertex) -> std::tuple<bool, uint64_t> {
+			for (uint64_t i = vertexNormalCalc.size(); i--;) {
+				if (vertexNormalCalc[i].position == _rotatedVertex) {
+					return { true, i };
 				}
 			}
 
-			return Vec3(0);
+			return { false, 0 };
 		};
+
+		auto getVertexNormal = [&vertexNormalCalc, getIndexOfRotatedVertex](const Vec3& _rotatedVertex) -> Vec3 {
+			auto [exists, index] = getIndexOfRotatedVertex(_rotatedVertex);
+
+			return vertexNormalCalc[index].normal;
+		};
+
+		// Calculate If Needed
+
+		bool doVertexNormalsNeedToBeCalculated = false;
+
+		for (uint64_t i = 0; i < model.triangles.size(); i++) {
+			if (model.triangles[i].isSmoothed) {
+				doVertexNormalsNeedToBeCalculated = true;
+				break;
+			}
+		}
+
+		if (doVertexNormalsNeedToBeCalculated) {
+			for (const std::array<Vec3, 3> & rotatedVertices : rotatedVerticesOfTriangles) {
+				const Vec3 normal = Triangle::getSurfaceNormal(rotatedVertices);
+				const float weight = 1;
+
+				for (const Vec3& rotatedVertex : rotatedVertices) {
+					auto [exists, index] = getIndexOfRotatedVertex(rotatedVertex);
+
+					if (!exists) {
+						vertexNormalCalc.push_back({ rotatedVertex, Vec3(), 0 });
+						index = vertexNormalCalc.size() - 1;
+					}
+
+					vertexNormalCalc[index].normal += normal * weight;
+					vertexNormalCalc[index].sumWeights += weight;
+				}
+			}
+
+			for (uint64_t i = 0; i < vertexNormalCalc.size(); i++)
+				vertexNormalCalc[i].normal /= vertexNormalCalc[i].sumWeights;
+
+		}
 
 		// Render
 
@@ -112,7 +127,11 @@ void Renderer::drawModels() {
 
 			std::array<Vec3, 3> rotatedVertices = rotatedVerticesOfTriangles[trIndex];
 
-			std::array<Vec3, 3> vertexNormals = { getVertexNormal(rotatedVertices[0]), getVertexNormal(rotatedVertices[1]), getVertexNormal(rotatedVertices[2]) };
+			std::array<Vec3, 3> vertexNormals;
+
+			if (_tr.isSmoothed) {
+				vertexNormals = { getVertexNormal(rotatedVertices[0]), getVertexNormal(rotatedVertices[1]), getVertexNormal(rotatedVertices[2]) };
+			}
 
 			const Vec3 triangleSurfaceNormal = Triangle::getSurfaceNormal(rotatedVertices);
 
@@ -142,15 +161,25 @@ void Renderer::drawModels() {
 				transformedVertices[v].y = ((transformedVertices[v].y + 1.f) / +2.f) * this->height;
 			}
 
-			// Get the color of each vertex w/ lighting
-			const std::array<Color<>, 3> triangleBaseColors = { _tr.vertices[0].color, _tr.vertices[1].color, _tr.vertices[2].color };
+			// Get the color of each vertex
+			std::array<Color<>, 3> triangleBaseColors;
+			
+			if (_tr.isSmoothed) {
+				triangleBaseColors = { _tr.vertices[0].color, _tr.vertices[1].color, _tr.vertices[2].color };
+			} else {
+				triangleBaseColors = {
+					Light::getDiffusedLighting(rotatedVertices[0], _tr.vertices[0].color, triangleSurfaceNormal, this->lights, this->camera.position),
+					Light::getDiffusedLighting(rotatedVertices[1], _tr.vertices[1].color, triangleSurfaceNormal, this->lights, this->camera.position),
+					Light::getDiffusedLighting(rotatedVertices[2], _tr.vertices[2].color, triangleSurfaceNormal, this->lights, this->camera.position)
+				};
+			}
 
 			// Start Rendering
 			// PreCalculate Values(For Barycentric Interpolation)
 			// Thanks to : https://codeplea.com/triangular-interpolation
 
 			const float denominator = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
-			float precalculated[6] = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
+			float precalculated[6]  = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
 
 			// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
 
@@ -167,8 +196,7 @@ void Renderer::drawModels() {
 
 			const uint16_t total_height = static_cast<uint16_t>(t2.y - t0.y);
 
-			for (uint16_t i = 0; i < total_height; i++)
-			{
+			for (uint16_t i = 0; i < total_height; i++) {
 				const uint16_t y = static_cast<uint16_t>(t0.y + i);
 
 				if (y < 0 || y > this->height - 1)
@@ -189,8 +217,7 @@ void Renderer::drawModels() {
 				precalculated[5] = (y - transformedVertices[2].y);
 
 				// Limit X Between (0 and width - 1) in the loop to avoid trying to set a pixel out of the screen buffer and to maximize performance
-				for (int j = static_cast<int>((A.x < 0) ? 0 : A.x); j <= static_cast<int>((B.x > this->width - 2) ? this->width - 2 : B.x); j++)
-				{
+				for (int j = static_cast<int>((A.x < 0) ? 0 : A.x); j <= static_cast<int>((B.x > this->width - 2) ? this->width - 2 : B.x); j++) {
 					const uint16_t x = j;
 
 					precalculated[4] = (x - transformedVertices[2].x);
@@ -212,28 +239,42 @@ void Renderer::drawModels() {
 					// Render Pixel if it is in front of the pixel already there
 					const uint32_t pixelIndex = this->getIndexInColorBuffer(x, y);
 
-					if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1)
-					{
+					if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1) {
 						this->depthBuffer[pixelIndex] = w;
 
-						// Triangulate the pixel color
+						// Interpolate Values
 						Color<float> basePixelColor(0);
-						Vec3 position, normal;
+						Vec3 position;
 
 						// For every vertex
 						for (uint8_t c = 0; c < 3; c++) {
 							basePixelColor += Color<float>(triangleBaseColors[c]) * VertexPositionWeights[c];
 							position += rotatedVertices[c] * VertexPositionWeights[c];
-							normal += vertexNormals[c] * VertexPositionWeights[c];
 						}
 
 						basePixelColor /= VertexPositionWeightSum;
 						position /= VertexPositionWeightSum;
-						normal /= VertexPositionWeightSum;
 
 						basePixelColor.constrain(0, 255);
 
-						Color<> pixelColor = Light::getColorWithLighting(position, basePixelColor, normal, this->lights, this->camera.position, _tr.reflectivity);
+						Color<> pixelColor;
+
+						if (_tr.isSmoothed) {
+							Vec3 normal;
+
+							for (uint8_t c = 0; c < 3; c++)
+								normal += vertexNormals[c] * VertexPositionWeights[c];
+
+							normal /= VertexPositionWeightSum;
+
+							pixelColor = Light::getColorWithLighting(position, Color<>(basePixelColor), normal, this->lights, this->camera.position, _tr.reflectivity);
+						} else {
+							Color<float> pixelColorFloat = Color<float>(basePixelColor) / 255.f + Color<float>(Light::getSpecularLighting(position, triangleSurfaceNormal, this->lights, this->camera.position, _tr.reflectivity)) / 255.f;
+
+							pixelColorFloat.constrain(0, 1);
+
+							pixelColor = Color<>(pixelColorFloat * 255.f);
+						}
 
 						renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor;
 					}
