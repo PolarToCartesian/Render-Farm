@@ -1,7 +1,6 @@
 #include "Box.h"
 
-Box::Box(const Vec3& _center, const float sideLength, const bool _randomColor, const Color<>& _color, const Vec3& _rotationMidPoint, const Vec3& _rotation, const float _reflectivity)
-{
+Box::Box(const Vec3& _center, const float sideLength, const bool _randomColor, const Color<>& _color, const Vec3& _rotationMidPoint, const Vec3& _rotation, const float _reflectivity) {
 	const float hsl = sideLength / 2.f;
 
 	const Vertex vertices[8] = {

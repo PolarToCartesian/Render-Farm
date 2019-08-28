@@ -3,7 +3,9 @@
 #include <experimental/filesystem>
 #include <unordered_map>
 #include <functional>
+#include <algorithm>
 #include <iostream>
+#include <optional>
 #include <sstream>
 #include <cstring>
 #include <cassert>

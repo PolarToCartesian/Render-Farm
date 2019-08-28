@@ -28,8 +28,7 @@ Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bo
 			} else if (dataType == "f") {
 				uint32_t vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0, vertexIndex4 = 0;
 
-				if (_line.find("/") == std::string::npos) 
-				{
+				if (_line.find("/") == std::string::npos)  {
 					lineStream >> vertexIndex1 >> vertexIndex2 >> vertexIndex3;
 
 					// Check For 4 Component Face
@@ -69,34 +68,28 @@ Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bo
 	file.close();
 }
 
-Model::Model(const Triangle* _triangles, const uint64_t _numTriangles)
-{
+Model::Model(const Triangle* _triangles, const uint64_t _numTriangles) {
 	triangles.reserve(_numTriangles);
 
 	for (unsigned int i = 0; i < _numTriangles; i++) { triangles.push_back(_triangles[i]); }
 }
 
-void Model::applyFunctionToEachTriangle(const std::function<void(Triangle&)>& _function)
-{
+void Model::applyFunctionToEachTriangle(const std::function<void(Triangle&)>& _function) {
 	std::for_each(this->triangles.begin(), this->triangles.end(), _function);
 }
 
-void Model::setRotation(const Vec3& _rotation)
-{
+void Model::setRotation(const Vec3& _rotation) {
 	this->applyFunctionToEachTriangle([& _rotation](Triangle & _triangle) { _triangle.rotation = _rotation; });
 }
 
-void Model::setCenterOfRotation(const Vec3& _centerOfRotation)
-{
+void Model::setCenterOfRotation(const Vec3& _centerOfRotation) {
 	this->applyFunctionToEachTriangle([& _centerOfRotation](Triangle& _triangle) { _triangle.rotationMidPoint = _centerOfRotation; });
 }
 
-void Model::translate(const Vec3& _deltaPosition)
-{
+void Model::translate(const Vec3& _deltaPosition) {
 	this->applyFunctionToEachTriangle([& _deltaPosition](Triangle& _triangle) { _triangle.translate(_deltaPosition); });
 }
 
-void Model::rotate(const Vec3& _deltaRotation)
-{
+void Model::rotate(const Vec3& _deltaRotation) {
 	this->applyFunctionToEachTriangle([& _deltaRotation](Triangle& _triangle) { _triangle.rotation += _deltaRotation; });
 }

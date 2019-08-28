@@ -2,10 +2,8 @@
 
 // Matrix Struct
 
-Mat4x4::Mat4x4(const bool _isIdentityMatrix)
-{
-	if (_isIdentityMatrix)
-	{
+Mat4x4::Mat4x4(const bool _isIdentityMatrix) {
+	if (_isIdentityMatrix) {
 		for (uint8_t i = 1; i < 17; i += 5)
 			this->m[i - 1] = 1;
 	}
@@ -28,8 +26,7 @@ Mat4x4 Mat4x4::operator*(const Mat4x4& _m) const {
 	return result;
 }
 
-Mat4x4 Mat4x4::getRotationXMatrix(const float _rotX)
-{
+Mat4x4 Mat4x4::getRotationXMatrix(const float _rotX) {
 	const float sinX = std::sin(_rotX);
 	const float cosX = std::cos(_rotX);
 
@@ -43,8 +40,7 @@ Mat4x4 Mat4x4::getRotationXMatrix(const float _rotX)
 	return Mat4x4(m);
 }
 
-Mat4x4 Mat4x4::getRotationYMatrix(const float _rotY)
-{
+Mat4x4 Mat4x4::getRotationYMatrix(const float _rotY) {
 	const float sinY = std::sin(_rotY);
 	const float cosY = std::cos(_rotY);
 
@@ -58,8 +54,7 @@ Mat4x4 Mat4x4::getRotationYMatrix(const float _rotY)
 	return Mat4x4(m);
 }
 
-Mat4x4 Mat4x4::getRotationZMatrix(const float _rotZ)
-{
+Mat4x4 Mat4x4::getRotationZMatrix(const float _rotZ) {
 	const float sinZ = std::sin(_rotZ);
 	const float cosZ = std::cos(_rotZ);
 
@@ -79,8 +74,7 @@ Mat4x4 Mat4x4::getRotationMatrix(const float _rotX, const float _rotY, const flo
 		   Mat4x4::getRotationZMatrix(_rotZ);
 }
 
-Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned int _height, const float _fov, const float _zNear, const float _zFar)
-{
+Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned int _height, const float _fov, const float _zNear, const float _zFar) {
 	float aspectRatio = _height / static_cast<float>(_width);
 	float a = -std::abs(1.f / std::tan(MATH::degToRad(_fov / 2.f)));
 
@@ -98,8 +92,7 @@ Mat4x4 Mat4x4::getPerspectiveMatrix(const unsigned int _width, const unsigned in
 
 /// Overloading
 
-bool operator==(const Mat4x4& _a, const Mat4x4& _b)
-{
+bool operator==(const Mat4x4& _a, const Mat4x4& _b) {
 	bool isEqual = true;
 
 	for (uint8_t i = 0; i < 16; i++) {
@@ -116,8 +109,7 @@ bool operator!=(const Mat4x4& _a, const Mat4x4& _b) { return !operator==(_a, _b)
 
 /// Printing
 
-std::ostream& operator<<(std::ostream& _os, const Mat4x4& _m)
-{
+std::ostream& operator<<(std::ostream& _os, const Mat4x4& _m) {
 	for (int i = 0; i < 16; i++) {
 		_os << _m.m[i] << " ";
 

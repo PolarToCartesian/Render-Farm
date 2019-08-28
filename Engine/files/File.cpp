@@ -1,20 +1,19 @@
 #include "File.h"
 
-File::File(const std::string _filename, const std::string _permissions, const bool _doLogOpeningAndClosing)
-{
+File::File(const std::string _filename, const std::string _permissions, const bool _doLogOpeningAndClosing) {
 	this->doLogOpeningAndClosing = _doLogOpeningAndClosing;
 
 	this->open(_filename, _permissions);
 }
 
-File::~File()
-{
+File::~File() {
 	if (this->isFileOpen)
 		this->close();
 }
 
-void File::open(const std::string _filename, const std::string _permissions)
-{
+void File::open(const std::string _filename, const std::string _permissions) {
+	if (!this->isFileOpen) this->close();
+
 	this->filename = _filename;
 	this->permissions = _permissions;
 
@@ -25,8 +24,7 @@ void File::open(const std::string _filename, const std::string _permissions)
 		this->isFileOpen = (this->filePtr != NULL);
 	#endif
 
-	if (this->doLogOpeningAndClosing)
-	{
+	if (this->doLogOpeningAndClosing) {
 		if (this->isFileOpen) {
 			CMD::println("[FILE] The File \"" + std::string(_filename) + "\" Was Successfully Opened", LOG_TYPE::success);
 		} else {
@@ -40,8 +38,7 @@ void File::open(const std::string _filename, const std::string _permissions)
 
 void File::close() {
 	// Close the file only if the file is open
-	if (this->isFileOpen)
-	{
+	if (this->isFileOpen) {
 		fclose(this->filePtr);
 
 		if (this->doLogOpeningAndClosing)
@@ -58,16 +55,13 @@ void File::close() {
 	}
 }
 
-void File::writeNoVerif(const std::string& _content)
-{
+void File::writeNoVerif(const std::string& _content) {
 	std::fprintf(this->filePtr, _content.c_str());
 }
 
-void File::write(const std::string& _content)
-{
+void File::write(const std::string& _content) {
 	// Write to file if the file is open
-	if (this->isFileOpen)
-	{
+	if (this->isFileOpen) {
 		// Write if the file can be written to
 		if (this->canWrite) {
 			this->writeNoVerif(_content);
@@ -79,14 +73,11 @@ void File::write(const std::string& _content)
 	}
 }
 
-std::string File::read() const
-{
+std::string File::read() const {
 	// Read If the file is open
-	if (this->isFileOpen)
-	{
+	if (this->isFileOpen) {
 		// Read File only if the file can be read from
-		if (this->canRead)
-		{
+		if (this->canRead) {
 			// Thanks To : http://www.fundza.com/c4serious/fileIO_reading_all/
 
 			fseek(this->filePtr, 0L, SEEK_END);
@@ -96,8 +87,7 @@ std::string File::read() const
 
 			char* charBuffer = (char*) std::calloc(bytesInFile, sizeof(char));
 
-			if (charBuffer != NULL)
-			{
+			if (charBuffer != NULL) {
 				fread(charBuffer, sizeof(char), bytesInFile, this->filePtr);
 
 				return std::string(charBuffer);
@@ -114,20 +104,16 @@ std::string File::read() const
 	return "";
 }
 
-void File::readLineByLine(const std::function<void(const std::string&, const unsigned int)>& _lambda) const
-{
+void File::readLineByLine(const std::function<void(const std::string&, const unsigned int)>& _lambda) const {
 	// Read line by line if the file is open
-	if (this->isFileOpen)
-	{
+	if (this->isFileOpen) {
 		// Read File only if the file can be read from
-		if (this->canRead)
-		{
+		if (this->canRead) {
 			unsigned int lineNumber = 1;
 			char line[FILE_LINE_BUFFER_SIZE];
 
 			// For Every Line
-			while (std::fgets(line, sizeof(line), this->filePtr) != NULL)
-			{
+			while (std::fgets(line, sizeof(line), this->filePtr) != NULL) {
 				// Remove \n at the end of the line if there is one
 				if (line[strlen(line) - 1] == '\n')
 					line[strlen(line) - 1] = ' ';

@@ -2,13 +2,11 @@
 
 Video::Video(const bool _doLogSaving) : doLogSaving(_doLogSaving) {}
 
-void Video::addFrame(const std::string& _filename)
-{
+void Video::addFrame(const std::string& _filename) {
 	this->frames.push_back(_filename);
 }
 
-void Video::save(const std::string& _filename, const uint16_t _fps)
-{
+void Video::save(const std::string& _filename, const uint16_t _fps) {
 	assert(this->frames.size() > 0);
 	assert(_fps > 0);
 
@@ -16,8 +14,7 @@ void Video::save(const std::string& _filename, const uint16_t _fps)
 
 	File file("./temp/videoEncoder.py", FILE_WRITE, false);
 
-	if (file.isOpen())
-	{
+	if (file.isOpen()) {
 		unsigned int nLines = sizeof(VIDEO_ENCODING_PYTHON_SOURCE_CODE) / sizeof(const char*);
 
 		for (unsigned int i = 0; i < nLines; i++)

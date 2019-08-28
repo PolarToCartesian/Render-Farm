@@ -2,8 +2,7 @@
 
 // Image Class
 
-Image::Image(const Image& _img)
-{
+Image::Image(const Image& _img) {
 	this->imageWidth = _img.imageWidth;
 	this->imageHeight = _img.imageHeight;
 	this->nPixels = _img.nPixels;
@@ -12,25 +11,21 @@ Image::Image(const Image& _img)
 	std::memcpy(this->colorBuffer, _img.colorBuffer, this->nPixels * sizeof(Color<>));
 }
 
-Image::Image(const std::string& _filename, const bool _doLog)
-{
+Image::Image(const std::string& _filename, const bool _doLog) {
 	File file(_filename, FILE_READ, _doLog);
 
-	if (file.isOpen())
-	{
+	if (file.isOpen()) {
 		file.readLineByLine([this, _filename, _doLog](const std::string& _line, const unsigned int _lineNumber) {
 			std::istringstream lineStream(_line);
 
-			switch (_lineNumber)
-			{
+			switch (_lineNumber) {
 				case 1:
 					{
 						std::string ppmType;
 
 						lineStream >> ppmType;
 
-						if (ppmType != "P3")
-						{
+						if (ppmType != "P3") {
 							if (_doLog)
 								CMD::println("[IMAGE] ERROR WHILE READING \"" + _filename + "\". We Only Support P3", LOG_TYPE::error);
 
@@ -66,40 +61,33 @@ Image::Image(const std::string& _filename, const bool _doLog)
 	}
 }
 
-Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight)
-{
+Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
 	this->nPixels = this->imageWidth * this->imageHeight;
 
 	this->colorBuffer = new Color<>[this->nPixels];
 	std::fill_n(this->colorBuffer, this->nPixels, _backgroundColor);
 }
 
-uint32_t Image::getIndex(const uint16_t _x, const uint16_t _y) const
-{
+uint32_t Image::getIndex(const uint16_t _x, const uint16_t _y) const {
 	return _y * this->imageWidth + _x;
 }
 
 unsigned int Image::getWidth()  const { return this->imageWidth; }
 unsigned int Image::getHeight() const { return this->imageHeight; }
 
-void Image::setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c)
-{
+void Image::setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c) {
 	this->colorBuffer[this->getIndex(_x, _y)] = _c;
 }
 
-Color<> Image::sample(const uint16_t _x, const uint16_t _y) const
-{
+Color<> Image::sample(const uint16_t _x, const uint16_t _y) const {
 	return this->colorBuffer[this->getIndex(_x, _y)];
 }
 
-void Image::resize(const uint16_t _width, const uint16_t _height)
-{
+void Image::resize(const uint16_t _width, const uint16_t _height) {
 	Image newImage = Image(_width, _height);
 	
-	for (uint16_t x = 0; x < _width; x++) 
-	{
-		for (uint16_t y = 0; y < _height; y++)
-		{
+	for (uint16_t x = 0; x < _width; x++) {
+		for (uint16_t y = 0; y < _height; y++) {
 			const uint16_t sampleX = static_cast<uint16_t>((x / static_cast<float>(_width))  * this->imageWidth);
 			const uint16_t sampleY = static_cast<uint16_t>((y / static_cast<float>(_height)) * this->imageHeight);
 			const Color<> pixelColor = this->sample(sampleX, sampleY);
@@ -118,17 +106,14 @@ void Image::resize(const uint16_t _width, const uint16_t _height)
 	std::memcpy(this->colorBuffer, newImage.colorBuffer, this->nPixels * sizeof(Color<>));
 }
 
-void Image::writeToDisk(const std::string& _fileName) const
-{
-	File file(_fileName, FILE_WRITE, false);
+void Image::writeToDisk(const std::string& _fileName) const {
+	File file(_fileName, "wb", false);
 
-	if (file.isOpen())
-	{
+	if (file.isOpen()) {
 		std::string fileContents = "P3 \n" + std::to_string(this->imageWidth) + " " + std::to_string(this->imageHeight) + "\n255\n";
 
 		// PPM Contents
-		for (unsigned int i = 0; i < this->nPixels; i++)
-		{
+		for (unsigned int i = 0; i < this->nPixels; i++) {
 			fileContents += std::to_string(this->colorBuffer[i].r) + ' '+
 				            std::to_string(this->colorBuffer[i].g) + ' ' +
 				            std::to_string(this->colorBuffer[i].b) + '\n';

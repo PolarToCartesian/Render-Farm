@@ -9,8 +9,7 @@ Vec3::Vec3(const float _x, const float _y, const float _z) : x(_x), y(_y), z(_z)
 Vec3::Vec3(const float _x, const float _y, const float _z, const float _w) : x(_x), y(_y), z(_z), w(_w) {}
 Vec3::Vec3(const Vec3& _v) : x(_v.x), y(_v.y), z(_v.z), w(_v.w) {}
 
-void Vec3::add(const float _x, const float _y, const float _z, const float _w, const bool _useW)
-{
+void Vec3::add(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
 	this->x += _x; this->y += _y; this->z += _z;
 
 	if (_useW) this->w += _w;
@@ -27,8 +26,7 @@ Vec3 Vec3::operator+(const float _a)   const { Vec3 result = this->copy(); resul
 
 
 
-void Vec3::sub(const float _x, const float _y, const float _z, const float _w, const bool _useW)
-{
+void Vec3::sub(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
 	this->x -= _x; this->y -= _y; this->z -= _z;
 
 	if (_useW) this->w -= _w;
@@ -44,8 +42,7 @@ Vec3 Vec3::operator-(const Vec3& _a) const { Vec3 result = this->copy(); result.
 Vec3 Vec3::operator-(const float _a)   const { Vec3 result = this->copy(); result.sub(_a); return result; }
 
 
-void Vec3::mul(const float _x, const float _y, const float _z, const float _w, const bool _useW)
-{
+void Vec3::mul(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
 	this->x *= _x; this->y *= _y; this->z *= _z;
 
 	if (_useW) this->w *= _w;
@@ -62,8 +59,7 @@ Vec3 Vec3::operator*(const float _a)   const { Vec3 result = this->copy(); resul
 
 
 
-void Vec3::div(const float _x, const float _y, const float _z, const float _w, const bool _useW)
-{
+void Vec3::div(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
 	this->x /= _x; this->y /= _y; this->z /= _z;
 
 	if (_useW) this->w /= _w;
@@ -86,8 +82,7 @@ Vec3 Vec3::copy() const { return Vec3(this->x, this->y, this->z, this->w); }
 
 float Vec3::getLength() const { return std::sqrt(std::pow(this->x, 2) + std::pow(this->y, 2) + std::pow(this->z, 2)); }
 
-void Vec3::constrain(const float _min, const float _max)
-{
+void Vec3::constrain(const float _min, const float _max) {
 	if (this->x < _min) { this->x = _min; }
 	else if (this->x > _max) { this->x = _max; }
 
@@ -98,30 +93,26 @@ void Vec3::constrain(const float _min, const float _max)
 	else if (this->z > _max) { this->z = _max; }
 }
 
-void Vec3::constrainW(const float _min, const float _max)
-{
+void Vec3::constrainW(const float _min, const float _max) {
 	this->constrain(_min, _max);
 
 	if (this->w < _min) { this->w = _min; }
 	else if (this->w > _max) { this->w = _max; }
 }
 
-void Vec3::intify()
-{
+void Vec3::intify() {
 	this->x = static_cast<float>(static_cast<int>(this->x));
 	this->y = static_cast<float>(static_cast<int>(this->y));
 	this->z = static_cast<float>(static_cast<int>(this->z));
 }
 
-void Vec3::intifyW()
-{
+void Vec3::intifyW() {
 	this->intify();
 
 	this->w = static_cast<float>(static_cast<int>(this->w));
 }
 
-Vec3 Vec3::operator*(const Mat4x4& _m) const
-{
+Vec3 Vec3::operator*(const Mat4x4& _m) const {
 	return Vec3(
 		this->x * _m.m[_m.getIndex(0, 0)] + this->y * _m.m[_m.getIndex(1, 0)] + this->z * _m.m[_m.getIndex(2, 0)] + this->w * _m.m[_m.getIndex(3, 0)],
 		this->x * _m.m[_m.getIndex(0, 1)] + this->y * _m.m[_m.getIndex(1, 1)] + this->z * _m.m[_m.getIndex(2, 1)] + this->w * _m.m[_m.getIndex(3, 1)],
@@ -130,8 +121,7 @@ Vec3 Vec3::operator*(const Mat4x4& _m) const
 	);
 }
 
-void Vec3::operator*=(const Mat4x4& _m)
-{
+void Vec3::operator*=(const Mat4x4& _m) {
 	Vec3 r = this->operator*(_m);
 
 	this->x = r.x;
@@ -139,42 +129,36 @@ void Vec3::operator*=(const Mat4x4& _m)
 	this->z = r.z;
 }
 
-Vec3 Vec3::intify(const Vec3& _v)
-{
+Vec3 Vec3::intify(const Vec3& _v) {
 	Vec3 result = _v.copy();
 	result.intify();
 
 	return result;
 }
 
-Vec3 Vec3::normalize(const Vec3& _v)
-{
+Vec3 Vec3::normalize(const Vec3& _v) {
 	Vec3 result = _v.copy();
 	result.normalize();
 
 	return result;
 }
 
-float Vec3::dotProduct(const Vec3& _a, const Vec3& _b)
-{
+float Vec3::dotProduct(const Vec3& _a, const Vec3& _b) {
 	return _a.x * _b.x + _a.y * _b.y + _a.z * _b.z;
 }
 
 /// Operator Overloading
 
-bool operator==(const Vec3& _a, const Vec3& _b)
-{
+bool operator==(const Vec3& _a, const Vec3& _b) {
 	return (_a.x == _b.x && _a.y == _b.y && _a.z == _b.z);
 }
 
-bool operator!=(const Vec3 & _a, const Vec3 & _b)
-{
+bool operator!=(const Vec3 & _a, const Vec3 & _b) {
 	return !operator==(_a, _b);
 }
 
 /// Printing
 
-std::ostream& operator<<(std::ostream& _os, const Vec3& _v)
-{
+std::ostream& operator<<(std::ostream& _os, const Vec3& _v) {
 	return _os << "X : " << _v.x << ", Y : " << _v.y << ", Z : " << _v.z << ", W : " << _v.w;
 }

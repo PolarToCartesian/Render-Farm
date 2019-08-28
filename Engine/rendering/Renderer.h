@@ -6,6 +6,11 @@
 #include "objects/Light.h"
 #include "shapes/Model.h"
 
+struct VertexNormalCalcInfo {
+	Vec3 normal;
+	float sumWeights;
+};
+
 class Renderer {
 	private:
 		uint16_t width, height;
@@ -36,6 +41,10 @@ class Renderer {
 		uint32_t getIndexInColorBuffer(const uint16_t _x, const uint16_t _y);
 
 		void calculatePerspectiveMatrix();
+
+		std::unordered_map<std::string, VertexNormalCalcInfo> calculateVertexNormals(const Model& _model, const std::vector<std::array<Vec3, 3>> & _rotatedVertices) const;
+
+		void drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, const std::function<std::optional<Color<>>(const uint16_t _x, const uint16_t _y)>& _func);
 
 		void drawModels();
 
