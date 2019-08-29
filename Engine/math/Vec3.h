@@ -29,6 +29,8 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 	void operator+=(const float _a);
 	Vec3 operator+(const Vec3& _a) const;
 	Vec3 operator+(const float _a) const;
+	template <typename T>
+	friend Vec3 operator+(const Vec3& _a, T _b);
 
 	// SUBSTRACT
 
@@ -41,6 +43,8 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 	void operator-=(const float _a);
 	Vec3 operator-(const Vec3& _a) const;
 	Vec3 operator-(const float _a) const;
+	template <typename T>
+	friend Vec3 operator-(const Vec3& _a, T _b);
 
 	// MULTIPLY
 
@@ -65,6 +69,8 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 	void operator/=(const float _a);
 	Vec3 operator/(const Vec3& _a) const;
 	Vec3 operator/(const float _a) const;
+	template <typename T>
+	friend Vec3 operator/(const Vec3& _a, T _b);
 
 	// MISC
 

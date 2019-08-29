@@ -18,10 +18,8 @@ namespace CMD {
 	*/
 
 	template<typename T>
-	void print(const T& _message, const LOG_TYPE& _type = LOG_TYPE::normal, const bool _bypassMutex = false)
-	{
-		if (!_bypassMutex)
-		{
+	void print(const T& _message, const LOG_TYPE& _type = LOG_TYPE::normal, const bool _bypassMutex = false) {
+		if (!_bypassMutex) {
 			std::lock_guard<std::mutex> lock(printMutex);
 		}
 
@@ -69,8 +67,7 @@ namespace CMD {
 	// Prints a message or an object to the console with a given color and appends a newline character
 	
 	template<typename T>
-	void println(const T& _message, const LOG_TYPE& _type = LOG_TYPE::normal)
-	{
+	void println(const T& _message, const LOG_TYPE& _type = LOG_TYPE::normal) {
 		/*
 		 * In order to print a message or an object appended with a newline character,
 		 * we have the call two times the print function :

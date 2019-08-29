@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../math/BarycentricInterpolation.h"
 #include "../files/Video.h"
 #include "objects/Camera.h"
 #include "../files/Image.h"
@@ -30,7 +31,7 @@ class Renderer {
 
 		std::vector<Model> models;
 		std::vector<Light> lights;
-		std::vector<uint64_t> renderQueue;
+		std::deque<uint64_t> renderQueue;
 
 	public:
 		Camera camera;
@@ -59,17 +60,17 @@ class Renderer {
 		uint32_t getWidth()  const;
 		uint32_t getHeight() const;
 
-		uint32_t addLight(const Light& _light);
-		Light    copyLight(const uint32_t _lightId) const;
-		Light&   getLightRef(const uint32_t _lightId);
-		void     setLight(const uint32_t _lightId, const Light& _light);
+		uint64_t addLight(const Light& _light);
+		Light    copyLight(const uint64_t _lightId) const;
+		Light&   getLightRef(const uint64_t _lightId);
+		void     setLight(const uint64_t _lightId, const Light& _light);
 
-		uint32_t addModel(const Model& _model);
-		Model    copyModel(const uint32_t _modelId) const;
-		Model&   getModelRef(const uint32_t _modelId);
-		void     setModel(const uint32_t _modelId, const Model& _model);
+		uint64_t addModel(const Model& _model);
+		Model    copyModel(const uint64_t _modelId) const;
+		Model&   getModelRef(const uint64_t _modelId);
+		void     setModel(const uint64_t _modelId, const Model& _model);
 
-		void addModelToRenderQueue(const uint32_t _modelId);
+		void addModelToRenderQueue(const uint64_t _modelId);
 
 		void drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color<>& _color);
 		void drawPoint(const uint16_t _x, const uint16_t _y, const Color<>& _color);

@@ -6,6 +6,7 @@
 #include "../../math/Vertex.h"
 #include "../../math/Funcs.h"
 #include "../../other/pch.h"
+#include "../../math/Vec3.h"
 
 struct Light {
 	Vec3 position;

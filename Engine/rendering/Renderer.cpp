@@ -104,7 +104,7 @@ void Renderer::drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, co
 }
 
 void Renderer::drawModels() {
-	for (const uint32_t modelId : this->renderQueue) {
+	for (const uint64_t modelId : this->renderQueue) {
 		Model& model = this->getModelRef(modelId);
 
 		std::vector<std::array<Vec3, 3>> rotatedVerticesOfTriangles;
@@ -115,6 +115,8 @@ void Renderer::drawModels() {
 		});
 
 		std::unordered_map<std::string, VertexNormalCalcInfo> vertexNormals = this->calculateVertexNormals(model, rotatedVerticesOfTriangles);
+
+		// Lambda
 
 		auto hashRotatedVertex = [](const Vec3& _rotatedVertex) -> std::string {
 			return "x" + std::to_string(_rotatedVertex.x) + "y" + std::to_string(_rotatedVertex.y) + "z" + std::to_string(_rotatedVertex.z);
@@ -137,9 +139,8 @@ void Renderer::drawModels() {
 
 			std::array<Vec3, 3> vertexNormals;
 
-			if (_tr.isSmoothed) {
+			if (_tr.isSmoothed)
 				vertexNormals = { getVertexNormal(rotatedVertices[0]), getVertexNormal(rotatedVertices[1]), getVertexNormal(rotatedVertices[2]) };
-			}
 
 			std::array<Vec3, 3> transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
 
@@ -158,29 +159,11 @@ void Renderer::drawModels() {
 
 			// Start Rendering
 
-			// Calculate Values(For Barycentric Interpolation)
-			// Thanks to : https://codeplea.com/triangular-interpolation
-
-			const float denominator = (transformedVertices[1].y - transformedVertices[2].y) * (transformedVertices[0].x - transformedVertices[2].x) + (transformedVertices[2].x - transformedVertices[1].x) * (transformedVertices[0].y - transformedVertices[2].y);
-			float precalculated[6]  = { (transformedVertices[1].y - transformedVertices[2].y),  (transformedVertices[2].x - transformedVertices[1].x),  (transformedVertices[2].y - transformedVertices[0].y),  (transformedVertices[0].x - transformedVertices[2].x), 0, 0 };
+			const BarycentricInterpolation bi(transformedVertices.data());
 
 			this->drawTriangle2D(transformedVertices[0], transformedVertices[1], transformedVertices[2], [&](const uint16_t _x, const uint16_t _y) -> std::optional<Color<>> {
-				precalculated[5] = (_y - transformedVertices[2].y);
-				precalculated[4] = (_x - transformedVertices[2].x);
-
-				float VertexPositionWeights[3] = { (precalculated[0] * precalculated[4] + precalculated[1] * precalculated[5]) / denominator, (precalculated[2] * precalculated[4] + precalculated[3] * precalculated[5]) / denominator, 0 };
-				VertexPositionWeights[2] = 1 - VertexPositionWeights[0] - VertexPositionWeights[1];
-				const float VertexPositionWeightSum = VertexPositionWeights[0] + VertexPositionWeights[1] + VertexPositionWeights[2];
-
 				// Pixel Depth (w)
-				float w = 0;
-
-				// For every vertex (Barycentric Interpolation)
-				for (uint8_t c = 0; c < 3; c++)
-					w += transformedVertices[c].w * VertexPositionWeights[c];
-
-				// Calculate W (depth of pixel)
-				w /= VertexPositionWeightSum;
+				const float w = bi.interpolate(_x, _y, new float[3]{ transformedVertices[0].w, transformedVertices[1].w, transformedVertices[2].w });
 
 				// Render Pixel if it is in front of the pixel already there
 				const uint32_t pixelIndex = this->getIndexInColorBuffer(_x, _y);
@@ -188,30 +171,15 @@ void Renderer::drawModels() {
 				if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1) {
 					this->depthBuffer[pixelIndex] = w;
 
-					// Interpolate Values
-					Color<float> basePixelColor(0);
-					Vec3 position;
-
-					// For every vertex
-					for (uint8_t c = 0; c < 3; c++) {
-						basePixelColor += Color<float>(triangleBaseColors[c]) * VertexPositionWeights[c];
-						position += rotatedVertices[c] * VertexPositionWeights[c];
-					}
-
-					basePixelColor /= VertexPositionWeightSum;
-					position /= VertexPositionWeightSum;
-
+					Color<float> basePixelColor = bi.interpolate(_x, _y, new Color<float>[3] { Color<float>(triangleBaseColors[0]), Color<float>(triangleBaseColors[1]), Color<float>(triangleBaseColors[2]) });
 					basePixelColor.constrain(0, 255);
+
+					const Vec3 position = bi.interpolate(_x, _y, new Vec3[3] { rotatedVertices[0], rotatedVertices[1], rotatedVertices[2] });
 
 					Color<> pixelColor;
 
 					if (_tr.isSmoothed) {
-						Vec3 normal;
-
-						for (uint8_t c = 0; c < 3; c++)
-							normal += vertexNormals[c] * VertexPositionWeights[c];
-
-						normal /= VertexPositionWeightSum;
+						const Vec3 normal = bi.interpolate(_x, _y, new Vec3[3] { vertexNormals[0], vertexNormals[1], vertexNormals[2] });
 
 						pixelColor = Light::getColorWithLighting(position, Color<>(basePixelColor), normal, this->lights, this->camera.position, _tr.reflectivity);
 					} else {
@@ -249,17 +217,17 @@ Renderer::~Renderer() {
 inline uint32_t Renderer::getWidth()  const { return this->width; }
 inline uint32_t Renderer::getHeight() const { return this->height; }
 
-uint32_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
-Light    Renderer::copyLight(const uint32_t _lightId) const               { return this->lights[_lightId]; }
-Light&   Renderer::getLightRef(const uint32_t _lightId)                   { return this->lights[_lightId]; }
-void     Renderer::setLight(const uint32_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
+uint64_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
+Light    Renderer::copyLight(const uint64_t _lightId) const               { return this->lights[_lightId]; }
+Light&   Renderer::getLightRef(const uint64_t _lightId)                   { return this->lights[_lightId]; }
+void     Renderer::setLight(const uint64_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
 
-uint32_t Renderer::addModel(const Model& _model)                           { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
-Model    Renderer::copyModel(const uint32_t _modelId) const                { return this->models[_modelId]; }
-Model&   Renderer::getModelRef(const uint32_t _modelId)                    { return this->models[_modelId]; }
-void     Renderer::setModel(const uint32_t _modelId, const Model& _model)  { this->models[_modelId] = _model; }
+uint64_t Renderer::addModel(const Model& _model)                           { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
+Model    Renderer::copyModel(const uint64_t _modelId) const                { return this->models[_modelId]; }
+Model&   Renderer::getModelRef(const uint64_t _modelId)                    { return this->models[_modelId]; }
+void     Renderer::setModel(const uint64_t _modelId, const Model& _model)  { this->models[_modelId] = _model; }
 
-void Renderer::addModelToRenderQueue(const uint32_t _modelId) {
+void Renderer::addModelToRenderQueue(const uint64_t _modelId) {
 	this->renderQueue.push_back(_modelId);
 }
 

@@ -22,7 +22,9 @@ void Vec3::add(const float _n, const bool _useW) { this->add(_n, _n, _n, _n, _us
 void Vec3::operator+=(const Vec3& _a) { this->add(_a); }
 void Vec3::operator+=(const float _a) { this->add(_a); }
 Vec3 Vec3::operator+(const Vec3& _a) const { Vec3 result = this->copy(); result.add(_a); return result; }
-Vec3 Vec3::operator+(const float _a)   const { Vec3 result = this->copy(); result.add(_a); return result; }
+Vec3 Vec3::operator+(const float _a) const { Vec3 result = this->copy(); result.add(_a); return result; }
+template <typename T>
+Vec3 operator+(const Vec3& _a, T _b) { return _a.operator+(_b); }
 
 
 
@@ -39,7 +41,10 @@ void Vec3::sub(const float _n, const bool _useW) { this->sub(_n, _n, _n, _n, _us
 void Vec3::operator-=(const Vec3& _a) { this->sub(_a); }
 void Vec3::operator-=(const float _a) { this->sub(_a); }
 Vec3 Vec3::operator-(const Vec3& _a) const { Vec3 result = this->copy(); result.sub(_a); return result; }
-Vec3 Vec3::operator-(const float _a)   const { Vec3 result = this->copy(); result.sub(_a); return result; }
+Vec3 Vec3::operator-(const float _a) const { Vec3 result = this->copy(); result.sub(_a); return result; }
+template <typename T>
+Vec3 operator-(const Vec3& _a, T _b) { return _a.operator-(_b); }
+
 
 
 void Vec3::mul(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
@@ -55,9 +60,7 @@ void Vec3::mul(const float _n, const bool _useW) { this->mul(_n, _n, _n, _n, _us
 void Vec3::operator*=(const Vec3& _a) { this->mul(_a); }
 void Vec3::operator*=(const float _a) { this->mul(_a); }
 Vec3 Vec3::operator*(const Vec3& _a) const { Vec3 result = this->copy(); result.mul(_a); return result; }
-Vec3 Vec3::operator*(const float _a)   const { Vec3 result = this->copy(); result.mul(_a); return result; }
-
-
+Vec3 Vec3::operator*(const float _a) const { Vec3 result = this->copy(); result.mul(_a); return result; }
 
 void Vec3::div(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
 	this->x /= _x; this->y /= _y; this->z /= _z;
@@ -72,7 +75,10 @@ void Vec3::div(const float _n, const bool _useW) { this->div(_n, _n, _n, _n, _us
 void Vec3::operator/=(const Vec3& _a) { this->div(_a); }
 void Vec3::operator/=(const float _a) { this->div(_a); }
 Vec3 Vec3::operator/(const Vec3& _a) const { Vec3 result = this->copy(); result.div(_a); return result; }
-Vec3 Vec3::operator/(const float _a)   const { Vec3 result = this->copy(); result.div(_a); return result; }
+Vec3 Vec3::operator/(const float _a) const { Vec3 result = this->copy(); result.div(_a); return result; }
+template <typename T>
+Vec3 operator/(const Vec3& _a, T _b) { return _a.operator/(_b); }
+
 
 
 void Vec3::normalize() { this->div(this->getLength()); }

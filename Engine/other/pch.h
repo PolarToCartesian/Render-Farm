@@ -14,6 +14,7 @@
 #include <cmath>
 #include <array>
 #include <mutex>
+#include <deque>
 
 #ifdef _WIN32
 	#define NOMINMAX
