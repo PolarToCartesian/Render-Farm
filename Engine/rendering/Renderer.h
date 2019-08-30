@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../math/BarycentricInterpolation.h"
+#include "materials/Material.h"
 #include "../files/Video.h"
 #include "objects/Camera.h"
 #include "../files/Image.h"
@@ -31,6 +32,7 @@ class Renderer {
 
 		std::vector<Model> models;
 		std::vector<Light> lights;
+		std::vector<Material> materials;
 		std::deque<uint64_t> renderQueue;
 
 	public:
@@ -69,6 +71,11 @@ class Renderer {
 		Model    copyModel(const uint64_t _modelId) const;
 		Model&   getModelRef(const uint64_t _modelId);
 		void     setModel(const uint64_t _modelId, const Model& _model);
+
+		uint64_t  addMaterial(const Material& _material);
+		Material  copyMaterial(const uint64_t _materialId) const;
+		Material& getMaterialRef(const uint64_t _materialId);
+		void      setMaterial(const uint64_t _materialId, const Material& _material);
 
 		void addModelToRenderQueue(const uint64_t _modelId);
 

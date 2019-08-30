@@ -129,37 +129,37 @@ void Renderer::drawModels() {
 		// Render
 
 		for (uint64_t trIndex = 0; trIndex < model.triangles.size(); trIndex++) {
-			const Triangle& _tr = model.triangles[trIndex];
-			const std::array<Vec3, 3> rotatedVertices = rotatedVerticesOfTriangles[trIndex];
-			const Vec3 triangleSurfaceNormal = Triangle::getSurfaceNormal(rotatedVertices);
+			const Triangle&                triangle            = model.triangles[trIndex];
+			const std::array<Vec3, 3>      rotatedVertices     = rotatedVerticesOfTriangles[trIndex];
+			const Vec3                     surfaceNormal       = Triangle::getSurfaceNormal(rotatedVertices);
+			const Material&                material            = this->getMaterialRef(triangle.materialIndex);
+			const std::array<Vec3, 3>      transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
+			const BarycentricInterpolation bi(transformedVertices.data());
 
 			// Check if triangle is facing camera
-			if (!this->camera.isTriangleFacingCamera(rotatedVertices, triangleSurfaceNormal))
+			if (!this->camera.isTriangleFacingCamera(rotatedVertices, surfaceNormal))
 				continue;
 
 			std::array<Vec3, 3> vertexNormals;
-
-			if (_tr.isSmoothed)
-				vertexNormals = { getVertexNormal(rotatedVertices[0]), getVertexNormal(rotatedVertices[1]), getVertexNormal(rotatedVertices[2]) };
-
-			std::array<Vec3, 3> transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
-
-			// Get the color of each vertex
 			std::array<Color<>, 3> triangleBaseColors;
-			
-			if (_tr.isSmoothed) {
-				triangleBaseColors = { _tr.vertices[0].color, _tr.vertices[1].color, _tr.vertices[2].color };
+
+			if (triangle.isSmoothed) {
+				vertexNormals = {
+					getVertexNormal(rotatedVertices[0]), 
+					getVertexNormal(rotatedVertices[1]),
+					getVertexNormal(rotatedVertices[2]) 
+				};
+				
+				triangleBaseColors = material.vertexColors;
 			} else {
 				triangleBaseColors = {
-					Light::getDiffusedLighting(rotatedVertices[0], _tr.vertices[0].color, triangleSurfaceNormal, this->lights, this->camera.position),
-					Light::getDiffusedLighting(rotatedVertices[1], _tr.vertices[1].color, triangleSurfaceNormal, this->lights, this->camera.position),
-					Light::getDiffusedLighting(rotatedVertices[2], _tr.vertices[2].color, triangleSurfaceNormal, this->lights, this->camera.position)
+					Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, this->lights, this->camera.position),
+					Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, this->lights, this->camera.position),
+					Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, this->lights, this->camera.position)
 				};
 			}
 
 			// Start Rendering
-
-			const BarycentricInterpolation bi(transformedVertices.data());
 
 			this->drawTriangle2D(transformedVertices[0], transformedVertices[1], transformedVertices[2], [&](const uint16_t _x, const uint16_t _y) -> std::optional<Color<>> {
 				// Pixel Depth (w)
@@ -178,12 +178,12 @@ void Renderer::drawModels() {
 
 					Color<> pixelColor;
 
-					if (_tr.isSmoothed) {
+					if (triangle.isSmoothed) {
 						const Vec3 normal = bi.interpolate(_x, _y, new Vec3[3] { vertexNormals[0], vertexNormals[1], vertexNormals[2] });
 
-						pixelColor = Light::getColorWithLighting(position, Color<>(basePixelColor), normal, this->lights, this->camera.position, _tr.reflectivity);
+						pixelColor = Light::getColorWithLighting(position, Color<>(basePixelColor), normal, this->lights, this->camera.position, material);
 					} else {
-						Color<float> pixelColorFloat = Color<float>(basePixelColor) / 255.f + Color<float>(Light::getSpecularLighting(position, triangleSurfaceNormal, this->lights, this->camera.position, _tr.reflectivity)) / 255.f;
+						Color<float> pixelColorFloat = Color<float>(basePixelColor) / 255.f + Color<float>(Light::getSpecularLighting(position, surfaceNormal, this->lights, this->camera.position, material)) / 255.f;
 
 						pixelColorFloat.constrain(0, 1);
 
@@ -226,6 +226,11 @@ uint64_t Renderer::addModel(const Model& _model)                           { thi
 Model    Renderer::copyModel(const uint64_t _modelId) const                { return this->models[_modelId]; }
 Model&   Renderer::getModelRef(const uint64_t _modelId)                    { return this->models[_modelId]; }
 void     Renderer::setModel(const uint64_t _modelId, const Model& _model)  { this->models[_modelId] = _model; }
+
+uint64_t  Renderer::addMaterial(const Material& _material)                             { this->materials.push_back(_material); return static_cast<unsigned int>(this->materials.size() - 1); }
+Material  Renderer::copyMaterial(const uint64_t _materialId) const                     { return this->materials[_materialId]; }
+Material& Renderer::getMaterialRef(const uint64_t _materialId)                         { return this->materials[_materialId]; }
+void      Renderer::setMaterial(const uint64_t _materialId, const Material& _material) { this->materials[_materialId] = _material; }
 
 void Renderer::addModelToRenderQueue(const uint64_t _modelId) {
 	this->renderQueue.push_back(_modelId);

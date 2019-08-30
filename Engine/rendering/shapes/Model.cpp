@@ -4,7 +4,7 @@
 
 Model::Model() {}
 
-Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bool _randomColors, const Color<>& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation, const float _reflectivity) {
+Model::Model(const std::string& _filePath, const uint64_t _materialIndex, const Vec3& _delataPosition, const bool _randomColors, const Color<>& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation) {
 	File file(_filePath, FILE_READ, false);
 
 	if (file.isOpen()) {
@@ -24,7 +24,7 @@ Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bo
 
 				lineStream >> x >> y >> z;
 
-				vertices.emplace_back(Vec3(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z), _randomColors, Color<>(_flatColor));
+				vertices.emplace_back(Vec3(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z));
 			} else if (dataType == "f") {
 				uint32_t vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0, vertexIndex4 = 0;
 
@@ -44,12 +44,12 @@ Model::Model(const std::string& _filePath, const Vec3& _delataPosition, const bo
 
 				// Triangle 1
 				const Vertex triangle1Vertices[] = { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] };
-				triangles.emplace_back(triangle1Vertices, _centerOfRotation, _rotation, _reflectivity, isSmoothed);
+				triangles.emplace_back(triangle1Vertices, _materialIndex, _centerOfRotation, _rotation, isSmoothed);
 
 				// Triangle 2
 				if (vertexIndex4 > 0) {
 					const Vertex triangle2Vertices[] = { vertices[vertexIndex1 - 1], vertices[vertexIndex3 - 1], vertices[vertexIndex4 - 1] };
-					triangles.emplace_back(triangle2Vertices, _centerOfRotation, _rotation, _reflectivity, isSmoothed);
+					triangles.emplace_back(triangle2Vertices, _materialIndex, _centerOfRotation, _rotation, isSmoothed);
 				}
 			} else if (dataType == "s") {
 				std::string operand;
