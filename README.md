@@ -6,11 +6,12 @@ This Tool Is A Rendering Engine Who's Output Is A Video Clip. This Tool Is A Sim
 
 ## Features
 
-+ Phong Renderer
-+ Gouraud Renderer
++ Phong Rendering
++ Gouraud Rendering
 + OBJ File Parsing
 + Diffuse Lighting
 + Specular Lighting
++ Material System
 + Object Rotation
 + Camera Movement
 + Camera Rotation

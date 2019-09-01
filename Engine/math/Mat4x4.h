@@ -16,6 +16,8 @@ struct Mat4x4 {
 	uint8_t getIndex(const uint8_t _row, const uint8_t _col) const;
 
 	Mat4x4 operator*(const Mat4x4& _m) const;
+	float  operator()(const uint8_t _i) const;
+	float  operator()(const uint8_t _x, const uint8_t _y) const;
 
 	static Mat4x4 getRotationXMatrix(const float _rotX);
 	static Mat4x4 getRotationYMatrix(const float _rotY);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../other/Color.h"
+#include "../other/Util.h"
 #include "../math/Vec3.h"
 #include "../other/pch.h"
 #include "File.h"
@@ -14,27 +15,27 @@ class Image {
 		uint32_t nPixels = 0;
 		
 	public:
-		Color<> * colorBuffer = nullptr;
+		std::unique_ptr<Color<>[]> colorBuffer;
 
 	public:
 		Image(const Image& _img);
-		Image(const std::string& _filename, const bool _doLog = false);
+		Image(const std::string& _filename);
 		Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor = Color<>());
 
 		uint32_t getIndex(const uint16_t _x, const uint16_t _y) const;
 
-		unsigned int getWidth()  const;
-		unsigned int getHeight() const;
+		uint16_t getWidth()  const;
+		uint16_t getHeight() const;
 
 		void setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c);
 
 		Color<> sample(const uint16_t _x, const uint16_t _y) const;
+		Color<> operator()(const uint16_t _i) const;
+		Color<> operator()(const uint16_t _x, const uint16_t _y) const;
 
 		void resize(const uint16_t _width, const uint16_t _height);
 
 		void writeToDisk(const std::string& _fileName) const;
-
-		~Image();
 };
 
 typedef Image Texture;

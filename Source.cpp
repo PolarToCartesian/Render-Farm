@@ -33,10 +33,14 @@ public:
 		this->writeVideo(nFrames, fps);
 	}
 
-	void render() override {
+	void render3D() override {
 		for (int a = 0; a < i; a++) {
 			this->addModelToRenderQueue(a);
 		}
+	}
+
+	void render2D() override {
+
 	}
 
 	void update() override {

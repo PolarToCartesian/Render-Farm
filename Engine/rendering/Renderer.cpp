@@ -2,12 +2,8 @@
 
 // Private Methods
 
-inline void Renderer::resetDepthBuffer() {
+ void Renderer::resetDepthBuffer() {
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
-}
-
-inline uint32_t Renderer::getIndexInColorBuffer(const uint16_t _x, const uint16_t _y) {
-	return renderImages[this->indexImageBeingRendered]->getIndex(_x, _y);
 }
 
 void Renderer::calculatePerspectiveMatrix() {
@@ -23,7 +19,7 @@ std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexN
 	vertexNormalCalc.reserve(3 * _model.triangles.size());
 
 	auto hashRotatedVertex = [](const Vec3& _rotatedVertex) -> std::string {
-		return "x" + std::to_string(_rotatedVertex.x) + "y" + std::to_string(_rotatedVertex.y) + "z" + std::to_string(_rotatedVertex.z);
+		return std::to_string(_rotatedVertex.x) + std::to_string(_rotatedVertex.y) + std::to_string(_rotatedVertex.z);
 	};
 
 	bool doVertexNormalsNeedToBeCalculated = false;
@@ -59,7 +55,9 @@ std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexN
 }
 
 // For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
-void Renderer::drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, const std::function<std::optional<Color<>>(const uint16_t _x, const uint16_t _y)>& _func) {
+void Renderer::drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, const std::function<std::optional<Color<>>(const uint16_t _x, const uint16_t _y)>& _func) {	
+	const Image* renderSurface = this->renderImages[this->indexImageBeingRendered];
+	
 	Vec3 t0 = Vec3::intify(_a), t1 = Vec3::intify(_b), t2 = Vec3::intify(_c);
 
 	if (t0.y == t1.y && t0.y == t2.y)
@@ -93,18 +91,20 @@ void Renderer::drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, co
 		for (int j = static_cast<int>((A.x < 0) ? 0 : A.x); j <= static_cast<int>((B.x > this->width - 2) ? this->width - 2 : B.x); j++) {
 			const uint16_t x = j;
 
-			const uint32_t pixelIndex = this->getIndexInColorBuffer(x, y);
+			const uint32_t pixelIndex = renderSurface->getIndex(x, y);
 
 			std::optional<Color<>> pixelColor = _func(x, y);
 
 			if (pixelColor.has_value())
-				renderImages[this->indexImageBeingRendered]->colorBuffer[pixelIndex] = pixelColor.value();
+				renderSurface->colorBuffer[pixelIndex] = pixelColor.value();
 		}
 	}
 }
 
 void Renderer::drawModels() {
 	for (const uint64_t modelId : this->renderQueue) {
+		clock_t begin = clock();
+
 		Model& model = this->getModelRef(modelId);
 
 		std::vector<std::array<Vec3, 3>> rotatedVerticesOfTriangles;
@@ -119,7 +119,7 @@ void Renderer::drawModels() {
 		// Lambda
 
 		auto hashRotatedVertex = [](const Vec3& _rotatedVertex) -> std::string {
-			return "x" + std::to_string(_rotatedVertex.x) + "y" + std::to_string(_rotatedVertex.y) + "z" + std::to_string(_rotatedVertex.z);
+			return std::to_string(_rotatedVertex.x) + std::to_string(_rotatedVertex.y) + std::to_string(_rotatedVertex.z);
 		};
 
 		auto getVertexNormal = [&vertexNormals, hashRotatedVertex](const Vec3& _rotatedVertex) -> Vec3 {
@@ -134,14 +134,15 @@ void Renderer::drawModels() {
 			const Vec3                     surfaceNormal       = Triangle::getSurfaceNormal(rotatedVertices);
 			const Material&                material            = this->getMaterialRef(triangle.materialIndex);
 			const std::array<Vec3, 3>      transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
-			const BarycentricInterpolation bi(transformedVertices.data());
+				  BarycentricInterpolation bi(transformedVertices.data());
+			const Image* renderSurface = this->renderImages[this->indexImageBeingRendered];
 
 			// Check if triangle is facing camera
 			if (!this->camera.isTriangleFacingCamera(rotatedVertices, surfaceNormal))
 				continue;
 
 			std::array<Vec3, 3> vertexNormals;
-			std::array<Color<>, 3> triangleBaseColors;
+			std::array<Color<>, 3> baseVertexColors;
 
 			if (triangle.isSmoothed) {
 				vertexNormals = {
@@ -150,9 +151,9 @@ void Renderer::drawModels() {
 					getVertexNormal(rotatedVertices[2]) 
 				};
 				
-				triangleBaseColors = material.vertexColors;
+				baseVertexColors = material.vertexColors;
 			} else {
-				triangleBaseColors = {
+				baseVertexColors = {
 					Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, this->lights, this->camera.position),
 					Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, this->lights, this->camera.position),
 					Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, this->lights, this->camera.position)
@@ -162,30 +163,32 @@ void Renderer::drawModels() {
 			// Start Rendering
 
 			this->drawTriangle2D(transformedVertices[0], transformedVertices[1], transformedVertices[2], [&](const uint16_t _x, const uint16_t _y) -> std::optional<Color<>> {
+				bi.precalculateValuesForPosition(_x, _y);
+				
 				// Pixel Depth (w)
-				const float w = bi.interpolate(_x, _y, new float[3]{ transformedVertices[0].w, transformedVertices[1].w, transformedVertices[2].w });
+				const float w = bi.interpolateWPrecalc(new float[3]{ transformedVertices[0].w, transformedVertices[1].w, transformedVertices[2].w });
 
 				// Render Pixel if it is in front of the pixel already there
-				const uint32_t pixelIndex = this->getIndexInColorBuffer(_x, _y);
+				const uint32_t pixelIndex = renderSurface->getIndex(_x, _y);
 
 				if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1) {
 					this->depthBuffer[pixelIndex] = w;
 
-					Color<float> basePixelColor = bi.interpolate(_x, _y, new Color<float>[3] { Color<float>(triangleBaseColors[0]), Color<float>(triangleBaseColors[1]), Color<float>(triangleBaseColors[2]) });
-					basePixelColor.constrain(0, 255);
+					Color<float> pixelColorFloat = bi.interpolateWPrecalc(new Color<float>[3] { Color<float>(baseVertexColors[0]), Color<float>(baseVertexColors[1]), Color<float>(baseVertexColors[2]) });
+					pixelColorFloat.constrain(0, 255);
 
-					const Vec3 position = bi.interpolate(_x, _y, new Vec3[3] { rotatedVertices[0], rotatedVertices[1], rotatedVertices[2] });
+					const Vec3 position = bi.interpolateWPrecalc(new Vec3[3] { rotatedVertices[0], rotatedVertices[1], rotatedVertices[2] });
 
 					Color<> pixelColor;
 
 					if (triangle.isSmoothed) {
-						const Vec3 normal = bi.interpolate(_x, _y, new Vec3[3] { vertexNormals[0], vertexNormals[1], vertexNormals[2] });
+						const Vec3 normal = bi.interpolateWPrecalc(new Vec3[3] { vertexNormals[0], vertexNormals[1], vertexNormals[2] });
 
-						pixelColor = Light::getColorWithLighting(position, Color<>(basePixelColor), normal, this->lights, this->camera.position, material);
+						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, this->lights, this->camera.position, material);
 					} else {
-						Color<float> pixelColorFloat = Color<float>(basePixelColor) / 255.f + Color<float>(Light::getSpecularLighting(position, surfaceNormal, this->lights, this->camera.position, material)) / 255.f;
+						Color<float> pixelColor = Color<float>(pixelColorFloat) / 255.f + Color<float>(Light::getSpecularLighting(position, surfaceNormal, this->lights, this->camera.position, material)) / 255.f;
 
-						pixelColorFloat.constrain(0, 1);
+						pixelColor.constrain(0, 1);
 
 						pixelColor = Color<>(pixelColorFloat * 255.f);
 					}
@@ -214,8 +217,8 @@ Renderer::~Renderer() {
 	delete[] this->depthBuffer;
 }
 
-inline uint32_t Renderer::getWidth()  const { return this->width; }
-inline uint32_t Renderer::getHeight() const { return this->height; }
+ uint32_t Renderer::getWidth()  const { return this->width; }
+ uint32_t Renderer::getHeight() const { return this->height; }
 
 uint64_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
 Light    Renderer::copyLight(const uint64_t _lightId) const               { return this->lights[_lightId]; }
@@ -237,7 +240,7 @@ void Renderer::addModelToRenderQueue(const uint64_t _modelId) {
 }
 
 inline void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color<>& _color) {
-	this->renderImages[this->indexImageBeingRendered]->colorBuffer[getIndexInColorBuffer(_x, _y)] = _color;
+	this->renderImages[this->indexImageBeingRendered]->setColor(_x, _y, _color);
 }
 
 inline void Renderer::drawPoint(const uint16_t _x, const uint16_t _y, const Color<>& _color) {
@@ -372,9 +375,12 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 			// Call User Defined Functions
 			// Do Not Update If It Is The First Frame
 			if (!(nCycle == 0 && this->indexImageBeingRendered == 0)) this->update();
-			this->render();
+
+			this->render3D();
 
 			this->drawModels();
+
+			this->render2D();
 
 			const auto endTime = std::chrono::system_clock::now();
 			const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
@@ -403,8 +409,8 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 			// Join Threads
 			writeThreads[i].join();
 
-			// Reset Images To Black
-			std::fill_n(this->renderImages[i]->colorBuffer, this->width * this->height, this->backgroundColor);
+			// Reset Images To Background Color
+			std::fill_n(this->renderImages[i]->colorBuffer.get(), this->width * this->height, this->backgroundColor);
 		}
 
 		std::this_thread::yield();
@@ -414,9 +420,9 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 void Renderer::writeVideo(const uint32_t _nFrames, const uint16_t _fps) {
 	std::experimental::filesystem::create_directory("./out/video");
 
-	Video video(true);
+	Video video;
 
-	for (unsigned int i = 1; i < _nFrames+1; i++)
+	for (uint32_t i = 1; i < _nFrames+1; i++)
 		video.addFrame("./out/frames/" + std::to_string(i) + ".ppm");
 
 	video.save("./out/video/video.avi", _fps);

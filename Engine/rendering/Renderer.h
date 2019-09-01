@@ -34,14 +34,11 @@ class Renderer {
 		std::vector<Light> lights;
 		std::vector<Material> materials;
 		std::deque<uint64_t> renderQueue;
-
 	public:
 		Camera camera;
 
 	private:
 		void resetDepthBuffer();
-
-		uint32_t getIndexInColorBuffer(const uint16_t _x, const uint16_t _y);
 
 		void calculatePerspectiveMatrix();
 
@@ -57,7 +54,8 @@ class Renderer {
 		~Renderer();
 
 		virtual void update() = 0;
-		virtual void render() = 0;
+		virtual void render3D() = 0;
+		virtual void render2D() = 0;
 
 		uint32_t getWidth()  const;
 		uint32_t getHeight() const;
