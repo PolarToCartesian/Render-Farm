@@ -12,6 +12,7 @@ void Renderer::calculatePerspectiveMatrix() {
 
 std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexNormals(const Model& _model, const std::vector<std::array<Vec3, 3>>& _rotatedVerticesOfTriangles) const {
 	// Calculate Vertex Normals
+	// Thansk to : https://stackoverflow.com/questions/6656358/calculating-normals-in-a-triangle-mesh/6661242#6661242
 
 	//  We use a hash table to divide render times by 20 (according to my rough estimates)!
 	//  1) hashed rotated vertex    2) Info About rotated Vertex To Calculate Normal
@@ -32,8 +33,9 @@ std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexN
 	}
 
 	if (doVertexNormalsNeedToBeCalculated) {
-		for (const std::array<Vec3, 3> & rotatedVertices : _rotatedVerticesOfTriangles) {
+		for (const std::array<Vec3, 3>& rotatedVertices : _rotatedVerticesOfTriangles) {
 			const Vec3 normal = Triangle::getSurfaceNormal(rotatedVertices);
+
 			const float weight = 1; //*
 
 			for (const Vec3& rotatedVertex : rotatedVertices) {
@@ -101,11 +103,11 @@ void Renderer::drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, co
 	}
 }
 
-void Renderer::drawModels() {
-	for (const uint64_t modelId : this->renderQueue) {
+void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
+	for (const std::string& modelName : this->renderModels) {
 		clock_t begin = clock();
 
-		Model& model = this->getModelRef(modelId);
+		Model& model = this->models.at(modelName);
 
 		std::vector<std::array<Vec3, 3>> rotatedVerticesOfTriangles;
 		rotatedVerticesOfTriangles.reserve(model.triangles.size());
@@ -132,7 +134,7 @@ void Renderer::drawModels() {
 			const Triangle&                triangle            = model.triangles[trIndex];
 			const std::array<Vec3, 3>      rotatedVertices     = rotatedVerticesOfTriangles[trIndex];
 			const Vec3                     surfaceNormal       = Triangle::getSurfaceNormal(rotatedVertices);
-			const Material&                material            = this->getMaterialRef(triangle.materialIndex);
+			const Material&                material            = this->materials.at(triangle.material);
 			const std::array<Vec3, 3>      transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
 				  BarycentricInterpolation bi(transformedVertices.data());
 			const Image* renderSurface = this->renderImages[this->indexImageBeingRendered];
@@ -154,9 +156,9 @@ void Renderer::drawModels() {
 				baseVertexColors = material.vertexColors;
 			} else {
 				baseVertexColors = {
-					Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, this->lights, this->camera.position),
-					Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, this->lights, this->camera.position),
-					Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, this->lights, this->camera.position)
+					Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, _lightsInScene, this->camera.position),
+					Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, _lightsInScene, this->camera.position),
+					Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, _lightsInScene, this->camera.position)
 				};
 			}
 
@@ -184,9 +186,9 @@ void Renderer::drawModels() {
 					if (triangle.isSmoothed) {
 						const Vec3 normal = bi.interpolateWPrecalc(new Vec3[3] { vertexNormals[0], vertexNormals[1], vertexNormals[2] });
 
-						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, this->lights, this->camera.position, material);
+						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, _lightsInScene, this->camera.position, material);
 					} else {
-						Color<float> pixelColor = Color<float>(pixelColorFloat) / 255.f + Color<float>(Light::getSpecularLighting(position, surfaceNormal, this->lights, this->camera.position, material)) / 255.f;
+						Color<float> pixelColor = Color<float>(pixelColorFloat) / 255.f + Color<float>(Light::getSpecularLighting(position, surfaceNormal, _lightsInScene, this->camera.position, material)) / 255.f;
 
 						pixelColor.constrain(0, 1);
 
@@ -219,25 +221,6 @@ Renderer::~Renderer() {
 
  uint32_t Renderer::getWidth()  const { return this->width; }
  uint32_t Renderer::getHeight() const { return this->height; }
-
-uint64_t Renderer::addLight(const Light& _light)                          { this->lights.push_back(_light); return static_cast<unsigned int>(this->lights.size() - 1); }
-Light    Renderer::copyLight(const uint64_t _lightId) const               { return this->lights[_lightId]; }
-Light&   Renderer::getLightRef(const uint64_t _lightId)                   { return this->lights[_lightId]; }
-void     Renderer::setLight(const uint64_t _lightId, const Light& _light) { this->lights[_lightId] = _light; }
-
-uint64_t Renderer::addModel(const Model& _model)                           { this->models.push_back(_model); return static_cast<unsigned int>(this->models.size() - 1); }
-Model    Renderer::copyModel(const uint64_t _modelId) const                { return this->models[_modelId]; }
-Model&   Renderer::getModelRef(const uint64_t _modelId)                    { return this->models[_modelId]; }
-void     Renderer::setModel(const uint64_t _modelId, const Model& _model)  { this->models[_modelId] = _model; }
-
-uint64_t  Renderer::addMaterial(const Material& _material)                             { this->materials.push_back(_material); return static_cast<unsigned int>(this->materials.size() - 1); }
-Material  Renderer::copyMaterial(const uint64_t _materialId) const                     { return this->materials[_materialId]; }
-Material& Renderer::getMaterialRef(const uint64_t _materialId)                         { return this->materials[_materialId]; }
-void      Renderer::setMaterial(const uint64_t _materialId, const Material& _material) { this->materials[_materialId] = _material; }
-
-void Renderer::addModelToRenderQueue(const uint64_t _modelId) {
-	this->renderQueue.push_back(_modelId);
-}
 
 inline void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color<>& _color) {
 	this->renderImages[this->indexImageBeingRendered]->setColor(_x, _y, _color);
@@ -370,7 +353,8 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 			const auto startTime = std::chrono::system_clock::now();
 		
 			this->resetDepthBuffer();
-			this->renderQueue.clear();
+			this->renderModels.clear();
+			this->renderLights.clear();
 
 			// Call User Defined Functions
 			// Do Not Update If It Is The First Frame
@@ -378,7 +362,14 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 
 			this->render3D();
 
-			this->drawModels();
+			std::vector<Light> lightsInScene;
+			lightsInScene.reserve(this->renderLights.size());
+
+			for (const std::string& _lightName : this->renderLights) {
+				lightsInScene.push_back(this->lights.at(_lightName));
+			}
+
+			this->drawModels(lightsInScene);
 
 			this->render2D();
 

@@ -4,7 +4,7 @@
 
 Triangle::Triangle() {}
 
-Triangle::Triangle(const Vertex _vertices[3], const uint64_t _materialIndex, const bool _isSmoothed) : isSmoothed(_isSmoothed), materialIndex(_materialIndex) {
+Triangle::Triangle(const Vertex _vertices[3], const std::string& _material, const bool _isSmoothed) : isSmoothed(_isSmoothed), material(_material) {
 	std::memcpy(this->vertices, _vertices, 3 * sizeof(Vertex));
 
 	for (uint8_t i = 0; i < 3; i++)
@@ -13,7 +13,7 @@ Triangle::Triangle(const Vertex _vertices[3], const uint64_t _materialIndex, con
 	this->rotationMidPoint /= 3;
 }
 
-Triangle::Triangle(const Vertex _vertices[3], const uint64_t _materialIndex, const Vec3& _rotationMidPoint, const Vec3& _rotation, const bool _isSmoothed) : isSmoothed(_isSmoothed), materialIndex(_materialIndex), rotationMidPoint(_rotationMidPoint), rotation(_rotation) {
+Triangle::Triangle(const Vertex _vertices[3], const std::string& _material, const Vec3& _rotationMidPoint, const Vec3& _rotation, const bool _isSmoothed) : isSmoothed(_isSmoothed), material(_material), rotationMidPoint(_rotationMidPoint), rotation(_rotation) {
 	std::memcpy(this->vertices, _vertices, 3 * sizeof(Vertex));
 }
 

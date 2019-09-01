@@ -1,8 +1,9 @@
 #pragma once
 
+#include "../other/pch.h"
+
 #include "../other/Defines.h"
 #include "../math/Funcs.h"
-#include "../other/pch.h"
 
 struct Mat4x4 {
 	float m[16] = { 0 }; // r * c

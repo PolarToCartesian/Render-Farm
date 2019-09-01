@@ -1,23 +1,24 @@
 #pragma once
 
+#include "../../other/pch.h"
+
 #include "../../files/Image.h"
 #include "../../math/Vertex.h"
 #include "../../math/Mat4x4.h"
 #include "../objects/Camera.h"
-#include "../../other/pch.h"
 
 struct Triangle {
 	Vertex vertices[3];
 	Vec3 rotation;
 	Vec3 rotationMidPoint;
 
-	uint64_t materialIndex = 0;
+	std::string material;
 
 	bool isSmoothed = true; // use phong
 
 	Triangle();
-	Triangle(const Vertex _vertices[3], const uint64_t _materialIndex, const bool _isSmoothed = false);
-	Triangle(const Vertex _vertices[3], const uint64_t _materialIndex, const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3(), const bool _isSmoothed = false);
+	Triangle(const Vertex _vertices[3], const std::string& _material, const bool _isSmoothed = false);
+	Triangle(const Vertex _vertices[3], const std::string& _material, const Vec3& _rotationMidPoint = Vec3(), const Vec3& _rotation = Vec3(), const bool _isSmoothed = false);
 
 	void applyFunctionToEachVertex(const std::function<void(Vertex&)>& _function);
 

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../other/Defines.h"
 #include "../other/pch.h"
+
+#include "../other/Defines.h"
 
 namespace MATH {
 	unsigned int randomInt(const unsigned int _min, const unsigned int _max);

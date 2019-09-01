@@ -1,9 +1,10 @@
 #pragma once
 
+#include "../other/pch.h"
+
 #include "../other/Color.h"
 #include "../other/Util.h"
 #include "../math/Vec3.h"
-#include "../other/pch.h"
 #include "File.h"
 
 // Only Works With PPM Images With 255 in header

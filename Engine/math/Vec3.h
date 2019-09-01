@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../other/pch.h"
+
 #include "Mat4x4.h"
 
 struct Vec3 { // 4th Component is not manipulated, just stored (modified if requested)

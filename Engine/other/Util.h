@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../other/pch.h"
+#include "pch.h"
 
 namespace UTIL {
 	template <typename T>

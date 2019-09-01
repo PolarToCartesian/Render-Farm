@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../math/Funcs.h"
 #include "pch.h"
+
+#include "../math/Funcs.h"
 
 template <typename T = uint8_t>
 class Color {

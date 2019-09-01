@@ -1,5 +1,7 @@
 #pragma once
 
+#include "other/pch.h"
+
 #include "rendering/objects/Camera.h"
 #include "rendering/objects/Light.h"
 
@@ -11,7 +13,6 @@
 
 #include "other/Defines.h"
 #include "other/Color.h"
-#include "other/pch.h"
 
 #include "math/Vertex.h"
 #include "math/Mat4x4.h"
