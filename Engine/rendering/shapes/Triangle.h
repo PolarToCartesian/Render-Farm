@@ -14,7 +14,7 @@ struct Triangle {
 
 	std::string material;
 
-	bool isSmoothed = true; // use phong
+	bool isSmoothed = false; // use phong
 
 	Triangle();
 	Triangle(const Vertex _vertices[3], const std::string& _material, const bool _isSmoothed = false);

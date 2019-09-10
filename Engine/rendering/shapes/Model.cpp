@@ -4,7 +4,7 @@
 
 Model::Model() {}
 
-Model::Model(const std::string& _filePath, const std::string& _material, const Vec3& _delataPosition, const bool _randomColors, const Color<>& _flatColor, const Vec3& _centerOfRotation, const Vec3& _rotation) {
+Model::Model(const std::string& _filePath, const std::string& _material, const Vec3& _delataPosition, const Vec3& _centerOfRotation, const Vec3& _rotation) {
 	try {
 		File file(_filePath, FILE_READ);
 
@@ -12,8 +12,6 @@ Model::Model(const std::string& _filePath, const std::string& _material, const V
 			std::string dataType, junk;
 
 			std::vector<Vertex> vertices;
-
-			bool isSmoothed = false;
 
 			file.readLineByLine([&](const std::string& _line, const unsigned int _lineNumber) {
 				std::istringstream lineStream(_line);
@@ -26,8 +24,7 @@ Model::Model(const std::string& _filePath, const std::string& _material, const V
 					lineStream >> x >> y >> z;
 
 					vertices.emplace_back(Vec3(x + _delataPosition.x, y + _delataPosition.y, z + _delataPosition.z));
-				}
-				else if (dataType == "f") {
+				} else if (dataType == "f") {
 					uint32_t vertexIndex1 = 0, vertexIndex2 = 0, vertexIndex3 = 0, vertexIndex4 = 0;
 
 					if (_line.find("/") == std::string::npos) {
@@ -36,8 +33,7 @@ Model::Model(const std::string& _filePath, const std::string& _material, const V
 						// Check For 4 Component Face
 						if (!lineStream.str().empty())
 							lineStream >> vertexIndex4;
-					}
-					else {
+					} else {
 						lineStream >> vertexIndex1 >> junk >> vertexIndex2 >> junk >> vertexIndex3;
 
 						// Check For 4 Component Face
@@ -47,20 +43,13 @@ Model::Model(const std::string& _filePath, const std::string& _material, const V
 
 					// Triangle 1
 					const Vertex triangle1Vertices[] = { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] };
-					triangles.emplace_back(triangle1Vertices, _material, _centerOfRotation, _rotation, isSmoothed);
+					triangles.emplace_back(triangle1Vertices, _material, _centerOfRotation, _rotation, true);
 
 					// Triangle 2
 					if (vertexIndex4 > 0) {
 						const Vertex triangle2Vertices[] = { vertices[vertexIndex1 - 1], vertices[vertexIndex3 - 1], vertices[vertexIndex4 - 1] };
-						triangles.emplace_back(triangle2Vertices, _material, _centerOfRotation, _rotation, isSmoothed);
+						triangles.emplace_back(triangle2Vertices, _material, _centerOfRotation, _rotation, true);
 					}
-				}
-				else if (dataType == "s") {
-					std::string operand;
-
-					lineStream >> operand;
-
-					isSmoothed = (operand != "off");
 				}
 				});
 

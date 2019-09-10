@@ -166,7 +166,7 @@ void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
 
 			this->drawTriangle2D(transformedVertices[0], transformedVertices[1], transformedVertices[2], [&](const uint16_t _x, const uint16_t _y) -> std::optional<Color<>> {
 				bi.precalculateValuesForPosition(_x, _y);
-				
+
 				// Pixel Depth (w)
 				const float w = bi.interpolateWPrecalc(new float[3]{ transformedVertices[0].w, transformedVertices[1].w, transformedVertices[2].w });
 
@@ -176,23 +176,19 @@ void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
 				if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1) {
 					this->depthBuffer[pixelIndex] = w;
 
-					Color<float> pixelColorFloat = bi.interpolateWPrecalc(new Color<float>[3] { Color<float>(baseVertexColors[0]), Color<float>(baseVertexColors[1]), Color<float>(baseVertexColors[2]) });
+					Color<float> pixelColorFloat = bi.interpolateWPrecalc(new Color<float>[3]{ Color<float>(baseVertexColors[0]), Color<float>(baseVertexColors[1]), Color<float>(baseVertexColors[2]) });
 					pixelColorFloat.constrain(0, 255);
 
-					const Vec3 position = bi.interpolateWPrecalc(new Vec3[3] { rotatedVertices[0], rotatedVertices[1], rotatedVertices[2] });
+					const Vec3 position = bi.interpolateWPrecalc(new Vec3[3]{ rotatedVertices[0], rotatedVertices[1], rotatedVertices[2] });
 
 					Color<> pixelColor;
 
 					if (triangle.isSmoothed) {
-						const Vec3 normal = bi.interpolateWPrecalc(new Vec3[3] { vertexNormals[0], vertexNormals[1], vertexNormals[2] });
+						const Vec3 normal = bi.interpolateWPrecalc(new Vec3[3]{ vertexNormals[0], vertexNormals[1], vertexNormals[2] });
 
 						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, _lightsInScene, this->camera.position, material);
 					} else {
-						Color<float> pixelColor = Color<float>(pixelColorFloat) / 255.f + Color<float>(Light::getSpecularLighting(position, surfaceNormal, _lightsInScene, this->camera.position, material)) / 255.f;
-
-						pixelColor.constrain(0, 1);
-
-						pixelColor = Color<>(pixelColorFloat * 255.f);
+						pixelColor = pixelColorFloat + Light::getSpecularLighting(position, surfaceNormal, _lightsInScene, this->camera.position, material);
 					}
 
 					return pixelColor;

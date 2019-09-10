@@ -102,22 +102,30 @@ void Image::resize(const uint16_t _width, const uint16_t _height) {
 }
 
 void Image::writeToDisk(const std::string& _fileName) const {
-	try {
-		File file(_fileName, "wb");
+	FILE* filePtr = nullptr;
 
-		if (file.isOpen()) {
-			std::string fileContents = "P3 \n" + std::to_string(this->imageWidth) + " " + std::to_string(this->imageHeight) + "\n255\n";
+	fopen_s(&filePtr, _fileName.c_str(), "wb");
 
-			// PPM Contents
-			for (unsigned int i = 0; i < this->nPixels; i++) {
-				fileContents += std::to_string(this->colorBuffer[i].r) + ' '+
-								std::to_string(this->colorBuffer[i].g) + ' ' +
-								std::to_string(this->colorBuffer[i].b) + '\n';
+	if (filePtr != nullptr) {
+		const std::string header = "P6\n" + std::to_string(this->imageWidth) + " " + std::to_string(this->imageHeight) + " 255\n";
+		fprintf(filePtr, header.c_str());
+
+		uint8_t* fileBody = new uint8_t[this->nPixels * 3];
+
+		uint32_t pixelIndex = 0, filePixelIndex = 0;
+
+		for (uint16_t y = 0; y < this->imageHeight; y++) {
+			for (uint16_t x = 0; x < this->imageWidth; x++) {
+				fileBody[filePixelIndex++] = this->colorBuffer[pixelIndex].r;
+				fileBody[filePixelIndex++] = this->colorBuffer[pixelIndex].g;
+				fileBody[filePixelIndex++] = this->colorBuffer[pixelIndex++].b;
 			}
-
-			file.writeNoVerif(fileContents);
 		}
-	} catch (const char* _error) {
-		CMD::println("[ERROR] While Opening/Writing To \"" + _fileName + "\": " + _error, LOG_TYPE::error);
+
+		fwrite(fileBody, 1, this->nPixels * 3, filePtr);
+
+		fclose(filePtr);
+	} else {
+		CMD::println("[ERROR] While Opening/Writing To \"" + _fileName, LOG_TYPE::error);
 	}
 }
