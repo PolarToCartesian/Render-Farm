@@ -1,12 +1,16 @@
 #pragma once
 
-#include "../math/BarycentricInterpolation.h"
-#include "materials/Material.h"
+#include "shapes/Model.h"
+#include "objects/Light.h"
 #include "../files/Video.h"
 #include "objects/Camera.h"
 #include "../files/Image.h"
-#include "objects/Light.h"
-#include "shapes/Model.h"
+#include "materials/Material.h"
+#include "../math/BarycentricInterpolation.h"
+
+#include <experimental/filesystem>
+#include <optional>
+#include <deque>
 
 struct VertexNormalCalcInfo {
 	Vec3 normal;

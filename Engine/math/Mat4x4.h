@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../other/pch.h"
-
 #include "../other/Defines.h"
 #include "../math/Funcs.h"
 

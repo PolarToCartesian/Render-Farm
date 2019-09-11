@@ -12,7 +12,7 @@ Image::Image(const Image& _img) {
 
 Image::Image(const std::string& _filename) {
 	try {
-		File file(_filename, FILE_READ);
+		File file(_filename, "r");
 
 		uint16_t maxColor = 0;
 
@@ -102,16 +102,15 @@ void Image::resize(const uint16_t _width, const uint16_t _height) {
 }
 
 void Image::writeToDisk(const std::string& _fileName) const {
-	FILE* filePtr = nullptr;
+	try {
+		File file(_fileName, "wb");
 
-	fopen_s(&filePtr, _fileName.c_str(), "wb");
-
-	if (filePtr != nullptr) {
 		const std::string header = "P6\n" + std::to_string(this->imageWidth) + " " + std::to_string(this->imageHeight) + " 255\n";
-		fprintf(filePtr, header.c_str());
 
-		uint8_t* fileBody = new uint8_t[this->nPixels * 3];
+		file.writeNoVerif(header);
 
+		const uint64_t fileBodySize = this->nPixels * 3;
+		uint8_t* fileBody   = new uint8_t[fileBodySize];
 		uint32_t pixelIndex = 0, filePixelIndex = 0;
 
 		for (uint16_t y = 0; y < this->imageHeight; y++) {
@@ -122,10 +121,10 @@ void Image::writeToDisk(const std::string& _fileName) const {
 			}
 		}
 
-		fwrite(fileBody, 1, this->nPixels * 3, filePtr);
+		file.writeBufferNoVerif(fileBody, 1, fileBodySize);
 
-		fclose(filePtr);
-	} else {
-		CMD::println("[ERROR] While Opening/Writing To \"" + _fileName, LOG_TYPE::error);
+		delete[] fileBody;
+	} catch (const char* _error) {
+		CMD::println("[ERROR] While Writing To \"" + _fileName + "\": " + std::string(_error), LOG_TYPE::error);
 	}
 }

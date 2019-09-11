@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../other/pch.h"
-
-#include "../other/Defines.h"
 #include "../cmd/Logging.h"
+#include "../other/Defines.h"
+
+#include <functional>
 
 class File {
 	private:
@@ -17,16 +17,19 @@ class File {
 		std::string permissions;
 
 	public:
-		File(const std::string& _filename, const std::string& _permissions = FILE_READ_WRITE);
+		File(const std::string& _filename, const std::string& _permissions);
 		~File();
 
-		void open(const std::string& _filename, const std::string& _permissions = FILE_READ_WRITE);
+		void open(const std::string& _filename, const std::string& _permissions);
 
 		std::string read() const;
 		void readLineByLine(const std::function<void(const std::string&, const unsigned int)>& _lambda) const;
 
 		void writeNoVerif(const std::string& _content);
 		void write(const std::string& _content);
+
+		void writeBufferNoVerif(const void* _buff, const size_t _elementSize, size_t _elementCount);
+		void writeBuffer(const void* _buff, const size_t _elementSize, size_t _elementCount);
 
 		bool isOpen()   const;
 		bool isClosed() const;

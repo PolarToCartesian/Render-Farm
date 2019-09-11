@@ -12,7 +12,7 @@ Color<> Light::getDiffusedLighting(const Vec3& _point, const Color<>& _baseColor
 	for (const Light& light : _lights) {
 		const Vec3 pointToLight = Vec3::normalize(light.position - _point);
 
-		const float diffuseDotProduct = std::max(Vec3::dotProduct(pointToLight, _normal), 0.f);
+		const float diffuseDotProduct = max(Vec3::dotProduct(pointToLight, _normal), 0.f);
 
 		const float brightness = diffuseDotProduct * light.intensity;
 
@@ -40,7 +40,7 @@ Color<> Light::getSpecularLighting(const Vec3& _point, const Vec3& _normal, cons
 
 		const Vec3 reflectedLight = Vec3::normalize(lightToPoint - (_normal * dotLightToPointAndSurfaceNormal * 2));
 
-		const float specularDotProduct = std::max(Vec3::dotProduct(pointToCamera, reflectedLight), 0.f);
+		const float specularDotProduct = max(Vec3::dotProduct(pointToCamera, reflectedLight), 0.f);
 
 		outColor += (Color<float>(light.color) / 255.f) * _material.reflectivity * std::pow(specularDotProduct, _material.shineDamper);
 	}

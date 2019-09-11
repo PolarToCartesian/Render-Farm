@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
 namespace UTIL {
 	template <typename T>
 	T extractValue(std::istringstream& _istrstr) {

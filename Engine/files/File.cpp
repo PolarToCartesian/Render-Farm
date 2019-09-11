@@ -27,8 +27,8 @@ void File::open(const std::string& _filename, const std::string& _permissions) {
 		throw 0;
 	}
 
-	this->canRead  = (this->isFileOpen && (this->permissions == FILE_READ  || this->permissions == FILE_READ_WRITE));
-	this->canWrite = (this->isFileOpen && (this->permissions == FILE_WRITE || this->permissions == FILE_READ_WRITE));
+	this->canRead  = (this->permissions.find("r") != std::string::npos);
+	this->canWrite = (this->permissions.find("w") != std::string::npos);
 }
 
 void File::close() {
@@ -59,6 +59,26 @@ void File::write(const std::string& _content) {
 			throw "NOT_WRITABLE";
 		}
 	} else {
+		throw "CLOSED";
+	}
+}
+
+void File::writeBufferNoVerif(const void* _buff, const size_t _elementSize, size_t _elementCount) {
+	std::fwrite(_buff, _elementSize, _elementCount, this->filePtr);
+}
+
+void File::writeBuffer(const void* _buff, const size_t _elementSize, size_t _elementCount) {
+	// Write to file if the file is open
+	if (this->isFileOpen) {
+		// Write if the file can be written to
+		if (this->canWrite) {
+			this->writeBufferNoVerif(_buff, _elementSize, _elementCount);
+		}
+		else {
+			throw "NOT_WRITABLE";
+		}
+	}
+	else {
 		throw "CLOSED";
 	}
 }

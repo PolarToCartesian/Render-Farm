@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../../other/pch.h"
-
-#include "../materials/Material.h"
-#include "../../other/Defines.h"
-#include "../../cmd/Logging.h"
-#include "../../math/Vertex.h"
-#include "../../math/Funcs.h"
 #include "../../math/Vec3.h"
+#include "../../math/Funcs.h"
+#include "../../math/Vertex.h"
+#include "../../cmd/Logging.h"
+#include "../../other/Defines.h"
+#include "../materials/Material.h"
+
+#include <algorithm>
 
 struct Light {
 	Vec3 position;

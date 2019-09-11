@@ -1,6 +1,10 @@
 #pragma once
 
-#include "pch.h"
+#include <unordered_map>
+
+#ifdef _WIN32
+	#include <Windows.h>
+#endif
 
 /// Can Be Changed By User
 
@@ -18,10 +22,6 @@ constexpr float TAU = static_cast<float>(2 * PI);
 // File
 
 constexpr uint16_t FILE_LINE_BUFFER_SIZE = 255;
-
-constexpr const char* FILE_READ  = "r";
-constexpr const char* FILE_WRITE = "w";
-constexpr const char* FILE_READ_WRITE = "r+";
 
 // Logging
 

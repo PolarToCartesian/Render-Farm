@@ -12,7 +12,7 @@ void Video::save(const std::string& _filename, const uint16_t _fps) {
 
 	std::experimental::filesystem::create_directory("./temp/");
 	try {
-		File file("./temp/videoEncoder.py", FILE_WRITE);
+		File file("./temp/videoEncoder.py", "w");
 
 		unsigned int nLines = sizeof(VIDEO_ENCODING_PYTHON_SOURCE_CODE) / sizeof(const char*);
 

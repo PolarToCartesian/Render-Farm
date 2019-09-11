@@ -9,80 +9,28 @@ Vec3::Vec3(const float _x, const float _y, const float _z) : x(_x), y(_y), z(_z)
 Vec3::Vec3(const float _x, const float _y, const float _z, const float _w) : x(_x), y(_y), z(_z), w(_w) {}
 Vec3::Vec3(const Vec3& _v) : x(_v.x), y(_v.y), z(_v.z), w(_v.w) {}
 
-void Vec3::add(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
-	this->x += _x; this->y += _y; this->z += _z;
+void Vec3::operator+=(const Vec3& _v) { this->x += _v.x; this->y += _v.y; this->z += _v.z; }
+void Vec3::operator+=(const float _n) { this->x += _n;   this->y += _n;   this->z += _n;   }
+Vec3 Vec3::operator+(const Vec3& _v) const { return Vec3( this->x + _v.x, this->y + _v.y, this->z + _v.z ); }
+Vec3 Vec3::operator+(const float _n) const { return Vec3( this->x + _n,   this->y + _n,   this->z + _n   ); }
 
-	if (_useW) this->w += _w;
-}
+void Vec3::operator-=(const Vec3& _v) { this->x -= _v.x; this->y -= _v.y; this->z -= _v.z; }
+void Vec3::operator-=(const float _n) { this->x -= _n;   this->y -= _n;   this->z -= _n; }
+Vec3 Vec3::operator-(const Vec3& _v) const { return Vec3( this->x - _v.x, this->y - _v.y, this->z - _v.z); }
+Vec3 Vec3::operator-(const float _n) const { return Vec3( this->x - _n,   this->y - _n,   this->z - _n  ); }
 
-void Vec3::add(const float _x, const float _y, const float _z) { this->x += _x; this->y += _y; this->z += _z; }
-void Vec3::add(const float _x, const float _y) { this->x += _x; this->y += _y; }
-void Vec3::add(const Vec3& _v, const bool _useW) { this->add(_v.x, _v.y, _v.z, _v.w, _useW); }
-void Vec3::add(const float _n, const bool _useW) { this->add(_n, _n, _n, _n, _useW); }
-void Vec3::operator+=(const Vec3& _a) { this->add(_a); }
-void Vec3::operator+=(const float _a) { this->add(_a); }
-Vec3 Vec3::operator+(const Vec3& _a) const { Vec3 result = this->copy(); result.add(_a); return result; }
-Vec3 Vec3::operator+(const float _a) const { Vec3 result = this->copy(); result.add(_a); return result; }
-template <typename T>
-Vec3 operator+(const Vec3& _a, T _b) { return _a.operator+(_b); }
+void Vec3::operator*=(const Vec3& _v) { this->x *= _v.x; this->y *= _v.y; this->z *= _v.z; }
+void Vec3::operator*=(const float _n) { this->x *= _n;   this->y *= _n;   this->z *= _n; }
+Vec3 Vec3::operator*(const Vec3& _v) const { return Vec3( this->x * _v.x, this->y * _v.y, this->z * _v.z); }
+Vec3 Vec3::operator*(const float _n) const { return Vec3( this->x * _n,   this->y * _n,   this->z * _n  ); }
 
+void Vec3::operator/=(const Vec3& _v) { this->x /= _v.x; this->y /= _v.y; this->z /= _v.z; }
+void Vec3::operator/=(const float _n) { this->x /= _n;   this->y /= _n;   this->z /= _n; }
+Vec3 Vec3::operator/(const Vec3& _v) const { return Vec3( this->x / _v.x, this->y / _v.y, this->z / _v.z); }
+Vec3 Vec3::operator/(const float _n) const { return Vec3( this->x / _n,   this->y / _n,   this->z / _n  ); }
 
-
-void Vec3::sub(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
-	this->x -= _x; this->y -= _y; this->z -= _z;
-
-	if (_useW) this->w -= _w;
-}
-
-void Vec3::sub(const float _x, const float _y, const float _z) { this->x -= _x; this->y -= _y; this->z -= _z; }
-void Vec3::sub(const float _x, const float _y) { this->x -= _x; this->y -= _y; }
-void Vec3::sub(const Vec3& _v, const bool _useW) { this->sub(_v.x, _v.y, _v.z, _v.w, _useW); }
-void Vec3::sub(const float _n, const bool _useW) { this->sub(_n, _n, _n, _n, _useW); }
-void Vec3::operator-=(const Vec3& _a) { this->sub(_a); }
-void Vec3::operator-=(const float _a) { this->sub(_a); }
-Vec3 Vec3::operator-(const Vec3& _a) const { Vec3 result = this->copy(); result.sub(_a); return result; }
-Vec3 Vec3::operator-(const float _a) const { Vec3 result = this->copy(); result.sub(_a); return result; }
-template <typename T>
-Vec3 operator-(const Vec3& _a, T _b) { return _a.operator-(_b); }
-
-
-
-void Vec3::mul(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
-	this->x *= _x; this->y *= _y; this->z *= _z;
-
-	if (_useW) this->w *= _w;
-}
-
-void Vec3::mul(const float _x, const float _y, const float _z) { this->x *= _x; this->y *= _y; this->z *= _z; }
-void Vec3::mul(const float _x, const float _y) { this->x *= _x; this->y *= _y; }
-void Vec3::mul(const Vec3& _v, const bool _useW) { this->mul(_v.x, _v.y, _v.z, _v.w, _useW); }
-void Vec3::mul(const float _n, const bool _useW) { this->mul(_n, _n, _n, _n, _useW); }
-void Vec3::operator*=(const Vec3& _a) { this->mul(_a); }
-void Vec3::operator*=(const float _a) { this->mul(_a); }
-Vec3 Vec3::operator*(const Vec3& _a) const { Vec3 result = this->copy(); result.mul(_a); return result; }
-Vec3 Vec3::operator*(const float _a) const { Vec3 result = this->copy(); result.mul(_a); return result; }
-
-void Vec3::div(const float _x, const float _y, const float _z, const float _w, const bool _useW) {
-	this->x /= _x; this->y /= _y; this->z /= _z;
-
-	if (_useW) this->w /= _w;
-}
-
-void Vec3::div(const float _x, const float _y, const float _z) { this->x /= _x; this->y /= _y; this->z /= _z; }
-void Vec3::div(const float _x, const float _y) { this->x /= _x; this->y /= _y; }
-void Vec3::div(const Vec3& _v, const bool _useW) { this->div(_v.x, _v.y, _v.z, _v.w, _useW); }
-void Vec3::div(const float _n, const bool _useW) { this->div(_n, _n, _n, _n, _useW); }
-void Vec3::operator/=(const Vec3& _a) { this->div(_a); }
-void Vec3::operator/=(const float _a) { this->div(_a); }
-Vec3 Vec3::operator/(const Vec3& _a) const { Vec3 result = this->copy(); result.div(_a); return result; }
-Vec3 Vec3::operator/(const float _a) const { Vec3 result = this->copy(); result.div(_a); return result; }
-template <typename T>
-Vec3 operator/(const Vec3& _a, T _b) { return _a.operator/(_b); }
-
-
-
-void Vec3::normalize() { this->div(this->getLength()); }
-void Vec3::setLength(const float _l) { this->normalize(); this->mul(_l); }
+void Vec3::normalize() { this->operator/=(this->getLength()); }
+void Vec3::setLength(const float _l) { this->normalize(); this->operator*=(_l); }
 
 Vec3 Vec3::copy() const { return Vec3(this->x, this->y, this->z, this->w); }
 
@@ -120,19 +68,19 @@ void Vec3::intifyW() {
 
 Vec3 Vec3::operator*(const Mat4x4& _m) const {
 	return Vec3(
-		this->x * _m.m[_m.getIndex(0, 0)] + this->y * _m.m[_m.getIndex(1, 0)] + this->z * _m.m[_m.getIndex(2, 0)] + this->w * _m.m[_m.getIndex(3, 0)],
-		this->x * _m.m[_m.getIndex(0, 1)] + this->y * _m.m[_m.getIndex(1, 1)] + this->z * _m.m[_m.getIndex(2, 1)] + this->w * _m.m[_m.getIndex(3, 1)],
-		this->x * _m.m[_m.getIndex(0, 2)] + this->y * _m.m[_m.getIndex(1, 2)] + this->z * _m.m[_m.getIndex(2, 2)] + this->w * _m.m[_m.getIndex(3, 2)],
-		this->x * _m.m[_m.getIndex(0, 3)] + this->y * _m.m[_m.getIndex(1, 3)] + this->z * _m.m[_m.getIndex(2, 3)] + this->w * _m.m[_m.getIndex(3, 3)]
+		this->x * _m.m[0] + this->y * _m.m[4] + this->z * _m.m[8]  + this->w * _m.m[12],
+		this->x * _m.m[1] + this->y * _m.m[5] + this->z * _m.m[9]  + this->w * _m.m[13],
+		this->x * _m.m[2] + this->y * _m.m[6] + this->z * _m.m[10] + this->w * _m.m[14],
+		this->x * _m.m[3] + this->y * _m.m[7] + this->z * _m.m[11] + this->w * _m.m[15]
 	);
 }
 
 void Vec3::operator*=(const Mat4x4& _m) {
-	Vec3 r = this->operator*(_m);
-
-	this->x = r.x;
-	this->y = r.y;
-	this->z = r.z;
+	const Vec3 c(*this); // copy
+	this->x = c.x * _m.m[0] + c.y * _m.m[4] + c.z * _m.m[8]  + c.w * _m.m[12];
+	this->y = c.x * _m.m[1] + c.y * _m.m[5] + c.z * _m.m[9]  + c.w * _m.m[13];
+	this->z = c.x * _m.m[2] + c.y * _m.m[6] + c.z * _m.m[10] + c.w * _m.m[14];
+	this->w = c.x * _m.m[3] + c.y * _m.m[7] + c.z * _m.m[11] + c.w * _m.m[15];
 }
 
 Vec3 Vec3::intify(const Vec3& _v) {

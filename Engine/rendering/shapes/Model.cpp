@@ -6,7 +6,7 @@ Model::Model() {}
 
 Model::Model(const std::string& _filePath, const std::string& _material, const Vec3& _delataPosition, const Vec3& _centerOfRotation, const Vec3& _rotation) {
 	try {
-		File file(_filePath, FILE_READ);
+		File file(_filePath, "r");
 
 		if (file.isOpen()) {
 			std::string dataType, junk;

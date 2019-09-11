@@ -2,6 +2,8 @@
 
 #include "../../files/Image.h"
 
+#include <array>
+
 struct Material {
 	float reflectivity;
 	float shineDamper;

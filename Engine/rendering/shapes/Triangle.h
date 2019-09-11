@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../../other/pch.h"
-
 #include "../../files/Image.h"
 #include "../../math/Vertex.h"
 #include "../../math/Mat4x4.h"

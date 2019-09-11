@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../other/pch.h"
-
 #include "Mat4x4.h"
+
+#include <ostream>
 
 struct Vec3 { // 4th Component is not manipulated, just stored (modified if requested)
 	union {
@@ -21,39 +21,20 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 
 	// ADD
 
-	void add(const float _x, const float _y, const float _z, const float _w, const bool _useW = false);
-	void add(const float _x, const float _y, const float _z);
-	void add(const float _x, const float _y);
-	void add(const Vec3& _v, const bool _useW = false);
-	void add(const float _n, const bool _useW = false);
-	void operator+=(const Vec3& _a);
-	void operator+=(const float _a);
-	Vec3 operator+(const Vec3& _a) const;
-	Vec3 operator+(const float _a) const;
-	template <typename T>
-	friend Vec3 operator+(const Vec3& _a, T _b);
+	void operator+=(const Vec3& _v);
+	void operator+=(const float _n);
+	Vec3 operator+(const Vec3& _v) const;
+	Vec3 operator+(const float _n) const;
 
 	// SUBSTRACT
 
-	void sub(const float _x, const float _y, const float _z, const float _w, const bool _useW = false);
-	void sub(const float _x, const float _y, const float _z);
-	void sub(const float _x, const float _y);
-	void sub(const Vec3& _v, const bool _useW = false);
-	void sub(const float _n, const bool _useW = false);
 	void operator-=(const Vec3& _a);
 	void operator-=(const float _a);
 	Vec3 operator-(const Vec3& _a) const;
 	Vec3 operator-(const float _a) const;
-	template <typename T>
-	friend Vec3 operator-(const Vec3& _a, T _b);
 
 	// MULTIPLY
 
-	void mul(const float _x, const float _y, const float _z, const float _w, const bool _useW = false);
-	void mul(const float _x, const float _y, const float _z);
-	void mul(const float _x, const float _y);
-	void mul(const Vec3& _v, const bool _useW = false);
-	void mul(const float _n, const bool _useW = false);
 	void operator*=(const Vec3& _a);
 	void operator*=(const float _a);
 	Vec3 operator*(const Vec3& _a) const;
@@ -61,17 +42,10 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 
 	// DIVIDE
 
-	void div(const float _x, const float _y, const float _z, const float _w, const bool _useW = false);
-	void div(const float _x, const float _y, const float _z);
-	void div(const float _x, const float _y);
-	void div(const Vec3& _v, const bool _useW = false);
-	void div(const float _n, const bool _useW = false);
 	void operator/=(const Vec3& _a);
 	void operator/=(const float _a);
 	Vec3 operator/(const Vec3& _a) const;
 	Vec3 operator/(const float _a) const;
-	template <typename T>
-	friend Vec3 operator/(const Vec3& _a, T _b);
 
 	// MISC
 

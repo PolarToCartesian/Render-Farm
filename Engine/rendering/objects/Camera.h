@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../other/pch.h"
-
 #include "../../math/Vertex.h"
+
+#include <array>
 
 struct Camera {
 	Vec3 position;

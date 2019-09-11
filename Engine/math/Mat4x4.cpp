@@ -127,10 +127,11 @@ bool operator!=(const Mat4x4& _a, const Mat4x4& _b) { return !operator==(_a, _b)
 /// Printing
 
 std::ostream& operator<<(std::ostream& _os, const Mat4x4& _m) {
-	for (int i = 0; i < 16; i++) {
+	for (uint8_t i = 0; i < 16; i++) {
 		_os << _m.m[i] << " ";
 
-		if ((i + 1) % 4 == 0) _os << std::endl;
+		if ((i + 1) % 4 == 0)
+			_os << '\n';
 	}
 
 	return _os;

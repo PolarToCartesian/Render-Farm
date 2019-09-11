@@ -2,6 +2,10 @@
 
 #include "File.h"
 
+#include <experimental/filesystem>
+#include <cassert>
+#include <string>
+
 class Video {
 	private:
 		std::vector<std::string> frames;

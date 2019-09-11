@@ -1,12 +1,10 @@
 #pragma once
 
-#include "../../other/pch.h"
-
-#include "../../other/Defines.h"
-#include "../../files/File.h"
-#include "../../math/Vec3.h"
-#include "../../cmd/Logging.h"
 #include "Triangle.h"
+#include "../../math/Vec3.h"
+#include "../../files/File.h"
+#include "../../cmd/Logging.h"
+#include "../../other/Defines.h"
 
 struct Model {
 	std::vector<Triangle> triangles;
