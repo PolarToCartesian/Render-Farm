@@ -19,10 +19,6 @@ std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexN
 	std::unordered_map<std::string, VertexNormalCalcInfo> vertexNormalCalc;
 	vertexNormalCalc.reserve(3 * _model.triangles.size());
 
-	auto hashRotatedVertex = [](const Vec3& _rotatedVertex) -> std::string {
-		return std::to_string(_rotatedVertex.x) + std::to_string(_rotatedVertex.y) + std::to_string(_rotatedVertex.z);
-	};
-
 	bool doVertexNormalsNeedToBeCalculated = false;
 
 	for (uint64_t i = 0; i < _model.triangles.size(); i++) {
@@ -39,7 +35,7 @@ std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexN
 			const float weight = 1; //*
 
 			for (const Vec3& rotatedVertex : rotatedVertices) {
-				const std::string hashedRotatedVertex = hashRotatedVertex(rotatedVertex);
+				const std::string hashedRotatedVertex = Vec3::hashVec3(rotatedVertex);
 
 				if (vertexNormalCalc.find(hashedRotatedVertex) == vertexNormalCalc.end())
 					vertexNormalCalc.insert({ hashedRotatedVertex, { Vec3(), 0 } });
@@ -116,17 +112,7 @@ void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
 			rotatedVerticesOfTriangles.push_back(_tr.getRotatedVertices(this->camera));
 		});
 
-		std::unordered_map<std::string, VertexNormalCalcInfo> vertexNormals = this->calculateVertexNormals(model, rotatedVerticesOfTriangles);
-
-		// Lambda
-
-		auto hashRotatedVertex = [](const Vec3& _rotatedVertex) -> std::string {
-			return std::to_string(_rotatedVertex.x) + std::to_string(_rotatedVertex.y) + std::to_string(_rotatedVertex.z);
-		};
-
-		auto getVertexNormal = [&vertexNormals, hashRotatedVertex](const Vec3& _rotatedVertex) -> Vec3 {
-			return vertexNormals[hashRotatedVertex(_rotatedVertex)].normal;
-		};
+		std::unordered_map<std::string, VertexNormalCalcInfo> allVertexNormals = this->calculateVertexNormals(model, rotatedVerticesOfTriangles);
 
 		// Render
 
@@ -137,7 +123,7 @@ void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
 			const Material&                material            = this->materials.at(triangle.material);
 			const std::array<Vec3, 3>      transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
 				  BarycentricInterpolation bi(transformedVertices.data());
-			const Image* renderSurface = this->renderImages[this->indexImageBeingRendered];
+			const Image*                   renderSurface       = this->renderImages[this->indexImageBeingRendered];
 
 			// Check if triangle is facing camera
 			if (!this->camera.isTriangleFacingCamera(rotatedVertices, surfaceNormal))
@@ -148,9 +134,9 @@ void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
 
 			if (triangle.isSmoothed) {
 				vertexNormals = {
-					getVertexNormal(rotatedVertices[0]), 
-					getVertexNormal(rotatedVertices[1]),
-					getVertexNormal(rotatedVertices[2]) 
+					allVertexNormals[Vec3::hashVec3(rotatedVertices[0])].normal,
+					allVertexNormals[Vec3::hashVec3(rotatedVertices[1])].normal,
+					allVertexNormals[Vec3::hashVec3(rotatedVertices[2])].normal
 				};
 				
 				baseVertexColors = material.vertexColors;
@@ -168,7 +154,7 @@ void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
 				bi.precalculateValuesForPosition(_x, _y);
 
 				// Pixel Depth (w)
-				const float w = bi.interpolateWPrecalc(new float[3]{ transformedVertices[0].w, transformedVertices[1].w, transformedVertices[2].w });
+				const float w = bi.interpolateWPrecalc(std::array<float, 3> { transformedVertices[0].w, transformedVertices[1].w, transformedVertices[2].w });
 
 				// Render Pixel if it is in front of the pixel already there
 				const uint32_t pixelIndex = renderSurface->getIndex(_x, _y);
@@ -176,15 +162,15 @@ void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
 				if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1) {
 					this->depthBuffer[pixelIndex] = w;
 
-					Color<float> pixelColorFloat = bi.interpolateWPrecalc(new Color<float>[3]{ Color<float>(baseVertexColors[0]), Color<float>(baseVertexColors[1]), Color<float>(baseVertexColors[2]) });
+					Color<float> pixelColorFloat = bi.interpolateWPrecalc(std::array<Color<float>, 3>{ Color<float>(baseVertexColors[0]), Color<float>(baseVertexColors[1]), Color<float>(baseVertexColors[2]) });
 					pixelColorFloat.constrain(0, 255);
 
-					const Vec3 position = bi.interpolateWPrecalc(new Vec3[3]{ rotatedVertices[0], rotatedVertices[1], rotatedVertices[2] });
+					const Vec3 position = bi.interpolateWPrecalc(rotatedVertices);
 
 					Color<> pixelColor;
 
 					if (triangle.isSmoothed) {
-						const Vec3 normal = bi.interpolateWPrecalc(new Vec3[3]{ vertexNormals[0], vertexNormals[1], vertexNormals[2] });
+						const Vec3 normal = bi.interpolateWPrecalc(vertexNormals);
 
 						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, _lightsInScene, this->camera.position, material);
 					} else {
@@ -215,7 +201,7 @@ Renderer::~Renderer() {
 	delete[] this->depthBuffer;
 }
 
- uint32_t Renderer::getWidth()  const { return this->width; }
+ uint32_t Renderer::getWidth()  const { return this->width;  }
  uint32_t Renderer::getHeight() const { return this->height; }
 
 inline void Renderer::drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color<>& _color) {

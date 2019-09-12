@@ -3,6 +3,7 @@
 #include "Mat4x4.h"
 
 #include <ostream>
+#include <string>
 
 struct Vec3 { // 4th Component is not manipulated, just stored (modified if requested)
 	union {
@@ -72,6 +73,7 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 	static Vec3 intify(const Vec3& _v);
 	static Vec3 normalize(const Vec3& _v);
 	static float dotProduct(const Vec3& _a, const Vec3& _b);
+	static std::string hashVec3(const Vec3& _v);
 };
 
 /// typedef

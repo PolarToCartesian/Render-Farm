@@ -26,7 +26,7 @@ class Renderer {
 		uint8_t fov;
 		float zNear, zFar;
 
-		unsigned int indexImageBeingRendered = 0;
+		uint32_t indexImageBeingRendered = 0;
 
 		float* depthBuffer = nullptr;
 

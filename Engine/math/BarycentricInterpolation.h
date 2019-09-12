@@ -30,7 +30,7 @@ class BarycentricInterpolation {
 		}
 
 		template <typename T>
-		T interpolateWPrecalc(const T _attribs[3]) const {
+		T interpolateWPrecalc(const std::array<T, 3> _attribs) const {
 			float weights[3] = { (this->precalculated[0] * precalculated2[1] + this->precalculated[1] * precalculated2[0]) / this->denominator,
 								 (this->precalculated[2] * precalculated2[1] + this->precalculated[3] * precalculated2[0]) / this->denominator,
 								  0.f };
@@ -54,6 +54,6 @@ class BarycentricInterpolation {
 		T interpolate(const uint16_t _x, const uint16_t _y, const T _attribs[3]) {
 			precalculateValuesForPosition(_x, _y);
 
-			return interpolateWithPrecalculatedValuesForPosition(_attribs);
+			return interpolateWPrecalc(_attribs);
 		}
 };

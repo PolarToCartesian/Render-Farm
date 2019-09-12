@@ -97,6 +97,10 @@ Vec3 Vec3::normalize(const Vec3& _v) {
 	return result;
 }
 
+std::string Vec3::hashVec3(const Vec3& _v) {
+	return std::to_string(_v.x) + std::to_string(_v.y) + std::to_string(_v.z);
+};
+
 float Vec3::dotProduct(const Vec3& _a, const Vec3& _b) {
 	return _a.x * _b.x + _a.y * _b.y + _a.z * _b.z;
 }
