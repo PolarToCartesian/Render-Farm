@@ -6,14 +6,6 @@
 	#include <Windows.h>
 #endif
 
-/// Can Be Changed By User
-
-// The higher, the more memory and threads needed at once
-// Putting it higher doesn't always make the rendering/writing faster and can cause errors
-// Putting it lower  can also make it very slow
-// You can and should try different values to see what suites you the best depending on your hardware
-constexpr uint8_t RENDERS_AND_WRITES_PER_CYCLE = 40;
-
 /// Do not modify past this comment
 
 constexpr float PI  = static_cast<float>(3.14159265359);

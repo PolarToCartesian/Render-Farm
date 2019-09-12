@@ -28,8 +28,7 @@ namespace CMD {
 		#ifdef _WIN32
 			WORD color_atrib = AINSI_COLORS.at("WHITE");
 
-			switch (_type)
-			{
+			switch (_type) {
 				case LOG_TYPE::success:
 					color_atrib = AINSI_COLORS.at("GREEN");
 					break;
@@ -49,8 +48,7 @@ namespace CMD {
 		#else
 			const char* prepended_coloring = "";
 
-			switch (_type)
-			{
+			switch (_type) {
 				case LOG_TYPE::success:
 					prepended_coloring = AINSI_COLORS.at("GREEN");
 					break;

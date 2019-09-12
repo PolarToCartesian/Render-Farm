@@ -1,7 +1,5 @@
 #include "Engine/Include.h"
 
-#include <iostream>
-
 class App : Renderer {
 public:
 	App() : Renderer(1920, 1080, Color<>(0)) {
@@ -26,21 +24,14 @@ public:
 		this->renderLights.push_back("Front-Light");
 	}
 
-	void render2D() override {
-
-	}
-
 	void update() override {
 		this->models["F-16"].rotate(Vec3(0.f, 0.05f, 0.f));
 	}
 };
 
 int main() {
-	auto start = std::chrono::system_clock::now();
 	App app;
-	auto end = std::chrono::system_clock::now();
-	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	std::cout << elapsed.count() << "ms" << std::endl;
+
 	std::cin.get();
 	return 0;
 }

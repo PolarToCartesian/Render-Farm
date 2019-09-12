@@ -2,12 +2,12 @@
 
 // Image Class
 
-Image::Image(const Image& _img) {
-	this->imageWidth = _img.imageWidth;
-	this->imageHeight = _img.imageHeight;
-	this->nPixels = _img.nPixels;
-
+Image::Image(const Image& _img)
+	: imageWidth(_img.imageWidth), imageHeight(_img.imageHeight), nPixels(_img.nPixels)
+{
 	this->colorBuffer = std::make_unique<Color<>[]>(this->nPixels);
+
+	std::memcpy(this->colorBuffer.get(), _img.colorBuffer.get(), this->nPixels * sizeof(Color<>));
 }
 
 Image::Image(const std::string& _filename) {
@@ -69,14 +69,6 @@ Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, co
  Color<> Image::sample(const uint16_t _x, const uint16_t _y) const {
 	return this->colorBuffer[_y * this->imageWidth + _x];
 }
-
- Color<> Image::operator()(const uint16_t _i) const {
-	 return this->colorBuffer[_i];
- }
-
- Color<> Image::operator()(const uint16_t _x, const uint16_t _y) const {
-	 return this->colorBuffer[_y * this->imageWidth + _x];
- }
 
 void Image::resize(const uint16_t _width, const uint16_t _height) {
 	Image newImage = Image(_width, _height);

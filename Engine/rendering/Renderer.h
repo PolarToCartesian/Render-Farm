@@ -2,6 +2,7 @@
 
 #include "shapes/Model.h"
 #include "objects/Light.h"
+#include "../other/Timer.h"
 #include "../files/Video.h"
 #include "objects/Camera.h"
 #include "../files/Image.h"
@@ -26,13 +27,11 @@ class Renderer {
 		uint8_t fov;
 		float zNear, zFar;
 
-		uint32_t indexImageBeingRendered = 0;
-
 		float* depthBuffer = nullptr;
 
-		Image* renderImages[RENDERS_AND_WRITES_PER_CYCLE];
-
 		Color<> backgroundColor;
+
+		Image renderSurface;
 
 	public:
 		Camera camera;
@@ -62,24 +61,9 @@ class Renderer {
 
 		virtual void update() = 0;
 		virtual void render3D() = 0;
-		virtual void render2D() = 0;
 
 		uint32_t getWidth()  const;
 		uint32_t getHeight() const;
-
-		void drawPointNoVerif(const uint16_t _x, const uint16_t _y, const Color<>& _color);
-		void drawPoint(const uint16_t _x, const uint16_t _y, const Color<>& _color);
-
-		void drawRectangleNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color<>& _color);
-		void drawRectangle(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color<>& _color);
-
-		void drawImageNoVerif(const uint16_t _x, const uint16_t _y, const Image& _image);
-		void drawImage(const uint16_t _x, const uint16_t _y, const Image& _image);
-
-		void drawImageNoVerif(const uint16_t _x, const uint16_t _y, const uint16_t _width, const uint16_t _height, const Image& _image);
-		void drawImage(const uint16_t _x, const uint16_t _y, const uint16_t _width, const uint16_t _height, const Image& _image);
-
-		void drawDisk(const Vec3& _position, const uint16_t _radius, const Color<>& _color);
 
 		void renderAndWriteFrames(const uint32_t _nFrames);
 

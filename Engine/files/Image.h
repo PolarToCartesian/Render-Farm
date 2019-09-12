@@ -32,8 +32,6 @@ class Image {
 		void setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c);
 
 		Color<> sample(const uint16_t _x, const uint16_t _y) const;
-		Color<> operator()(const uint16_t _i) const;
-		Color<> operator()(const uint16_t _x, const uint16_t _y) const;
 
 		void resize(const uint16_t _width, const uint16_t _height);
 
