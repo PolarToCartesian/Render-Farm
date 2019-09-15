@@ -17,11 +17,10 @@ struct Model {
 
 	void applyFunctionToEachTriangle(const std::function<void(Triangle&)>& _function);
 
+	void rotate(const Vec3& _deltaRotation);
 	void setRotation(const Vec3& _rotation);
 
 	void setCenterOfRotation(const Vec3& _centerOfRotation);
 
 	void translate(const Vec3& _deltaPosition);
-
-	void rotate(const Vec3& _deltaRotation);
 };

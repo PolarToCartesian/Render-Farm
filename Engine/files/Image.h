@@ -21,7 +21,6 @@ class Image {
 
 	public:
 		Image(const Image& _img);
-		Image(const std::string& _filename);
 		Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor = Color<>());
 
 		uint32_t getIndex(const uint16_t _x, const uint16_t _y) const;

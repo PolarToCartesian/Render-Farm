@@ -26,16 +26,12 @@ void Triangle::translate(const Vec3& _deltaPosition) {
 	this->rotationMidPoint += _deltaPosition;
 }
 
-std::array<Vec3, 3> Triangle::getRotatedVertices(const Camera & _cam) const {
+std::array<Vec3, 3> Triangle::getRotatedVertices(const Camera& _cam) const {
 	std::array<Vec3, 3> rotatedVertices{
-				this->vertices[0].position + Vec3(0, 0, 0, 1),
-				this->vertices[1].position + Vec3(0, 0, 0, 1),
-				this->vertices[2].position + Vec3(0, 0, 0, 1)
+		this->vertices[0].position + Vec3(0, 0, 0, 1),
+		this->vertices[1].position + Vec3(0, 0, 0, 1),
+		this->vertices[2].position + Vec3(0, 0, 0, 1)
 	};
-
-	const Mat4x4 cameraRotationXMatrix = Mat4x4::getRotationXMatrix(-_cam.rotation.x);
-	const Mat4x4 cameraRotationYMatrix = Mat4x4::getRotationYMatrix(-_cam.rotation.y);
-	const Mat4x4 cameraRotationZMatrix = Mat4x4::getRotationZMatrix(-_cam.rotation.z);
 
 	const Mat4x4 triangleRotationMatrix = Mat4x4::getRotationMatrix(this->rotation.x, this->rotation.y, this->rotation.z);
 
@@ -47,11 +43,7 @@ std::array<Vec3, 3> Triangle::getRotatedVertices(const Camera & _cam) const {
 		rotatedVertices[v] += this->rotationMidPoint;
 
 		// Apply Camera Rotation
-		rotatedVertices[v] -= _cam.position;
-		rotatedVertices[v] += _cam.position + rotatedVertices[v] * (-3)
-			+ rotatedVertices[v] * cameraRotationXMatrix
-			+ rotatedVertices[v] * cameraRotationYMatrix
-			+ rotatedVertices[v] * cameraRotationZMatrix;
+		_cam.applyRotation(rotatedVertices[v]);
 	}
 
 	return rotatedVertices;
@@ -60,14 +52,12 @@ std::array<Vec3, 3> Triangle::getRotatedVertices(const Camera & _cam) const {
 Vec3 Triangle::getSurfaceNormal(const std::array<Vec3, 3>& _points) {
 	//https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
 
-	Vec3 U = _points[1] - _points[0];
-	Vec3 V = _points[2] - _points[0];
+	const Vec3 U = _points[1] - _points[0];
+	const Vec3 V = _points[2] - _points[0];
 
-	float nX = U.y * V.z - U.z * V.y;
-	float nY = U.z * V.x - U.x * V.z;
-	float nZ = U.x * V.y - U.y * V.x;
-
-	return Vec3::normalize(Vec3(nX, nY, nZ));
+	return Vec3::normalize(Vec3(U.y * V.z - U.z * V.y, 
+								U.z * V.x - U.x * V.z,
+								U.x * V.y - U.y * V.x));
 }
 
 std::array<Vec3, 3> Triangle::getTransformedVertices(const std::array<Vec3, 3>& _rotatedVertices, const Camera& _cam, const Mat4x4& _perspectiveMatrix, const uint16_t _width, const uint16_t _height) {

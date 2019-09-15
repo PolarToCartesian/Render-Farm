@@ -75,6 +75,10 @@ void Model::applyFunctionToEachTriangle(const std::function<void(Triangle&)>& _f
 	std::for_each(this->triangles.begin(), this->triangles.end(), _function);
 }
 
+void Model::rotate(const Vec3& _deltaRotation) {
+	this->applyFunctionToEachTriangle([&_deltaRotation](Triangle& _triangle) { _triangle.rotation += _deltaRotation; });
+}
+
 void Model::setRotation(const Vec3& _rotation) {
 	this->applyFunctionToEachTriangle([& _rotation](Triangle & _triangle) { _triangle.rotation = _rotation; });
 }
@@ -85,8 +89,4 @@ void Model::setCenterOfRotation(const Vec3& _centerOfRotation) {
 
 void Model::translate(const Vec3& _deltaPosition) {
 	this->applyFunctionToEachTriangle([& _deltaPosition](Triangle& _triangle) { _triangle.translate(_deltaPosition); });
-}
-
-void Model::rotate(const Vec3& _deltaRotation) {
-	this->applyFunctionToEachTriangle([& _deltaRotation](Triangle& _triangle) { _triangle.rotation += _deltaRotation; });
 }

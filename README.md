@@ -1,8 +1,14 @@
-# Render-Farm
+# Gazel
 
 ![Presentation Image](images/example.png)
 
+# The Goal
+
 This Tool Is A Rendering Engine Who's Output Is A Video Clip. This Tool Is A Simplistic Attempt At Recreating The Software Used In 3D Animated Movies.
+
+## Requirements
+
+C++, Python, and the cv2 python package.
 
 ## Features
 
@@ -16,9 +22,6 @@ This Tool Is A Rendering Engine Who's Output Is A Video Clip. This Tool Is A Sim
 + Camera Movement
 + Camera Rotation
 
-## Requirements
-
-C++, Python, and the cv2 python package.
 
 ## How To Install
 
@@ -30,18 +33,7 @@ cd Render-Farm/setup/
 python install_python_dependencies_pip.py
 ```
 
-You should also if you want to, install a ppm image viewer.
-
-You can delete :
-
-+ Readme.md
-+ images/
-+ models/
-+ .gitignore
-
-You Should Modify :
-
-+ Source.cpp
+Install a ppm image viewer if you want to look at individual frames.
 
 ## Compiling On Linux
 
@@ -64,6 +56,7 @@ The executable will be located in the main Render-Farm/ directory.
 + [2D Triangle Renderer](https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling)
 + [Specular Lighting / Texturing / Phong Shading](https://www.youtube.com/watch?v=Is6D5rnWEvs&list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g&index=11&t=1512s)
 + [Calculating The Reflexion Vector](https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector)
++ [PPM 3 And 6 File Format Specification](http://netpbm.sourceforge.net/doc/ppm.html)
 
 ### Test Models
 

@@ -11,7 +11,6 @@
 
 #include <experimental/filesystem>
 #include <optional>
-#include <deque>
 
 struct VertexNormalCalcInfo {
 	Vec3 normal;
@@ -40,8 +39,8 @@ class Renderer {
 		std::unordered_map<std::string, Model> models;
 		std::unordered_map<std::string, Material> materials;
 
-		std::deque<std::string> renderModels;
-		std::deque<std::string> renderLights;
+		std::vector<std::string> renderModels;
+		std::vector<std::string> renderLights;
 
 	private:
 		void resetDepthBuffer();
@@ -52,7 +51,7 @@ class Renderer {
 
 		void drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, const std::function<std::optional<Color<>>(const uint16_t _x, const uint16_t _y)>& _func);
 
-		void drawModels(const std::vector<Light>& _lightsInScene);
+		void drawModels(const std::vector<Light*>& _lightsInScene);
 
 	public:
 		Renderer(const uint16_t _width, const uint16_t _height, const Color<>& _backgroundColor = Color<>(51), const uint8_t _fov = 90, const float _zNear = 0.1, const float _zFar = 1000);

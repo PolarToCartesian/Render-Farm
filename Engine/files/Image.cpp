@@ -10,46 +10,6 @@ Image::Image(const Image& _img)
 	std::memcpy(this->colorBuffer.get(), _img.colorBuffer.get(), this->nPixels * sizeof(Color<>));
 }
 
-Image::Image(const std::string& _filename) {
-	try {
-		File file(_filename, "r");
-
-		uint16_t maxColor = 0;
-
-		file.readLineByLine([this, &_filename, &maxColor](const std::string& _line, const unsigned int _lineNumber) {
-			std::istringstream lineStream(_line);
-
-			if (_lineNumber == 1) {
-				const std::string ppmType = UTIL::extractValue<std::string>(lineStream);
-
-				if (ppmType != "P3") {
-					CMD::println("[IMAGE] ERROR WHILE READING \"" + _filename + "\". We Only Support P3", LOG_TYPE::error);
-
-					this->~Image();
-
-					return;
-				}
-			} else if (_lineNumber == 2) {
-				this->imageWidth  = UTIL::extractValue<uint16_t>(lineStream);
-				this->imageHeight = UTIL::extractValue<uint16_t>(lineStream);
-
-				this->nPixels     = this->imageWidth * this->imageHeight;
-				this->colorBuffer = std::make_unique<Color<>[]>(this->nPixels);
-			} else if (_lineNumber == 3) {
-				maxColor = UTIL::extractValue<uint16_t>(lineStream);
-			} else {
-				const uint8_t red   = static_cast<uint8_t>(UTIL::extractValue<uint16_t>(lineStream) / static_cast<float>(maxColor) * 255);
-				const uint8_t green = static_cast<uint8_t>(UTIL::extractValue<uint16_t>(lineStream) / static_cast<float>(maxColor) * 255);
-				const uint8_t blue  = static_cast<uint8_t>(UTIL::extractValue<uint16_t>(lineStream) / static_cast<float>(maxColor) * 255);
-
-				this->colorBuffer[_lineNumber - 2] = Color<>(red, green, blue);
-			}
-		});
-	} catch (const char* _error) {
-		CMD::println("[ERROR] While Opening/Writing To \"" + _filename + "\": " + std::string(_error), LOG_TYPE::error);
-	}
-}
-
 Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
 	this->nPixels = this->imageWidth * this->imageHeight;
 

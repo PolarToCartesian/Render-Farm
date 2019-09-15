@@ -6,10 +6,12 @@ Light::Light(const Vec3& _position, const Color<>& _color, const float _intensit
 
 // Engine Namespace
 
-Color<> Light::getDiffusedLighting(const Vec3& _point, const Color<>& _baseColor, const Vec3& _normal, const std::vector<Light>& _lights, const Vec3& _cameraPosition) {
+Color<> Light::getDiffusedLighting(const Vec3& _point, const Color<>& _baseColor, const Vec3& _normal, const std::vector<Light*>& _lights, const Vec3& _cameraPosition) {
 	Color<float> outColor;
 
-	for (const Light& light : _lights) {
+	for (const Light* lightPtr : _lights) {
+		const Light& light = *lightPtr;
+
 		const Vec3 pointToLight = Vec3::normalize(light.position - _point);
 
 		const float diffuseDotProduct = max(Vec3::dotProduct(pointToLight, _normal), 0.f);
@@ -26,10 +28,11 @@ Color<> Light::getDiffusedLighting(const Vec3& _point, const Color<>& _baseColor
 	return Color<>(outColor * 255.f);
 }
 
-Color<> Light::getSpecularLighting(const Vec3& _point, const Vec3& _normal, const std::vector<Light>& _lights, const Vec3& _cameraPosition, const Material& _material) {
+Color<> Light::getSpecularLighting(const Vec3& _point, const Vec3& _normal, const std::vector<Light*>& _lights, const Vec3& _cameraPosition, const Material& _material) {
 	Color<float> outColor;
 
-	for (const Light& light : _lights) {
+	for (const Light* lightPtr : _lights) {
+		const Light& light = *lightPtr;
 		// Specular (https://www.youtube.com/watch?v=Is6D5rnWEvs&list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g&index=11&t=1512s)
 
 		const Vec3 lightToPoint = Vec3::normalize(_point - light.position);
@@ -50,7 +53,7 @@ Color<> Light::getSpecularLighting(const Vec3& _point, const Vec3& _normal, cons
 	return Color<>(outColor * 255.f);
 }
 
-Color<> Light::getColorWithLighting(const Vec3& _point, const Color<>& _baseColor, const Vec3& _normal, const std::vector<Light>& _lights, const Vec3& _cameraPosition, const Material& _material) {
+Color<> Light::getColorWithLighting(const Vec3& _point, const Color<>& _baseColor, const Vec3& _normal, const std::vector<Light*>& _lights, const Vec3& _cameraPosition, const Material& _material) {
 	Color<float> outColor;
 
 	outColor += Color<float>(Light::getDiffusedLighting(_point, _baseColor, _normal, _lights, _cameraPosition)) / 255.f;

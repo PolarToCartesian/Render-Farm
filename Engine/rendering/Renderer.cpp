@@ -97,10 +97,8 @@ void Renderer::drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, co
 	}
 }
 
-void Renderer::drawModels(const std::vector<Light>& _lightsInScene) {
+void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 	for (const std::string& modelName : this->renderModels) {
-		clock_t begin = clock();
-
 		Model& model = this->models.at(modelName);
 
 		std::vector<std::array<Vec3, 3>> rotatedVerticesOfTriangles;
@@ -214,15 +212,18 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 			this->renderLights.clear();
 
 			// Do Not Update If It Is The First Frame
-			if (!(nFrame)) this->update();
+			if (!(nFrame == 0)) this->update();
 
 			this->render3D();
 
-			std::vector<Light> lightsInScene;
+			this->camera.calculateRotationMatrices();
+
+			// Get All Lights In Scene
+			std::vector<Light*> lightsInScene;
 			lightsInScene.reserve(this->renderLights.size());
 
 			for (const std::string& _lightName : this->renderLights)
-				lightsInScene.push_back(this->lights.at(_lightName));
+				lightsInScene.push_back(&this->lights.at(_lightName));
 
 			this->drawModels(lightsInScene);
 		}
