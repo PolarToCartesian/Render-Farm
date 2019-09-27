@@ -17,7 +17,7 @@ class Image {
 		uint32_t nPixels = 0;
 		
 	public:
-		std::unique_ptr<Color<>[]> colorBuffer;
+		Color<>* colorBuffer = nullptr;
 
 	public:
 		Image(const Image& _img);
@@ -28,13 +28,15 @@ class Image {
 		uint16_t getWidth()  const;
 		uint16_t getHeight() const;
 
+		void fill(const Color<>& _bgColor) const;
+
 		void setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c);
 
 		Color<> sample(const uint16_t _x, const uint16_t _y) const;
 
-		void resize(const uint16_t _width, const uint16_t _height);
-
 		void writeToDisk(const std::string& _fileName) const;
+
+		~Image();
 };
 
 typedef Image Texture;

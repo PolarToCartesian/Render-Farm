@@ -1,6 +1,6 @@
 #include "Timer.h"
 
-Timer::Timer(const char* _str) : str(_str) {
+Timer::Timer(const std::string& _str) : str(_str) {
 	this->start = std::chrono::system_clock::now();
 }
 

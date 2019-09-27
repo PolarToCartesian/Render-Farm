@@ -169,7 +169,9 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 
 						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, _lightsInScene, this->camera.position, material);
 					} else {
-						pixelColor = pixelColorFloat + Light::getSpecularLighting(position, surfaceNormal, _lightsInScene, this->camera.position, material);
+						pixelColorFloat += Color<float>(Light::getSpecularLighting(position, surfaceNormal, _lightsInScene, this->camera.position, material));
+						pixelColorFloat.constrain(0, 255);
+						pixelColor = pixelColorFloat;
 					}
 
 					return pixelColor;
@@ -231,10 +233,10 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 		{ // Writing
 			const Timer renderingTimer((std::string("[WRITING]   Frame n") + std::to_string(nFrame + 1) + " was written in ").c_str());
 
-			renderSurface.writeToDisk("./out/frames/" + std::to_string(nFrame + 1) + ".ppm");
+			this->renderSurface.writeToDisk("./out/frames/" + std::to_string(nFrame + 1) + ".ppm");
 		}
-		
-		std::fill_n(this->renderSurface.colorBuffer.get(), this->width * this->height, 0);
+
+		this->renderSurface.fill(this->backgroundColor);
 	}
 }
 

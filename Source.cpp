@@ -7,9 +7,7 @@ public:
 		this->models.insert({ "F-16", Model("models/f-16.txt", "Metal", Vec3(), Vec3(), Vec3(0, PI + 1, 0)) });
 		this->lights.insert({ "Front-Light", Light(Vec3(0, 2, -4), Color<>(255), 1) });
 
-		this->camera.position.x = 0;
-		this->camera.position.y = 0.75;
-		this->camera.position.z = -2;
+		this->camera.position = Vec3(0.f, 0.75f, -2.f);
 
 		const uint32_t fps = 30; // frames per second
 		const uint32_t duration = 5; // seconds

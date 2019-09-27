@@ -1,13 +1,3 @@
-deleteOutput.bat
-*.vcxproj
-*.filters
-.vscode/
-models/
-Debug/
 temp/
-*.user
-*.sln
-saved/
 x64/
 out/
-.vs/

@@ -5,9 +5,9 @@
 #include <chrono>
 
 struct Timer {
-	const char* str;
+	std::string str;
 	std::chrono::system_clock::time_point start;
 
-	Timer(const char* _str);
+	Timer(const std::string& _str);
 	~Timer();
 };

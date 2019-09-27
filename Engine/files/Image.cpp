@@ -5,16 +5,16 @@
 Image::Image(const Image& _img)
 	: imageWidth(_img.imageWidth), imageHeight(_img.imageHeight), nPixels(_img.nPixels)
 {
-	this->colorBuffer = std::make_unique<Color<>[]>(this->nPixels);
+	this->colorBuffer = (Color<>*) std::malloc(this->nPixels * sizeof(Color<>));
 
-	std::memcpy(this->colorBuffer.get(), _img.colorBuffer.get(), this->nPixels * sizeof(Color<>));
+	std::memcpy( this->colorBuffer, _img.colorBuffer, this->nPixels * sizeof(Color<>) );
 }
 
 Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor) : imageWidth(_imageWidth), imageHeight(_imageHeight) {
 	this->nPixels = this->imageWidth * this->imageHeight;
 
-	this->colorBuffer = std::make_unique<Color<>[]>(this->nPixels);
-	std::fill_n(this->colorBuffer.get(), this->nPixels, _backgroundColor);
+	this->colorBuffer = (Color<>*) std::malloc(this->nPixels * sizeof(Color<>));
+	std::fill_n(this->colorBuffer, this->nPixels, _backgroundColor);
 }
 
  uint32_t Image::getIndex(const uint16_t _x, const uint16_t _y) const { return _y * this->imageWidth + _x; }
@@ -22,35 +22,16 @@ Image::Image(const unsigned int _imageWidth, const unsigned int _imageHeight, co
  uint16_t Image::getWidth()  const { return this->imageWidth; }
  uint16_t Image::getHeight() const { return this->imageHeight; }
 
+ void Image::fill(const Color<>& _bgColor) const {
+	 std::fill_n(this->colorBuffer, this->imageWidth * this->imageHeight, _bgColor);
+ }
+
  void Image::setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c) {
 	this->colorBuffer[_y * this->imageWidth + _x] = _c;
 }
 
  Color<> Image::sample(const uint16_t _x, const uint16_t _y) const {
 	return this->colorBuffer[_y * this->imageWidth + _x];
-}
-
-void Image::resize(const uint16_t _width, const uint16_t _height) {
-	Image newImage = Image(_width, _height);
-	
-	for (uint16_t x = 0; x < _width; x++) {
-		for (uint16_t y = 0; y < _height; y++) {
-			const uint16_t sampleX = static_cast<uint16_t>((x / static_cast<float>(_width))  * this->imageWidth);
-			const uint16_t sampleY = static_cast<uint16_t>((y / static_cast<float>(_height)) * this->imageHeight);
-			const Color<> pixelColor = this->sample(sampleX, sampleY);
-
-			newImage.setColor(x, y, pixelColor);
-		}
-	}
-
-	this->colorBuffer.reset();
-
-	this->imageWidth  = _width;
-	this->imageHeight = _height;
-	this->nPixels     = this->imageWidth * this->imageHeight;
-	this->colorBuffer = std::make_unique<Color<>[]>(this->nPixels);
-	
-	std::memcpy(this->colorBuffer.get(), newImage.colorBuffer.get(), this->nPixels * sizeof(Color<>));
 }
 
 void Image::writeToDisk(const std::string& _fileName) const {
@@ -79,4 +60,8 @@ void Image::writeToDisk(const std::string& _fileName) const {
 	} catch (const char* _error) {
 		CMD::println("[ERROR] While Writing To \"" + _fileName + "\": " + std::string(_error), LOG_TYPE::error);
 	}
+}
+
+Image::~Image() {
+	std::free(this->colorBuffer);
 }
