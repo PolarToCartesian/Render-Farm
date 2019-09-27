@@ -1,6 +1,6 @@
 # Gazel
 
-![Presentation Image](saved/examples/example.png)
+![Presentation Image](presentation_images/example.png)
 
 # The Goal
 

@@ -2,3 +2,8 @@ saved/
 temp/
 x64/
 out/
+
+*.sln
+*.vcxproj
+*.filters
+*.user
