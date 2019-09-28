@@ -1,12 +1,12 @@
 #pragma once
 
-#include "shapes/Model.h"
+#include "models/Model.h"
 #include "objects/Light.h"
+#include "cameras/Camera.h"
 #include "../other/Timer.h"
-#include "../files/Video.h"
-#include "objects/Camera.h"
-#include "../files/Image.h"
 #include "materials/Material.h"
+#include "../files/media/Video.h"
+#include "../files/media/Image.h"
 #include "../math/BarycentricInterpolation.h"
 
 #include <experimental/filesystem>
@@ -23,9 +23,6 @@ class Renderer {
 
 		Mat4x4 perspectiveMatrix;
 
-		uint8_t fov;
-		float zNear, zFar;
-
 		float* depthBuffer = nullptr;
 
 		Color<> backgroundColor;
@@ -33,7 +30,7 @@ class Renderer {
 		Image renderSurface;
 
 	public:
-		Camera camera;
+		Camera* camera = nullptr;
 		
 		std::unordered_map<std::string, Light> lights;
 		std::unordered_map<std::string, Model> models;
@@ -53,10 +50,12 @@ class Renderer {
 
 		void drawModels(const std::vector<Light*>& _lightsInScene);
 
-	public:
-		Renderer(const uint16_t _width, const uint16_t _height, const Color<>& _backgroundColor = Color<>(51), const uint8_t _fov = 90, const float _zNear = 0.1, const float _zFar = 1000);
+		void renderAndWriteFrames(const uint32_t _fps, const uint32_t _duration);
 
-		~Renderer();
+		void writeVideo(const uint32_t _fps, const uint32_t _duration);
+
+	public:
+		Renderer(const uint16_t _width, const uint16_t _height, Camera* _camera, const Color<>& _backgroundColor = Color<>(51));
 
 		virtual void update() = 0;
 		virtual void render3D() = 0;
@@ -64,7 +63,7 @@ class Renderer {
 		uint32_t getWidth()  const;
 		uint32_t getHeight() const;
 
-		void renderAndWriteFrames(const uint32_t _nFrames);
+		void run(const uint32_t _fps, const uint32_t _duration);
 
-		void writeVideo(const uint32_t _nFrames, const uint16_t _fps = 30);
+		~Renderer();
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../files/Image.h"
+#include "../../files/media/Image.h"
 
 #include <array>
 

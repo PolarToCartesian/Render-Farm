@@ -26,7 +26,7 @@ void Triangle::translate(const Vec3& _deltaPosition) {
 	this->rotationMidPoint += _deltaPosition;
 }
 
-std::array<Vec3, 3> Triangle::getRotatedVertices(const Camera& _cam) const {
+std::array<Vec3, 3> Triangle::getRotatedVertices(const Camera* _cam) const {
 	std::array<Vec3, 3> rotatedVertices{
 		this->vertices[0].position + Vec3(0, 0, 0, 1),
 		this->vertices[1].position + Vec3(0, 0, 0, 1),
@@ -43,7 +43,7 @@ std::array<Vec3, 3> Triangle::getRotatedVertices(const Camera& _cam) const {
 		rotatedVertices[v] += this->rotationMidPoint;
 
 		// Apply Camera Rotation
-		_cam.applyRotation(rotatedVertices[v]);
+		_cam->applyRotation(rotatedVertices[v]);
 	}
 
 	return rotatedVertices;
@@ -60,13 +60,13 @@ Vec3 Triangle::getSurfaceNormal(const std::array<Vec3, 3>& _points) {
 								U.x * V.y - U.y * V.x));
 }
 
-std::array<Vec3, 3> Triangle::getTransformedVertices(const std::array<Vec3, 3>& _rotatedVertices, const Camera& _cam, const Mat4x4& _perspectiveMatrix, const uint16_t _width, const uint16_t _height) {
+std::array<Vec3, 3> Triangle::getTransformedVertices(const std::array<Vec3, 3>& _rotatedVertices, const Camera* _cam, const Mat4x4& _perspectiveMatrix, const uint16_t _width, const uint16_t _height) {
 	std::array<Vec3, 3> transformedVertices = _rotatedVertices;
 
 	// For Every Vertex
 	for (uint8_t v = 0; v < 3; v++) {
 		// Camera Translation
-		transformedVertices[v] -= _cam.position;
+		transformedVertices[v] -= _cam->position;
 
 		// Apply Perspective
 		transformedVertices[v] = transformedVertices[v] * _perspectiveMatrix;

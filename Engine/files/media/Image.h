@@ -1,10 +1,10 @@
 #pragma once
 
 
-#include "File.h"
-#include "../math/Vec3.h"
-#include "../other/Util.h"
-#include "../other/Color.h"
+#include "../File.h"
+#include "../../math/Vec3.h"
+#include "../../other/Util.h"
+#include "../../other/Color.h"
 
 #include <sstream>
 

@@ -1,8 +1,10 @@
-saved/
+Debug/
 temp/
 x64/
 out/
 
+*.git
+*.vs
 *.sln
 *.vcxproj
 *.filters

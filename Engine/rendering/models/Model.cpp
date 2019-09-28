@@ -43,12 +43,12 @@ Model::Model(const std::string& _filePath, const std::string& _material, const V
 
 					// Triangle 1
 					const Vertex triangle1Vertices[] = { vertices[vertexIndex1 - 1], vertices[vertexIndex2 - 1], vertices[vertexIndex3 - 1] };
-					triangles.emplace_back(triangle1Vertices, _material, _centerOfRotation, _rotation, false);
+					triangles.emplace_back(triangle1Vertices, _material, _centerOfRotation, _rotation, true);
 
 					// Triangle 2
 					if (vertexIndex4 > 0) {
 						const Vertex triangle2Vertices[] = { vertices[vertexIndex1 - 1], vertices[vertexIndex3 - 1], vertices[vertexIndex4 - 1] };
-						triangles.emplace_back(triangle2Vertices, _material, _centerOfRotation, _rotation, false);
+						triangles.emplace_back(triangle2Vertices, _material, _centerOfRotation, _rotation, true);
 					}
 				}
 				});

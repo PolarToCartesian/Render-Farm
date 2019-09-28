@@ -1,11 +1,13 @@
 #pragma once
 
-#include "rendering/objects/Camera.h"
+#include "rendering/cameras/PerspectiveCamera.h"
+#include "rendering/cameras/Camera.h"
+
 #include "rendering/objects/Light.h"
 
-#include "rendering/shapes/Triangle.h"
-#include "rendering/shapes/Model.h"
-#include "rendering/shapes/Box.h"
+#include "rendering/models/Triangle.h"
+#include "rendering/models/Model.h"
+#include "rendering/models/Box.h"
 
 #include "rendering/Renderer.h"
 
@@ -19,7 +21,6 @@
 #include "math/Funcs.h"
 #include "math/Vec3.h"
 
-#include "files/Image.h"
-#include "files/Video.h"
+#include "files/media/Image.h"
+#include "files/media/Video.h"
 #include "files/File.h"
-

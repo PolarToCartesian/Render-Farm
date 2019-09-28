@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../files/Image.h"
+#include "../cameras/Camera.h"
 #include "../../math/Vertex.h"
 #include "../../math/Mat4x4.h"
-#include "../objects/Camera.h"
+#include "../../files/media/Image.h"
 
 struct Triangle {
 	Vertex vertices[3];
@@ -22,8 +22,8 @@ struct Triangle {
 
 	void translate(const Vec3& _deltaPosition);
 
-	std::array<Vec3, 3> getRotatedVertices(const Camera& _cam) const;
+	std::array<Vec3, 3> getRotatedVertices(const Camera* _cam) const;
 
 	static Vec3 getSurfaceNormal(const std::array<Vec3, 3>& _points);
-	static std::array<Vec3, 3> getTransformedVertices(const std::array<Vec3, 3>& _rotatedVertices, const Camera& _cam, const Mat4x4& _perspectiveMatrix, const uint16_t _width, const uint16_t _height);
+	static std::array<Vec3, 3> getTransformedVertices(const std::array<Vec3, 3>& _rotatedVertices, const Camera* _cam, const Mat4x4& _perspectiveMatrix, const uint16_t _width, const uint16_t _height);
 };

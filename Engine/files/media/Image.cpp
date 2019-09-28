@@ -42,7 +42,7 @@ void Image::writeToDisk(const std::string& _fileName) const {
 
 		file.writeNoVerif(header);
 
-		const uint64_t fileBodySize = this->nPixels * 3;
+		const uint32_t fileBodySize = this->nPixels * 3;
 		uint8_t* fileBody   = new uint8_t[fileBodySize];
 		uint32_t pixelIndex = 0, filePixelIndex = 0;
 

@@ -7,7 +7,7 @@ void Renderer::resetDepthBuffer() {
 }
 
 void Renderer::calculatePerspectiveMatrix() {
-	this->perspectiveMatrix = Mat4x4::getPerspectiveMatrix(this->width, this->height, this->fov, this->zNear, this->zFar);
+	this->perspectiveMatrix = Mat4x4::getPerspectiveMatrix(this->width, this->height, this->camera->fov, this->camera->zNear, this->camera->zFar);
 }
 
 std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexNormals(const Model& _model, const std::vector<std::array<Vec3, 3>>& _rotatedVerticesOfTriangles) const {
@@ -121,7 +121,7 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 				  BarycentricInterpolation bi(transformedVertices.data());
 
 			// Check if triangle is facing camera
-			if (!this->camera.isTriangleFacingCamera(rotatedVertices, surfaceNormal))
+			if (!this->camera->isTriangleFacingCamera(rotatedVertices, surfaceNormal))
 				continue;
 
 			std::array<Vec3, 3> vertexNormals;
@@ -137,9 +137,9 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 				baseVertexColors = material.vertexColors;
 			} else {
 				baseVertexColors = {
-					Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, _lightsInScene, this->camera.position),
-					Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, _lightsInScene, this->camera.position),
-					Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, _lightsInScene, this->camera.position)
+					Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, _lightsInScene, this->camera->position),
+					Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, _lightsInScene, this->camera->position),
+					Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, _lightsInScene, this->camera->position)
 				};
 			}
 
@@ -167,9 +167,9 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 					if (triangle.isSmoothed) {
 						const Vec3 normal = bi.interpolateWPrecalc(vertexNormals);
 
-						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, _lightsInScene, this->camera.position, material);
+						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, _lightsInScene, this->camera->position, material);
 					} else {
-						pixelColorFloat += Color<float>(Light::getSpecularLighting(position, surfaceNormal, _lightsInScene, this->camera.position, material));
+						pixelColorFloat += Color<float>(Light::getSpecularLighting(position, surfaceNormal, _lightsInScene, this->camera->position, material));
 						pixelColorFloat.constrain(0, 255);
 						pixelColor = pixelColorFloat;
 					}
@@ -183,29 +183,10 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 	}
 }
 
-// Public Methods
 
-Renderer::Renderer(const uint16_t _width, const uint16_t _height, const Color<>& _backgroundColor, const uint8_t _fov, const float _zNear, const float _zFar)
-	: width(_width), height(_height), fov(_fov), zNear(_zNear), zFar(_zFar), renderSurface(_width, _height, _backgroundColor)
-{
-	std::experimental::filesystem::create_directory("./out");
-	std::experimental::filesystem::create_directory("./out/frames");
-
-	this->calculatePerspectiveMatrix();
-	this->backgroundColor = _backgroundColor;
-	this->depthBuffer = new float[static_cast<uint32_t>(this->width * this->height)];
-}
-
-Renderer::~Renderer() {
-	delete[] this->depthBuffer;
-}
-
- uint32_t Renderer::getWidth()  const { return this->width;  }
- uint32_t Renderer::getHeight() const { return this->height; }
-
-void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
+void Renderer::renderAndWriteFrames(const uint32_t _fps, const uint32_t _duration) {
 	// Render And Write Frames
-	for (uint32_t nFrame = 0; nFrame < _nFrames; nFrame++) {
+	for (uint32_t nFrame = 0; nFrame < _fps * _duration; nFrame++) {
 		{ // Rendering
 			const Timer renderingTimer((std::string("[RENDERING] Frame n") + std::to_string(nFrame + 1) + " was rendered in ").c_str());
 
@@ -218,7 +199,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 
 			this->render3D();
 
-			this->camera.calculateRotationMatrices();
+			this->camera->calculateRotationMatrices();
 
 			// Get All Lights In Scene
 			std::vector<Light*> lightsInScene;
@@ -240,13 +221,38 @@ void Renderer::renderAndWriteFrames(const uint32_t _nFrames) {
 	}
 }
 
-void Renderer::writeVideo(const uint32_t _nFrames, const uint16_t _fps) {
+void Renderer::writeVideo(const uint32_t _fps, const uint32_t _duration) {
 	std::experimental::filesystem::create_directory("./out/video");
 
 	Video video;
 
-	for (uint32_t i = 1; i < _nFrames+1; i++)
+	for (uint32_t i = 1; i < _fps * _duration + 1; i++)
 		video.addFrame("./out/frames/" + std::to_string(i) + ".ppm");
 
 	video.save("./out/video/video.avi", _fps);
+}
+
+// Public Methods
+
+Renderer::Renderer(const uint16_t _width, const uint16_t _height, Camera* _cam, const Color<>& _backgroundColor)
+	: width(_width), height(_height), camera(_cam), renderSurface(_width, _height, _backgroundColor)
+{
+	std::experimental::filesystem::create_directory("./out");
+	std::experimental::filesystem::create_directory("./out/frames");
+
+	this->calculatePerspectiveMatrix();
+	this->backgroundColor = _backgroundColor;
+	this->depthBuffer = new float[static_cast<uint32_t>(this->width * this->height)];
+}
+
+uint32_t Renderer::getWidth()  const { return this->width;  }
+uint32_t Renderer::getHeight() const { return this->height; }
+
+void Renderer::run(const uint32_t _fps, const uint32_t _duration) {
+	this->renderAndWriteFrames(_fps, _duration);
+	this->writeVideo(_fps, _duration);
+}
+
+Renderer::~Renderer() {
+	delete[] this->depthBuffer;
 }
