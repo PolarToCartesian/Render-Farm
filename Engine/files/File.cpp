@@ -114,7 +114,19 @@ std::string File::read() const {
 	return "";
 }
 
-void File::readLineByLine(const std::function<void(const std::string&, const unsigned int)>& _lambda) const {
+char* File::readBytesNoVerif(const uint32_t _nBytes) const {
+	char* buff = (char*)std::malloc(_nBytes);
+
+	if (buff != nullptr) {
+		fread(buff, 1, _nBytes, this->filePtr);
+
+		return buff;
+	}
+
+	return nullptr;
+}
+
+void File::readLineByLine(const std::function<void(const std::string&, const uint32_t)>& _lambda) const {
 	// Read line by line if the file is open
 	if (this->isFileOpen) {
 		// Read File only if the file can be read from

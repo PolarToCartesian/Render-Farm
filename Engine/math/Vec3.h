@@ -73,6 +73,7 @@ struct Vec3 { // 4th Component is not manipulated, just stored (modified if requ
 	static Vec3 intify(const Vec3& _v);
 	static Vec3 normalize(const Vec3& _v);
 	static float dotProduct(const Vec3& _a, const Vec3& _b);
+	static Vec3 constrain(const Vec3& _v, const float _min, const float _max);
 	static std::string hashVec3(const Vec3& _v);
 };
 

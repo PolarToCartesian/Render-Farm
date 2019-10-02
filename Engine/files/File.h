@@ -23,6 +23,7 @@ class File {
 		void open(const std::string& _filename, const std::string& _permissions);
 
 		std::string read() const;
+		char* readBytesNoVerif(const uint32_t _nBytes) const;
 		void readLineByLine(const std::function<void(const std::string&, const unsigned int)>& _lambda) const;
 
 		void writeNoVerif(const std::string& _content);

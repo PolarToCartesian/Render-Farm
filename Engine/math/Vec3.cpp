@@ -105,6 +105,13 @@ float Vec3::dotProduct(const Vec3& _a, const Vec3& _b) {
 	return _a.x * _b.x + _a.y * _b.y + _a.z * _b.z;
 }
 
+Vec3 Vec3::constrain(const Vec3& _v, const float _min, const float _max) {
+	Vec3 result = _v.copy();
+	result.constrain(_min, _max);
+
+	return result;
+}
+
 /// Operator Overloading
 
 bool operator==(const Vec3& _a, const Vec3& _b) {

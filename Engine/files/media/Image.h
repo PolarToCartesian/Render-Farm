@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "../File.h"
 #include "../../math/Vec3.h"
 #include "../../other/Util.h"
@@ -20,7 +19,9 @@ class Image {
 		Color<>* colorBuffer = nullptr;
 
 	public:
+		Image();
 		Image(const Image& _img);
+		Image(const std::string& _filename);
 		Image(const unsigned int _imageWidth, const unsigned int _imageHeight, const Color<>& _backgroundColor = Color<>());
 
 		uint32_t getIndex(const uint16_t _x, const uint16_t _y) const;
@@ -30,11 +31,12 @@ class Image {
 
 		void fill(const Color<>& _bgColor) const;
 
-		void setColor(const uint16_t _x, const uint16_t _y, const Color<>& _c);
+		void set(const uint16_t _x, const uint16_t _y, const Color<>& _c);
 
 		Color<> sample(const uint16_t _x, const uint16_t _y) const;
 
 		void writeToDisk(const std::string& _fileName) const;
+		void resize(const uint16_t _width, const uint16_t _height);
 
 		~Image();
 };

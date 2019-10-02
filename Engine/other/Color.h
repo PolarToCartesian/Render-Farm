@@ -83,6 +83,14 @@ class Color {
 			this->g = (this->g < min) ? min : ((this->g > max) ? max : this->g);
 			this->b = (this->b < min) ? min : ((this->b > max) ? max : this->b);
 		}
+
+		template <typename T2>
+		static Color<T2> constrain(const Color<T2>& _c, const T2 _min, const T2 _max) {
+			Color<T2> result = _c;
+			result.constrain(_min, _max);
+
+			return result;
+		}
 };
 
 template <typename T, typename T2>

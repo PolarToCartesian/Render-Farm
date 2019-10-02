@@ -6,17 +6,17 @@
 
 class BarycentricInterpolation {
 	private:
-		Vec3 vertices[3] = { 0.f };
-		float precalculated[4] = { 0.f };
-		float precalculated2[2] = { 0.f };
+		std::array<Vec3, 3>  vertices = { 0.f };
+		std::array<float, 4> precalculated  = { 0.f };
+		std::array<float, 2> precalculated2 = { 0.f };
 		float denominator;
 
 	public:
-		BarycentricInterpolation(const Vec3 _v[3]) {
-			std::memcpy(this->vertices, _v, 3 * sizeof(Vec3));
-
+		BarycentricInterpolation(const std::array<Vec3, 3>& _v)
+			: vertices(_v)
+		{
 			this->denominator = (_v[1].y - _v[2].y) * (_v[0].x - _v[2].x) +
-				(_v[2].x - _v[1].x) * (_v[0].y - _v[2].y);
+								(_v[2].x - _v[1].x) * (_v[0].y - _v[2].y);
 
 			this->precalculated[0] = (_v[1].y - _v[2].y);
 			this->precalculated[1] = (_v[2].x - _v[1].x);

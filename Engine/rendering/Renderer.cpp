@@ -52,51 +52,6 @@ std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexN
 	return vertexNormalCalc;
 }
 
-// For the basic Renderer (thx) https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling
-void Renderer::drawTriangle2D(const Vec3& _a, const Vec3& _b, const Vec3& _c, const std::function<std::optional<Color<>>(const uint16_t _x, const uint16_t _y)>& _func) {		
-	Vec3 t0 = Vec3::intify(_a), t1 = Vec3::intify(_b), t2 = Vec3::intify(_c);
-
-	if (t0.y == t1.y && t0.y == t2.y)
-		return;
-
-	if (t0.y > t1.y) std::swap(t0, t1);
-	if (t0.y > t2.y) std::swap(t0, t2);
-	if (t1.y > t2.y) std::swap(t1, t2);
-
-	const uint16_t total_height = static_cast<uint16_t>(t2.y - t0.y);
-
-	for (uint16_t i = 0; i < total_height; i++) {
-		const uint16_t y = static_cast<uint16_t>(t0.y + i);
-
-		if (y < 0 || y > this->height - 1)
-			continue;
-
-		const bool second_half = i > t1.y - t0.y || t1.y == t0.y;
-		const int segment_height = static_cast<int>(second_half ? t2.y - t1.y : t1.y - t0.y);
-
-		const float alpha = i / static_cast<float>(total_height);
-		const float beta = static_cast<float>(i - (second_half ? t1.y - t0.y : 0)) / segment_height;
-
-		Vec3 A = t0 + (t2 - t0) * alpha;
-		Vec3 B = second_half ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
-
-		if (A.x > B.x)
-			std::swap(A, B);
-
-		// Limit X Between (0 and width - 1) in the loop to avoid trying to set a pixel out of the screen buffer and to maximize performance
-		for (int j = static_cast<int>((A.x < 0) ? 0 : A.x); j <= static_cast<int>((B.x > this->width - 2) ? this->width - 2 : B.x); j++) {
-			const uint16_t x = j;
-
-			const uint32_t pixelIndex = this->renderSurface.getIndex(x, y);
-
-			std::optional<Color<>> pixelColor = _func(x, y);
-
-			if (pixelColor.has_value())
-				this->renderSurface.colorBuffer[pixelIndex] = pixelColor.value();
-		}
-	}
-}
-
 void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 	for (const std::string& modelName : this->renderModels) {
 		Model& model = this->models.at(modelName);
@@ -118,14 +73,15 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 			const Vec3                     surfaceNormal       = Triangle::getSurfaceNormal(rotatedVertices);
 			const Material&                material            = this->materials.at(triangle.material);
 			const std::array<Vec3, 3>      transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
-				  BarycentricInterpolation bi(transformedVertices.data());
+			const std::array<Vec3, 3>      textureCoordinates  = { triangle.vertices[0].textureCoord, triangle.vertices[1].textureCoord, triangle.vertices[2].textureCoord };
+			const Texture&                 texture             = (material.isTextured) ? this->textures[material.textureName] : Texture();
+				  BarycentricInterpolation bi(transformedVertices);
 
 			// Check if triangle is facing camera
 			if (!this->camera->isTriangleFacingCamera(rotatedVertices, surfaceNormal))
 				continue;
 
 			std::array<Vec3, 3> vertexNormals;
-			std::array<Color<>, 3> baseVertexColors;
 
 			if (triangle.isSmoothed) {
 				vertexNormals = {
@@ -133,19 +89,25 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 					allVertexNormals[Vec3::hashVec3(rotatedVertices[1])].normal,
 					allVertexNormals[Vec3::hashVec3(rotatedVertices[2])].normal
 				};
-				
-				baseVertexColors = material.vertexColors;
-			} else {
-				baseVertexColors = {
-					Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, _lightsInScene, this->camera->position),
-					Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, _lightsInScene, this->camera->position),
-					Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, _lightsInScene, this->camera->position)
-				};
+			}
+
+			std::array<Color<float>, 3> baseVertexColors;
+
+			if (!material.isTextured) {
+				if (triangle.isSmoothed) {
+					baseVertexColors = { material.vertexColors[0], material.vertexColors[1],material.vertexColors[2] };
+				} else {
+					baseVertexColors = {
+						Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, _lightsInScene, this->camera->position),
+						Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, _lightsInScene, this->camera->position),
+						Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, _lightsInScene, this->camera->position)
+					};
+				}
 			}
 
 			// Start Rendering
 
-			this->drawTriangle2D(transformedVertices[0], transformedVertices[1], transformedVertices[2], [&](const uint16_t _x, const uint16_t _y) -> std::optional<Color<>> {
+			Triangle::drawTriangle2D(this->renderSurface, transformedVertices[0], transformedVertices[1], transformedVertices[2], [&](const uint16_t _x, const uint16_t _y) -> std::optional<Color<>> {
 				bi.precalculateValuesForPosition(_x, _y);
 
 				// Pixel Depth (w)
@@ -157,24 +119,13 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 				if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1) {
 					this->depthBuffer[pixelIndex] = w;
 
-					Color<float> pixelColorFloat = bi.interpolateWPrecalc(std::array<Color<float>, 3>{ Color<float>(baseVertexColors[0]), Color<float>(baseVertexColors[1]), Color<float>(baseVertexColors[2]) });
-					pixelColorFloat.constrain(0, 255);
+					const Vec3 position     = bi.interpolateWPrecalc(rotatedVertices);
+					const Vec3 textureCoord = (material.isTextured) ? Vec3::constrain(bi.interpolateWPrecalc(textureCoordinates), 0.f, 1.f) : Vec3();
+					const Vec3 normal       = (triangle.isSmoothed) ? bi.interpolateWPrecalc(vertexNormals)                                 : surfaceNormal;
 
-					const Vec3 position = bi.interpolateWPrecalc(rotatedVertices);
-
-					Color<> pixelColor;
-
-					if (triangle.isSmoothed) {
-						const Vec3 normal = bi.interpolateWPrecalc(vertexNormals);
-
-						pixelColor = Light::getColorWithLighting(position, Color<>(pixelColorFloat), normal, _lightsInScene, this->camera->position, material);
-					} else {
-						pixelColorFloat += Color<float>(Light::getSpecularLighting(position, surfaceNormal, _lightsInScene, this->camera->position, material));
-						pixelColorFloat.constrain(0, 255);
-						pixelColor = pixelColorFloat;
-					}
-
-					return pixelColor;
+					const Color<float> basePixelColor = Color<float>::constrain((material.isTextured) ? Color<float>(texture.sample(textureCoord.x * texture.getWidth(), textureCoord.y * texture.getHeight())) : Color<float>(bi.interpolateWPrecalc(baseVertexColors)), 0.f, 255.f);
+					
+					return Color<>::constrain(Light::getColorWithLighting(position, basePixelColor, normal, _lightsInScene, this->camera->position, material), (uint8_t)0, (uint8_t)255);
 				} else {
 					return {};
 				}
@@ -182,7 +133,6 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 		}
 	}
 }
-
 
 void Renderer::renderAndWriteFrames(const uint32_t _fps, const uint32_t _duration) {
 	// Render And Write Frames
@@ -209,6 +159,8 @@ void Renderer::renderAndWriteFrames(const uint32_t _fps, const uint32_t _duratio
 				lightsInScene.push_back(&this->lights.at(_lightName));
 
 			this->drawModels(lightsInScene);
+
+			this->render2D();
 		}
 
 		{ // Writing
@@ -251,6 +203,57 @@ uint32_t Renderer::getHeight() const { return this->height; }
 void Renderer::run(const uint32_t _fps, const uint32_t _duration) {
 	this->renderAndWriteFrames(_fps, _duration);
 	this->writeVideo(_fps, _duration);
+}
+
+void Renderer::fillDisk(const uint16_t _x, const uint16_t _y, const uint16_t _r, const Color<>& _color) {
+	const float r2 = static_cast<float>(std::pow(_r, 2));
+
+	for (int y = -_r; y <= _r; y++) {
+		const float y2 = static_cast<float>(std::pow(y, 2));
+
+		for (int x = -_r; x <= _r; x++) {
+			if (x * x + y2 <= r2)
+				this->renderSurface.set(_x + x, y + _y, _color);			
+		}
+	}
+}
+
+void Renderer::fillRect(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const Color<>& _color) {
+	const uint16_t xEnd = (_x + _w < this->width)  ? _x + _w : this->width  - 1;
+	const uint16_t yEnd = (_y + _h < this->height) ? _y + _h : this->height - 1;
+	
+	for (uint16_t y = _y; y < yEnd; y++) {
+		uint32_t renderSurfacePixelIndex = this->width * y + _x;
+
+		for (uint16_t x = _x; x < xEnd; x++)
+			this->renderSurface.colorBuffer[renderSurfacePixelIndex++] = _color;
+	}
+}
+
+void Renderer::textureRect(const uint16_t _x, const uint16_t _y, const uint16_t _w, const uint16_t _h, const std::string& _textureName) {
+	Texture* texture = &this->textures[_textureName];
+
+	const bool doResize = !(texture->getWidth() == _w && texture->getHeight() == _h);
+
+	if (doResize) {
+		Texture* resizedTexture = new Texture(*texture);
+		resizedTexture->resize(_w, _h);
+		texture = resizedTexture;
+	}
+
+	uint32_t texturePixelIndex = 0;
+
+	const uint16_t xEnd = (_x + _w < this->width)  ? _x + _w : this->width  - 1;
+	const uint16_t yEnd = (_y + _h < this->height) ? _y + _h : this->height - 1;
+
+	for (uint16_t y = _y; y < yEnd; y++) {
+		uint32_t renderSurfacePixelIndex = this->width * y + _x;
+
+		for (uint16_t x = _x; x < xEnd; x++)
+			this->renderSurface.colorBuffer[renderSurfacePixelIndex++] = texture->colorBuffer[texturePixelIndex++];
+	}
+
+	if (doResize) delete texture;
 }
 
 Renderer::~Renderer() {
