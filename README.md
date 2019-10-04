@@ -13,6 +13,7 @@ C++, Python, and the cv2 python package.
 ## Features
 
 + Phong Rendering
++ Perspective Correct Texture Mapping
 + Gouraud Rendering
 + OBJ File Parsing
 + Diffuse Lighting
@@ -50,13 +51,19 @@ The executable will be located in the main Render-Farm/ directory.
 
 ### Documentation / Resources
 
-+ [Barycentric Interpolation](https://codeplea.com/triangular-interpolation)
++ Barycentric Interpolation
+  + https://stackoverflow.com/questions/55480931/how-does-the-opengl-fragment-shader-interpolate-the-color-of-each-vertex-in-orde?noredirect=1#comment97672403_55480931
+  + https://codeplea.com/triangular-interpolation
 + [Surface Normal Calculation](https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal)
 + [General 3D Matrix Calculations](https://www.youtube.com/playlist?list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP)
 + [2D Triangle Renderer](https://github.com/ssloy/tinyrenderer/wiki/Lesson-2:-Triangle-rasterization-and-back-face-culling)
 + [Specular Lighting / Texturing / Phong Shading](https://www.youtube.com/watch?v=Is6D5rnWEvs&list=PL_w_qWAQZtAZhtzPI5pkAtcUVgmzdAP8g&index=11&t=1512s)
 + [Calculating The Reflexion Vector](https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector)
 + [PPM 3 And 6 File Format Specification](http://netpbm.sourceforge.net/doc/ppm.html)
++ Perspective Correct Texture Mapping
+  + http://www.lysator.liu.se/~mikaelk/doc/perspectivetexture/
+  + https://www.youtube.com/watch?v=_elt1LVUsdY
+  + https://en.wikipedia.org/wiki/Texture_mapping#Perspective_correctness
 
 ### Test Models
 

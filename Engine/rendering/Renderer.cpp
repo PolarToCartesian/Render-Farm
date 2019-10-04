@@ -68,14 +68,14 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 		// Render
 
 		for (uint64_t trIndex = 0; trIndex < model.triangles.size(); trIndex++) {
-			const Triangle&                triangle            = model.triangles[trIndex];
-			const std::array<Vec3, 3>      rotatedVertices     = rotatedVerticesOfTriangles[trIndex];
-			const Vec3                     surfaceNormal       = Triangle::getSurfaceNormal(rotatedVertices);
-			const Material&                material            = this->materials.at(triangle.material);
-			const std::array<Vec3, 3>      transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
-			const std::array<Vec3, 3>      textureCoordinates  = { triangle.vertices[0].textureCoord, triangle.vertices[1].textureCoord, triangle.vertices[2].textureCoord };
-			const Texture&                 texture             = (material.isTextured) ? this->textures[material.textureName] : Texture();
-				  BarycentricInterpolation bi(transformedVertices);
+			const Triangle&           triangle            = model.triangles[trIndex];
+			const std::array<Vec3, 3> rotatedVertices     = rotatedVerticesOfTriangles[trIndex];
+			const Vec3                surfaceNormal       = Triangle::getSurfaceNormal(rotatedVertices);
+			const Material&           material            = this->materials.at(triangle.material);
+			const std::array<Vec3, 3> transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
+			const std::array<Vec3, 3> textureCoordinates  = { triangle.vertices[0].textureCoord, triangle.vertices[1].textureCoord, triangle.vertices[2].textureCoord };
+			const Texture&            texture             = (material.isTextured) ? this->textures[material.textureName] : Texture();
+			BarycentricInterpolation  bi(transformedVertices);
 
 			// Check if triangle is facing camera
 			if (!this->camera->isTriangleFacingCamera(rotatedVertices, surfaceNormal))
@@ -96,7 +96,8 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 			if (!material.isTextured) {
 				if (triangle.isSmoothed) {
 					baseVertexColors = { material.vertexColors[0], material.vertexColors[1],material.vertexColors[2] };
-				} else {
+				}
+				else {
 					baseVertexColors = {
 						Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, _lightsInScene, this->camera->position),
 						Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, _lightsInScene, this->camera->position),
@@ -105,25 +106,34 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 				}
 			}
 
+
+			// For Perspective Correct Texture Mapping And Depth Buffer Calculations
+
+			const std::array<float, 3> invertedW              = { 1 / transformedVertices[0].w,         1 / transformedVertices[1].w,         1 / transformedVertices[2].w };
+			const std::array<Vec3,  3> invertedWTextureCoords = { textureCoordinates[0] * invertedW[0], textureCoordinates[1] * invertedW[1], textureCoordinates[2] * invertedW[2] };
+
 			// Start Rendering
 
 			Triangle::drawTriangle2D(this->renderSurface, transformedVertices[0], transformedVertices[1], transformedVertices[2], [&](const uint16_t _x, const uint16_t _y) -> std::optional<Color<>> {
 				bi.precalculateValuesForPosition(_x, _y);
 
-				// Pixel Depth (w)
-				const float w = bi.interpolateWPrecalc(std::array<float, 3> { transformedVertices[0].w, transformedVertices[1].w, transformedVertices[2].w });
+				// Pixel Depth (w) (somewhat)
+				const float w = 1.f / bi.interpolateWPrecalc(invertedW);
 
-				// Render Pixel if it is in front of the pixel already there
 				const uint32_t pixelIndex = renderSurface.getIndex(_x, _y);
 
+				// Render Pixel if it is in front of the pixel already there
 				if (w < this->depthBuffer[pixelIndex] || this->depthBuffer[pixelIndex] == -1) {
 					this->depthBuffer[pixelIndex] = w;
 
 					const Vec3 position     = bi.interpolateWPrecalc(rotatedVertices);
-					const Vec3 textureCoord = (material.isTextured) ? Vec3::constrain(bi.interpolateWPrecalc(textureCoordinates), 0.f, 1.f) : Vec3();
-					const Vec3 normal       = (triangle.isSmoothed) ? bi.interpolateWPrecalc(vertexNormals)                                 : surfaceNormal;
+					const Vec3 textureCoord = (material.isTextured) ? Vec3::constrain(bi.interpolateWPrecalc(invertedWTextureCoords) * w, 0.f, 1.f) : Vec3();
+					const Vec3 normal       = (triangle.isSmoothed) ? bi.interpolateWPrecalc(vertexNormals) : surfaceNormal;
 
-					const Color<float> basePixelColor = Color<float>::constrain((material.isTextured) ? Color<float>(texture.sample(textureCoord.x * texture.getWidth(), textureCoord.y * texture.getHeight())) : Color<float>(bi.interpolateWPrecalc(baseVertexColors)), 0.f, 255.f);
+					const float sampleU = textureCoord.x * (texture.getWidth()  - 1);
+					const float sampleV = textureCoord.y * (texture.getHeight() - 1);
+
+					const Color<float> basePixelColor = Color<float>::constrain((material.isTextured) ? Color<float>(texture.sample(sampleU, sampleV)) : Color<float>(bi.interpolateWPrecalc(baseVertexColors)), 0.f, 255.f);
 					
 					return Color<>::constrain(Light::getColorWithLighting(position, basePixelColor, normal, _lightsInScene, this->camera->position, material), (uint8_t)0, (uint8_t)255);
 				} else {

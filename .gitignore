@@ -1,9 +1,7 @@
-textures/
-models/
-Debug/
+compile/
 temp/
-x64/
 out/
+res/
 
 *.git
 *.vs

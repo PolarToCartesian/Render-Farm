@@ -24,7 +24,7 @@ void File::open(const std::string& _filename, const std::string& _permissions) {
 
 	if (!this->isFileOpen) {
 		std::perror("Failure while opening file: ");
-		throw 0;
+		throw "ERROR_WHILE_OPENING";
 	}
 
 	this->canRead  = (this->permissions.find("r") != std::string::npos);

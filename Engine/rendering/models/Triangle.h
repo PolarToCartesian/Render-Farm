@@ -24,6 +24,8 @@ struct Triangle {
 
 	void translate(const Vec3& _deltaPosition);
 
+	void setTextureCoordinates(const Vec3 _textureCoord[3]);
+
 	std::array<Vec3, 3> getRotatedVertices(const Camera* _cam) const;
 
 	static Vec3 getSurfaceNormal(const std::array<Vec3, 3>& _points);

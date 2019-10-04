@@ -1,6 +1,7 @@
 #pragma once
 
 #include "models/Model.h"
+#include "../other/Util.h"
 #include "objects/Light.h"
 #include "cameras/Camera.h"
 #include "../other/Timer.h"

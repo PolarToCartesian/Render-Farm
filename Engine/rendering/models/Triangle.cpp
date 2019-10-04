@@ -26,6 +26,11 @@ void Triangle::translate(const Vec3& _deltaPosition) {
 	this->rotationMidPoint += _deltaPosition;
 }
 
+void Triangle::setTextureCoordinates(const Vec3 _textureCoord[3]) {
+	for (uint8_t i = 0; i < 3; i++)
+		this->vertices[i].textureCoord = _textureCoord[i];
+}
+
 std::array<Vec3, 3> Triangle::getRotatedVertices(const Camera* _cam) const {
 	std::array<Vec3, 3> rotatedVertices{
 		this->vertices[0].position + Vec3(0, 0, 0, 1),
