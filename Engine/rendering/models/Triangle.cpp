@@ -112,27 +112,13 @@ void Triangle::drawTriangle2D(const Image& _renderSurface, const Vec3& _a, const
 }
 
 
-std::array<Vec3, 3> Triangle::getTransformedVertices(const std::array<Vec3, 3>& _rotatedVertices, const Camera* _cam, const Mat4x4& _perspectiveMatrix, const uint16_t _width, const uint16_t _height) {
+std::array<Vec3, 3> Triangle::getTransformedVertices(const std::array<Vec3, 3>& _rotatedVertices, const Camera* _cam, const uint16_t _width, const uint16_t _height) {
 	std::array<Vec3, 3> transformedVertices = _rotatedVertices;
 
 	// For Every Vertex
-	for (uint8_t v = 0; v < 3; v++) {
-		// Camera Translation
-		transformedVertices[v] -= _cam->position;
-
-		// Apply Perspective
-		transformedVertices[v] = transformedVertices[v] * _perspectiveMatrix;
-
-		if (transformedVertices[v].w < 0)
-			continue;
-
-		if (transformedVertices[v].w > 0)
-			transformedVertices[v] /= transformedVertices[v].w;
-
-		// -1 to 1    to    0-width
-		transformedVertices[v].x = ((transformedVertices[v].x - 1.f) / -2.f) * _width;
-		// 1  to -1   to    height-0
-		transformedVertices[v].y = ((transformedVertices[v].y + 1.f) / +2.f) * _height;
+	for (Vec3& _vertex : transformedVertices) {
+		_cam->applyTranslation(_vertex);
+		_cam->applyProjection(_vertex);
 	}
 
 	return transformedVertices;

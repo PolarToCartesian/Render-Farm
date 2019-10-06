@@ -2,7 +2,7 @@
 
 class App : Renderer {
 	public:
-		App() : Renderer(1920, 1080, new PerspectiveCamera(90.f, 0.1f, 1000.f), Color<>(0)) {
+		App() : Renderer(1920, 1080, new PerspectiveCamera(1920, 1080, 90.f, 0.1f, 1000.f), Color<>(0)) {
 			this->textures.insert({ "Teapot", Texture("res/textures/teapot.ppm") });
 			this->textures.insert({ "Dirt",   Texture("res/textures/dirt.ppm")   });
 			this->textures.insert({ "Grass",  Texture("res/textures/grass.ppm")  });
@@ -26,7 +26,7 @@ class App : Renderer {
 
 			this->lights.insert({ "Front-Light", Light(Vec3(0, 2, -4), Color<>(255), 1) });
 
-			this->camera->position = Vec3(0.f, 0.5f, -1.f);
+			this->camera->setPosition(Vec3(0.f, 0.5f, -1.f));
 
 			this->models["Box"].setRotation(Vec3(-0.45f, 0.f, 0.0f));
 

@@ -15,14 +15,12 @@
 
 struct VertexNormalCalcInfo {
 	Vec3 normal;
-	float sumWeights;
+	float sumWeights = 0.f;
 };
 
 class Renderer {
 	private:
 		uint16_t width, height;
-
-		Mat4x4 perspectiveMatrix;
 
 		float* depthBuffer = nullptr;
 
@@ -43,8 +41,6 @@ class Renderer {
 
 	private:
 		void resetDepthBuffer();
-
-		void calculatePerspectiveMatrix();
 
 		std::unordered_map<std::string, VertexNormalCalcInfo> calculateVertexNormals(const Model& _model, const std::vector<std::array<Vec3, 3>> & _rotatedVertices) const;
 

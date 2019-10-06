@@ -6,10 +6,6 @@ void Renderer::resetDepthBuffer() {
 	std::fill_n(this->depthBuffer, this->width * this->height, -1.f);
 }
 
-void Renderer::calculatePerspectiveMatrix() {
-	this->perspectiveMatrix = Mat4x4::getPerspectiveMatrix(this->width, this->height, this->camera->fov, this->camera->zNear, this->camera->zFar);
-}
-
 std::unordered_map<std::string, VertexNormalCalcInfo> Renderer::calculateVertexNormals(const Model& _model, const std::vector<std::array<Vec3, 3>>& _rotatedVerticesOfTriangles) const {
 	// Calculate Vertex Normals
 	// Thansk to : https://stackoverflow.com/questions/6656358/calculating-normals-in-a-triangle-mesh/6661242#6661242
@@ -72,7 +68,7 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 			const std::array<Vec3, 3> rotatedVertices     = rotatedVerticesOfTriangles[trIndex];
 			const Vec3                surfaceNormal       = Triangle::getSurfaceNormal(rotatedVertices);
 			const Material&           material            = this->materials.at(triangle.material);
-			const std::array<Vec3, 3> transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->perspectiveMatrix, this->width, this->height);
+			const std::array<Vec3, 3> transformedVertices = Triangle::getTransformedVertices(rotatedVertices, this->camera, this->width, this->height);
 			const std::array<Vec3, 3> textureCoordinates  = { triangle.vertices[0].textureCoord, triangle.vertices[1].textureCoord, triangle.vertices[2].textureCoord };
 			const Texture&            texture             = (material.isTextured) ? this->textures[material.textureName] : Texture();
 			BarycentricInterpolation  bi(transformedVertices);
@@ -99,9 +95,9 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 				}
 				else {
 					baseVertexColors = {
-						Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, _lightsInScene, this->camera->position),
-						Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, _lightsInScene, this->camera->position),
-						Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, _lightsInScene, this->camera->position)
+						Light::getDiffusedLighting(rotatedVertices[0], material.vertexColors[0], surfaceNormal, _lightsInScene, this->camera->getPosition()),
+						Light::getDiffusedLighting(rotatedVertices[1], material.vertexColors[1], surfaceNormal, _lightsInScene, this->camera->getPosition()),
+						Light::getDiffusedLighting(rotatedVertices[2], material.vertexColors[2], surfaceNormal, _lightsInScene, this->camera->getPosition())
 					};
 				}
 			}
@@ -130,12 +126,12 @@ void Renderer::drawModels(const std::vector<Light*>& _lightsInScene) {
 					const Vec3 textureCoord = (material.isTextured) ? Vec3::constrain(bi.interpolateWPrecalc(invertedWTextureCoords) * w, 0.f, 1.f) : Vec3();
 					const Vec3 normal       = (triangle.isSmoothed) ? bi.interpolateWPrecalc(vertexNormals) : surfaceNormal;
 
-					const float sampleU = textureCoord.x * (texture.getWidth()  - 1);
-					const float sampleV = textureCoord.y * (texture.getHeight() - 1);
+					const uint16_t sampleU = static_cast<uint16_t>(textureCoord.x * (texture.getWidth()  - 1));
+					const uint16_t sampleV = static_cast<uint16_t>(textureCoord.y * (texture.getHeight() - 1));
 
 					const Color<float> basePixelColor = Color<float>::constrain((material.isTextured) ? Color<float>(texture.sample(sampleU, sampleV)) : Color<float>(bi.interpolateWPrecalc(baseVertexColors)), 0.f, 255.f);
 					
-					return Color<>::constrain(Light::getColorWithLighting(position, basePixelColor, normal, _lightsInScene, this->camera->position, material), (uint8_t)0, (uint8_t)255);
+					return Color<>::constrain(Light::getColorWithLighting(position, basePixelColor, normal, _lightsInScene, this->camera->getPosition(), material), (uint8_t)0, (uint8_t)255);
 				} else {
 					return {};
 				}
@@ -159,7 +155,7 @@ void Renderer::renderAndWriteFrames(const uint32_t _fps, const uint32_t _duratio
 
 			this->render3D();
 
-			this->camera->calculateRotationMatrices();
+			this->camera->calculateMatrices();
 
 			// Get All Lights In Scene
 			std::vector<Light*> lightsInScene;
@@ -197,14 +193,12 @@ void Renderer::writeVideo(const uint32_t _fps, const uint32_t _duration) {
 // Public Methods
 
 Renderer::Renderer(const uint16_t _width, const uint16_t _height, Camera* _cam, const Color<>& _backgroundColor)
-	: width(_width), height(_height), camera(_cam), renderSurface(_width, _height, _backgroundColor)
+	: width(_width), height(_height), camera(_cam), renderSurface(_width, _height, _backgroundColor), backgroundColor(_backgroundColor)
 {
 	std::experimental::filesystem::create_directory("./out");
 	std::experimental::filesystem::create_directory("./out/frames");
 
-	this->calculatePerspectiveMatrix();
-	this->backgroundColor = _backgroundColor;
-	this->depthBuffer = new float[static_cast<uint32_t>(this->width * this->height)];
+	this->depthBuffer = new float[static_cast<uint64_t>(this->width) * this->height];
 }
 
 uint32_t Renderer::getWidth()  const { return this->width;  }
